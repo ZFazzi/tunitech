@@ -51,7 +51,9 @@ export const Hero = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">🔹 Varför välja oss?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+              <GradientText>Why TuniTech?</GradientText>
+            </h2>
             <motion.div 
               className="space-y-4"
               initial="hidden"
@@ -87,15 +89,14 @@ export const Hero = () => {
           </motion.div>
 
           <motion.div
-            className="mt-12 glass-card p-8"
+            className="mt-8 text-gray-300 text-lg max-w-4xl mx-auto glass-card p-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Vår vision</h2>
-            <p className="text-gray-300 text-lg">
-              Att göra talang tillgänglig över gränser, där intelligens och innovation möts för att skapa smarta, framtidssäkra lösningar.
-            </p>
+            <GradientText>
+              "Att göra talang tillgänglig över gränser, där intelligens och innovation möts för att skapa smarta, framtidssäkra lösningar."
+            </GradientText>
           </motion.div>
           
           <div className="mt-8">
