@@ -18,12 +18,8 @@ export const Navbar = () => {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-tunitech-dark/80 backdrop-blur-lg" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <img src="/lovable-uploads/6fc4dc50-55da-428f-9e2b-d966bd20a8f4.png" alt="Tunitech Logo" className="h-8" />
-          </div>
-          
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="flex items-baseline space-x-8">
               <NavLink href="#home">Home</NavLink>
               <NavLink href="#services">Services</NavLink>
               <NavLink href="#values">Values</NavLink>
