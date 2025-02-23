@@ -51,11 +51,8 @@ export const Hero = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
-              <GradientText>Why TuniTech?</GradientText>
-            </h2>
             <motion.div 
-              className="space-y-4"
+              className="grid md:grid-cols-2 gap-8"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -68,21 +65,35 @@ export const Hero = () => {
               }}
             >
               {[
-                "Smart Minds: Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
-                "Smart Solutions: Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
-                "Global Reach, Local Impact: Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
-                "Cost-Efficient, Quality-Driven: Premiumutveckling utan storbolagens overhead-kostnader."
-              ].map((text, index) => (
+                {
+                  title: "Talented Minds",
+                  description: "Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
+                },
+                {
+                  title: "Tailored Solutions",
+                  description: "Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
+                },
+                {
+                  title: "Global Reach, Local Impact",
+                  description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
+                },
+                {
+                  title: "Cost-Efficient, Quality-Driven",
+                  description: "Premiumutveckling utan storbolagens overhead-kostnader.",
+                }
+              ].map((item, index) => (
                 <motion.div
                   key={index}
                   variants={{
-                    hidden: { opacity: 0, x: -20 },
-                    visible: { opacity: 1, x: 0 }
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
                   }}
-                  className="flex items-start space-x-3"
+                  className="glass-card p-6 border border-tunitech-mint/20 hover:border-tunitech-mint/40 transition-colors duration-300"
                 >
-                  <span className="text-tunitech-mint flex-shrink-0">✅</span>
-                  <p className="text-gray-300">{text}</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    <GradientText>{item.title}</GradientText>
+                  </h3>
+                  <p className="text-gray-300">{item.description}</p>
                 </motion.div>
               ))}
             </motion.div>
