@@ -1,6 +1,17 @@
 
 import { motion } from "framer-motion";
 
+const GradientText = ({ children }: { children: React.ReactNode }) => (
+  <motion.span
+    initial={{ backgroundPosition: "0% 50%" }}
+    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+    transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+    className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-[length:200%_100%] bg-clip-text text-transparent"
+  >
+    {children}
+  </motion.span>
+);
+
 export const Hero = () => {
   return (
     <section id="home" className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden">
@@ -20,11 +31,11 @@ export const Hero = () => {
           />
           
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
-            Developers Delivered on Demand
+            <GradientText>Talented Minds, Tailored Solutions</GradientText>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-            Talented Minds, Tailored Solutions
+            Digital Experts Delivered on Demand
           </p>
           
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
@@ -33,6 +44,59 @@ export const Hero = () => {
             Vi bemannar er med högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem. 
             Vår modell bygger på smidighet, effektivitet och innovation – där rätt talang möter rätt behov.
           </p>
+
+          <motion.div 
+            className="mt-12 space-y-8 text-left max-w-4xl mx-auto glass-card p-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">🔹 Varför välja oss?</h2>
+            <motion.div 
+              className="space-y-4"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.2
+                  }
+                }
+              }}
+            >
+              {[
+                "Smart Minds: Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
+                "Smart Solutions: Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
+                "Global Reach, Local Impact: Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
+                "Cost-Efficient, Quality-Driven: Premiumutveckling utan storbolagens overhead-kostnader."
+              ].map((text, index) => (
+                <motion.div
+                  key={index}
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    visible: { opacity: 1, x: 0 }
+                  }}
+                  className="flex items-start space-x-3"
+                >
+                  <span className="text-tunitech-mint flex-shrink-0">✅</span>
+                  <p className="text-gray-300">{text}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className="mt-12 glass-card p-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Vår vision</h2>
+            <p className="text-gray-300 text-lg">
+              Att göra talang tillgänglig över gränser, där intelligens och innovation möts för att skapa smarta, framtidssäkra lösningar.
+            </p>
+          </motion.div>
           
           <div className="mt-8">
             <motion.a
