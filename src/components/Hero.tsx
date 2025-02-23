@@ -14,7 +14,7 @@ export const Hero = () => {
           className="space-y-6"
         >
           <img
-            src="/lovable-uploads/3172edd2-90b1-4282-81e4-e6efcb996bd0.png"
+            src="/lovable-uploads/9e74fbfb-e487-4cc3-a2e1-827bc6ac79de.png"
             alt="Tunitech Logo"
             className="h-20 md:h-24 mx-auto mb-8"
           />
@@ -24,7 +24,14 @@ export const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-            Smart Minds, Smart Solutions
+            Talented Minds, Tailored Solutions
+          </p>
+          
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            I en värld där teknikutvecklingen aldrig står still krävs skarpa hjärnor för att bygga framtidens lösningar. 
+            TuniTech kopplar samman de bästa utvecklarna från Tunisien med innovativa företag i Sverige. 
+            Vi bemannar er med högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem. 
+            Vår modell bygger på smidighet, effektivitet och innovation – där rätt talang möter rätt behov.
           </p>
           
           <div className="mt-8">

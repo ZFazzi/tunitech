@@ -19,7 +19,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <img src="/lovable-uploads/3172edd2-90b1-4282-81e4-e6efcb996bd0.png" alt="Tunitech Logo" className="h-8" />
+            <img src="/lovable-uploads/6fc4dc50-55da-428f-9e2b-d966bd20a8f4.png" alt="Tunitech Logo" className="h-8" />
           </div>
           
           <div className="hidden md:block">
