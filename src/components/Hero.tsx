@@ -25,7 +25,7 @@ export const Hero = () => {
           className="space-y-6"
         >
           <img
-            src="/lovable-uploads/9e74fbfb-e487-4cc3-a2e1-827bc6ac79de.png"
+            src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
             alt="Tunitech Logo"
             className="h-20 md:h-24 mx-auto mb-8"
           />
