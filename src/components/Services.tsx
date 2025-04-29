@@ -30,9 +30,9 @@ export const Services = () => {
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Talents</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Delivering comprehensive solutions tailored to your needs
+            Vi erbjuder talanger efter era önskemål inom alla IT-områden
           </p>
         </div>
 
