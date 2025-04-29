@@ -1,5 +1,5 @@
 
-import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -77,7 +77,7 @@ export const Services = () => {
             }}
             className="w-full"
           >
-            <div className="overflow-visible px-10 md:px-14">
+            <div className="overflow-visible px-6 md:px-12">
               <CarouselContent className="-ml-4 md:-ml-6">
                 {services.map((service, index) => (
                   <CarouselItem key={index} className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/3 2xl:basis-1/4">
@@ -98,12 +98,12 @@ export const Services = () => {
               
               <div className="absolute left-0 top-1/2 -translate-y-1/2">
                 <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                  <ChevronLeft className="h-7 w-7 -ml-0.5" />
+                  <span className="text-xl font-bold">&lt;</span>
                 </CarouselPrevious>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2">
                 <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                  <ChevronRight className="h-7 w-7 -mr-0.5" />
+                  <span className="text-xl font-bold">&gt;</span>
                 </CarouselNext>
               </div>
             </div>
