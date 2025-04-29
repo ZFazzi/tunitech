@@ -103,14 +103,10 @@ export const Services = () => {
             </CarouselContent>
             
             <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                <span className="text-xl font-bold">&lt;</span>
-              </CarouselPrevious>
+              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10" />
             </div>
             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
-              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                <span className="text-xl font-bold">&gt;</span>
-              </CarouselNext>
+              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10" />
             </div>
           </Carousel>
         </div>
