@@ -1,4 +1,3 @@
-
 import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -102,16 +101,8 @@ export const Services = () => {
               ))}
             </CarouselContent>
             
-            <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
-              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                <span className="text-xl font-bold">&lt;</span>
-              </CarouselPrevious>
-            </div>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
-              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                <span className="text-xl font-bold">&gt;</span>
-              </CarouselNext>
-            </div>
+            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
+            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
           </Carousel>
         </div>
       </div>
