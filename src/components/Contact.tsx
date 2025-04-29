@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 export const Contact = () => {
   return (
@@ -30,12 +30,12 @@ export const Contact = () => {
             
             <div className="flex items-center space-x-4">
               <Mail className="w-6 h-6 text-tunitech-mint" />
-              <p className="text-gray-300">contact@tunitech.com</p>
+              <p className="text-gray-300">hello@tunitech.se</p>
             </div>
             
             <div className="flex items-center space-x-4">
-              <MessageSquare className="w-6 h-6 text-tunitech-mint" />
-              <p className="text-gray-300">Live chat available 24/7</p>
+              <MapPin className="w-6 h-6 text-tunitech-mint" />
+              <p className="text-gray-300">Stockholm, Sverige</p>
             </div>
           </motion.div>
 
