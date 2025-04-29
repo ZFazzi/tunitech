@@ -35,15 +35,42 @@ export const Navbar = () => {
               <NavLink href="#services">{t.ourTalents}</NavLink>
               <NavLink href="#values">{t.career}</NavLink>
               <NavLink href="#contact">{t.contact}</NavLink>
+              
+              {/* Language dropdown integrated within the menu bar */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-gray-300 hover:text-white hover:bg-white/10 px-5 py-2 text-sm font-medium transition-colors duration-200 rounded-full flex items-center gap-2">
+                  <Globe size={18} />
+                  <span className="text-sm">{language.toUpperCase()}</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-tunitech-dark/95 backdrop-blur-md border border-white/10 text-white">
+                  <DropdownMenuItem 
+                    className="hover:bg-white/10 focus:bg-white/10 cursor-pointer" 
+                    onClick={() => setLanguage("sv")}
+                  >
+                    {t.swedish}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="hover:bg-white/10 focus:bg-white/10 cursor-pointer" 
+                    onClick={() => setLanguage("en")}
+                  >
+                    {t.english}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="hover:bg-white/10 focus:bg-white/10 cursor-pointer" 
+                    onClick={() => setLanguage("fr")}
+                  >
+                    {t.french}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           
-          {/* Language selector - positioned absolutely on the right */}
-          <div className="absolute right-16 md:right-4 top-5">
+          {/* Mobile language selector - placed to the right */}
+          <div className="md:hidden absolute right-16 top-4">
             <DropdownMenu>
               <DropdownMenuTrigger className="text-gray-300 hover:text-white p-2 bg-tunitech-dark/80 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                 <Globe size={18} />
-                <span className="hidden sm:inline text-sm">{language.toUpperCase()}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-tunitech-dark/95 backdrop-blur-md border border-white/10 text-white">
                 <DropdownMenuItem 
