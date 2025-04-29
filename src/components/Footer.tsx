@@ -79,7 +79,7 @@ export const Footer = () => {
         </div>
         
         {/* Copyright Section */}
-        <div className="mt-12 pt-6 border-t border-white/10 text-left text-gray-400 text-sm">
+        <div className="mt-12 pt-6 border-t border-white/10 text-center text-gray-400 text-sm">
           <p>© {new Date().getFullYear()} TuniTech. Alla rättigheter reserverade.</p>
         </div>
       </div>
