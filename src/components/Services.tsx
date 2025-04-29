@@ -1,28 +1,48 @@
 
-import { Code, Server, Smartphone, Workflow } from "lucide-react";
+import { Code, Server, Smartphone, Workflow, Layout, Brush, Database, Globe, ShieldCheck, LineChart, BrainCircuit, CloudCog } from "lucide-react";
 import { motion } from "framer-motion";
 
 const services = [
   {
     icon: Code,
-    title: "Web Development",
-    description: "Custom web applications built with modern technologies and best practices.",
+    title: "Frontend Developer",
+    description: "Expert developers for modern, responsive web applications using React, Angular, and Vue.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "AI Expert",
+    description: "Specialists in machine learning, deep learning, and natural language processing solutions.",
   },
   {
     icon: Server,
-    title: "Backend Solutions",
-    description: "Scalable and secure backend infrastructure for your applications.",
+    title: "Backend Developer",
+    description: "Experienced developers for robust server-side applications and APIs.",
   },
   {
-    icon: Smartphone,
-    title: "Mobile Development",
-    description: "Native and cross-platform mobile applications for iOS and Android.",
+    icon: Brush,
+    title: "UI/UX Designer",
+    description: "Creative designers who craft intuitive and engaging user experiences.",
   },
   {
-    icon: Workflow,
-    title: "DevOps Services",
-    description: "Streamline your development workflow with automated processes.",
+    icon: Database,
+    title: "Database Specialist",
+    description: "Experts in database design, optimization and management systems.",
   },
+  {
+    icon: CloudCog,
+    title: "DevOps Engineer",
+    description: "Professionals who streamline deployment and optimize infrastructure.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Security Expert",
+    description: "Specialists in cybersecurity, threat assessment and security protocols.",
+  },
+  {
+    icon: Globe,
+    title: "Full-Stack Developer",
+    description: "Versatile developers with expertise across entire technology stacks.",
+  }
 ];
 
 export const Services = () => {
@@ -36,7 +56,7 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
             <motion.div
               key={index}
