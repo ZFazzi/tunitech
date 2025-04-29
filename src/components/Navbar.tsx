@@ -21,10 +21,10 @@ export const Navbar = () => {
           {/* Desktop menu - centered */}
           <div className="hidden md:flex items-center justify-center">
             <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
-              <NavLink href="#home">Home</NavLink>
-              <NavLink href="#services">Services</NavLink>
-              <NavLink href="#values">Values</NavLink>
-              <NavLink href="#contact">Contact</NavLink>
+              <NavLink href="#home">Om oss</NavLink>
+              <NavLink href="#services">Våra talanger</NavLink>
+              <NavLink href="#values">Karriär</NavLink>
+              <NavLink href="#contact">Kontakt</NavLink>
             </div>
           </div>
           
@@ -44,10 +44,10 @@ export const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/95 backdrop-blur-lg border-t border-white/10">
-          <MobileNavLink href="#home" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
-          <MobileNavLink href="#services" onClick={() => setIsOpen(false)}>Services</MobileNavLink>
-          <MobileNavLink href="#values" onClick={() => setIsOpen(false)}>Values</MobileNavLink>
-          <MobileNavLink href="#contact" onClick={() => setIsOpen(false)}>Contact</MobileNavLink>
+          <MobileNavLink href="#home" onClick={() => setIsOpen(false)}>Om oss</MobileNavLink>
+          <MobileNavLink href="#services" onClick={() => setIsOpen(false)}>Våra talanger</MobileNavLink>
+          <MobileNavLink href="#values" onClick={() => setIsOpen(false)}>Karriär</MobileNavLink>
+          <MobileNavLink href="#contact" onClick={() => setIsOpen(false)}>Kontakt</MobileNavLink>
         </div>
       </div>
     </nav>
