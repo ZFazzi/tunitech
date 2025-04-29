@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export const Contact = () => {
   return (
@@ -13,38 +13,13 @@ export const Contact = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <h3 className="text-2xl font-semibold text-white mb-6">Contact Information</h3>
-            
-            <div className="flex items-center space-x-4">
-              <Phone className="w-6 h-6 text-tunitech-mint" />
-              <p className="text-gray-300">+1 (555) 123-4567</p>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Mail className="w-6 h-6 text-tunitech-mint" />
-              <p className="text-gray-300">hello@tunitech.se</p>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <MapPin className="w-6 h-6 text-tunitech-mint" />
-              <p className="text-gray-300">Stockholm, Sverige</p>
-            </div>
-          </motion.div>
-
+        <div className="flex justify-center">
           <motion.form
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="glass-card p-8 space-y-6"
+            className="glass-card p-8 space-y-6 w-full max-w-2xl"
             onSubmit={(e) => e.preventDefault()}
           >
             <div>
