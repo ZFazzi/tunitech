@@ -1,5 +1,5 @@
 
-import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, ArrowLeft, ArrowRight } from "lucide-react";
+import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -68,17 +68,18 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="relative px-8 md:px-12">
+        <div className="relative">
           <Carousel
             opts={{
               align: "start",
               loop: true,
+              containScroll: "trimSnaps",
             }}
-            className="w-full"
+            className="w-full px-8 md:px-12"
           >
-            <CarouselContent>
+            <CarouselContent className="-ml-2 md:-ml-4">
               {services.map((service, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -93,8 +94,16 @@ export const Services = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute left-0 bg-black/50 border-white/20 hover:bg-white/10 text-white" />
-            <CarouselNext className="absolute right-0 bg-black/50 border-white/20 hover:bg-white/10 text-white" />
+            <div className="absolute -left-4 top-1/2 -translate-y-1/2">
+              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white">
+                <ChevronLeft className="h-6 w-6" />
+              </CarouselPrevious>
+            </div>
+            <div className="absolute -right-4 top-1/2 -translate-y-1/2">
+              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white">
+                <ChevronRight className="h-6 w-6" />
+              </CarouselNext>
+            </div>
           </Carousel>
         </div>
       </div>
