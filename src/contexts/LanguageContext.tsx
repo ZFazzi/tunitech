@@ -17,7 +17,21 @@ const translations = {
     contact: "Kontakt",
     swedish: "Svenska",
     english: "Engelska",
-    french: "Franska"
+    french: "Franska",
+    // Contact form translations
+    name: "Namn",
+    yourName: "För- och Efternamn",
+    email: "E-post",
+    yourEmail: "Din e-postadress",
+    company: "Företag",
+    yourCompany: "Ditt företag",
+    message: "Meddelande",
+    yourMessage: "Ditt meddelande",
+    sendMessage: "Skicka",
+    requiredField: "Detta fält är obligatoriskt",
+    invalidEmail: "Ange en giltig e-postadress",
+    messageSent: "Meddelandet har skickats!",
+    messageError: "Ett fel uppstod. Försök igen."
   },
   en: {
     aboutUs: "About Us",
@@ -26,7 +40,21 @@ const translations = {
     contact: "Contact",
     swedish: "Swedish",
     english: "English",
-    french: "French"
+    french: "French",
+    // Contact form translations
+    name: "Name",
+    yourName: "Your name",
+    email: "Email",
+    yourEmail: "Your email",
+    company: "Company",
+    yourCompany: "Your company",
+    message: "Message",
+    yourMessage: "Your message",
+    sendMessage: "Send Message",
+    requiredField: "This field is required",
+    invalidEmail: "Please enter a valid email",
+    messageSent: "Message sent!",
+    messageError: "An error occurred. Please try again."
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -35,7 +63,21 @@ const translations = {
     contact: "Contact",
     swedish: "Suédois",
     english: "Anglais",
-    french: "Français"
+    french: "Français",
+    // Contact form translations
+    name: "Nom",
+    yourName: "Votre nom",
+    email: "E-mail",
+    yourEmail: "Votre e-mail",
+    company: "Entreprise",
+    yourCompany: "Votre entreprise",
+    message: "Message",
+    yourMessage: "Votre message",
+    sendMessage: "Envoyer",
+    requiredField: "Ce champ est obligatoire",
+    invalidEmail: "Veuillez entrer un e-mail valide",
+    messageSent: "Message envoyé!",
+    messageError: "Une erreur est survenue. Veuillez réessayer."
   }
 };
 

@@ -5,6 +5,7 @@ import { Services } from "@/components/Services";
 import { Values } from "@/components/Values";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { Toaster } from "@/components/ui/toaster";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
       <Values />
       <Contact />
       <Footer />
+      <Toaster />
     </motion.div>
   );
 };
