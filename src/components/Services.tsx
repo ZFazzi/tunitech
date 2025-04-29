@@ -68,20 +68,20 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-6 mx-auto max-w-7xl">
-          <CarouselPrevious className="relative left-0 transform translate-y-0 h-10 w-10 bg-transparent border-0 hover:bg-white/10 text-white">
-            <ChevronLeft className="h-8 w-8" />
-          </CarouselPrevious>
-          
-          <div className="flex-grow overflow-hidden">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-                containScroll: "trimSnaps",
-              }}
-              className="w-full"
-            >
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+            containScroll: "trimSnaps",
+          }}
+          className="w-full relative mx-auto max-w-7xl"
+        >
+          <div className="flex items-center">
+            <CarouselPrevious className="relative left-0 transform translate-y-0 h-10 w-10 bg-transparent border-0 hover:bg-white/10 text-white">
+              <ChevronLeft className="h-8 w-8" />
+            </CarouselPrevious>
+            
+            <div className="flex-grow overflow-hidden">
               <CarouselContent className="-ml-2 md:-ml-4">
                 {services.map((service, index) => (
                   <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
@@ -99,13 +99,13 @@ export const Services = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-            </Carousel>
+            </div>
+            
+            <CarouselNext className="relative right-0 transform translate-y-0 h-10 w-10 bg-transparent border-0 hover:bg-white/10 text-white">
+              <ChevronRight className="h-8 w-8" />
+            </CarouselNext>
           </div>
-          
-          <CarouselNext className="relative right-0 transform translate-y-0 h-10 w-10 bg-transparent border-0 hover:bg-white/10 text-white">
-            <ChevronRight className="h-8 w-8" />
-          </CarouselNext>
-        </div>
+        </Carousel>
       </div>
     </section>
   );
