@@ -1,94 +1,84 @@
 
 import { motion } from "framer-motion";
+import { Mail, Send } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+
+interface FormData {
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+}
 
 export const Contact = () => {
   const { language, translations } = useLanguage();
   const t = translations[language];
   const { toast } = useToast();
-
-  const [formData, setFormData] = useState({
+  
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     company: "",
     message: ""
   });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = t.requiredField;
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = t.requiredField;
-    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = t.invalidEmail;
-    }
-    
-    if (!formData.message.trim()) {
-      newErrors.message = t.requiredField;
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user types
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: t.formError || "Error",
+        description: t.formErrorMsg || "Please fill in all required fields.",
+        variant: "destructive"
+      });
       return;
     }
 
-    const subject = `Contact Form Submission from ${formData.name}`;
-    const body = `
-Name: ${formData.name}
-Email: ${formData.email}
-Company: ${formData.company || "Not provided"}
+    setIsSubmitting(true);
 
-Message:
-${formData.message}
-    `.trim();
-
-    const mailtoLink = `mailto:hello@tunitech.se?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
     try {
-      window.location.href = mailtoLink;
-      toast({
-        title: t.messageSent,
-        variant: "default",
-      });
-      // Reset form after submission
+      // Create a mailto link to open the user's email client
+      const subject = `Contact Form: ${formData.name} from ${formData.company || 'N/A'}`;
+      const body = `Name: ${formData.name}
+Email: ${formData.email}
+Company: ${formData.company || 'N/A'}
+Message: ${formData.message}`;
+
+      const mailtoLink = `mailto:hello@tunitech.se?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink, '_blank');
+      
+      // Reset form
       setFormData({
         name: "",
         email: "",
         company: "",
         message: ""
       });
-    } catch (error) {
+      
+      // Show success notification
       toast({
-        title: t.messageError,
-        variant: "destructive",
+        title: t.success || "Success!",
+        description: t.emailSent || "Your message has been sent. Thank you!",
       });
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: t.error || "Error",
+        description: t.emailFailed || "Failed to send your message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -96,9 +86,9 @@ ${formData.message}
     <section id="contact" className="section-padding bg-gradient-to-b from-black to-tunitech-dark">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Get in Touch</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t.getInTouch || "Get in Touch"}</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Ready to start your next project? Contact us today.
+            {t.contactTagline || "Ready to start your next project? Contact us today."}
           </p>
         </div>
 
@@ -111,64 +101,67 @@ ${formData.message}
             className="glass-card p-8 space-y-6 w-full max-w-2xl"
             onSubmit={handleSubmit}
           >
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-white">{t.name}</Label>
-              <Input
-                id="name"
+            <div>
+              <label className="text-white mb-2 block">{t.name || "Namn"}</label>
+              <input
+                type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder={t.yourName}
-                className="bg-white/5 border border-white/10 text-white focus:border-tunitech-mint"
+                className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-tunitech-mint transition-colors"
+                placeholder={t.yourName || "För- och Efternamn"}
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-white">{t.email}</Label>
-              <Input
-                id="email"
-                name="email"
+            <div>
+              <label className="text-white mb-2 block">Email</label>
+              <input
                 type="email"
+                name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder={t.yourEmail}
-                className="bg-white/5 border border-white/10 text-white focus:border-tunitech-mint"
+                className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-tunitech-mint transition-colors"
+                placeholder="Email"
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="company" className="text-white">{t.company}</Label>
-              <Input
-                id="company"
+            <div>
+              <label className="text-white mb-2 block">{t.company || "Företag"}</label>
+              <input
+                type="text"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                placeholder={t.yourCompany}
-                className="bg-white/5 border border-white/10 text-white focus:border-tunitech-mint"
+                className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-tunitech-mint transition-colors"
+                placeholder={t.yourCompany || "Ditt företag"}
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="message" className="text-white">{t.message}</Label>
-              <Textarea
-                id="message"
+            <div>
+              <label className="text-white mb-2 block">{t.message || "Meddelande"}</label>
+              <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder={t.yourMessage}
-                className="bg-white/5 border border-white/10 text-white focus:border-tunitech-mint h-32"
+                className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-tunitech-mint transition-colors h-32"
+                placeholder={t.yourMessage || "Ditt meddelande"}
               />
-              {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
             </div>
 
-            <Button
+            <button
               type="submit"
-              className="w-full bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-medium py-6 hover:shadow-lg transition-all duration-300"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-medium py-3 rounded-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
             >
-              {t.sendMessage}
-            </Button>
+              {isSubmitting ? (
+                <span className="animate-pulse">{t.sending || "Sending..."}</span>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  <span>{t.sendMessage || "Skicka"}</span>
+                </>
+              )}
+            </button>
           </motion.form>
         </div>
       </div>
