@@ -73,17 +73,18 @@ export const Services = () => {
             <ChevronLeft className="h-8 w-8" />
           </CarouselPrevious>
           
-          <div className="flex-grow">
+          <div className="flex-grow overflow-hidden">
             <Carousel
               opts={{
                 align: "start",
                 loop: true,
+                containScroll: "trimSnaps",
               }}
               className="w-full"
             >
-              <CarouselContent>
+              <CarouselContent className="-ml-2 md:-ml-4">
                 {services.map((service, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                  <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
