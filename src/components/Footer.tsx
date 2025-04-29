@@ -20,11 +20,16 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Kontakta oss</h3>
+            <h3 className="text-xl font-bold mb-5 text-tunitech-mint text-center">Kontakta oss</h3>
             
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-tunitech-mint" />
-              <p className="text-gray-300">hello@tunitech.se</p>
+              <a 
+                href="mailto:hello@tunitech.se" 
+                className="text-gray-300 hover:text-white hover:underline transition-colors"
+              >
+                hello@tunitech.se
+              </a>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -41,7 +46,7 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Meny</h3>
+            <h3 className="text-xl font-bold mb-5 text-tunitech-mint text-center">Meny</h3>
             <ul className="space-y-2">
               <li><a href="#home" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.aboutUs}</a></li>
               <li><a href="#services" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.ourTalents}</a></li>
@@ -58,7 +63,7 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Sociala medier</h3>
+            <h3 className="text-xl font-bold mb-5 text-tunitech-mint text-center">Sociala medier</h3>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Facebook className="w-6 h-6" />
