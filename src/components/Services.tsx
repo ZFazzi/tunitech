@@ -8,6 +8,7 @@ import {
   CarouselPrevious,
   CarouselNext
 } from "@/components/ui/carousel";
+import { useRef, useEffect, useState } from "react";
 
 const services = [
   {
@@ -58,6 +59,8 @@ const services = [
 ];
 
 export const Services = () => {
+  const [api, setApi] = useState<any>(null);
+  
   return (
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto">
@@ -68,44 +71,48 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative px-4 md:px-8 lg:px-12">
           <Carousel
             opts={{
               align: "start",
               loop: true,
-              containScroll: "trimSnaps",
+              containScroll: false,
+              skipSnaps: false,
             }}
             className="w-full"
+            setApi={setApi}
           >
-            <div className="overflow-visible px-6 md:px-12">
-              <CarouselContent className="-ml-4 md:-ml-6">
-                {services.map((service, index) => (
-                  <CarouselItem key={index} className="pl-4 md:pl-6 md:basis-1/2 lg:basis-1/3 xl:basis-1/3 2xl:basis-1/4">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300"
-                    >
-                      <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
-                      <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
-                      <p className="text-gray-400">{service.description}</p>
-                    </motion.div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              
-              <div className="absolute left-0 top-1/2 -translate-y-1/2">
-                <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                  <span className="text-xl font-bold">&lt;</span>
-                </CarouselPrevious>
-              </div>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2">
-                <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
-                  <span className="text-xl font-bold">&gt;</span>
-                </CarouselNext>
-              </div>
+            <CarouselContent className="-ml-4">
+              {services.map((service, index) => (
+                <CarouselItem 
+                  key={index} 
+                  className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/3 2xl:basis-1/4"
+                  style={{ paddingRight: "12px" }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300"
+                  >
+                    <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
+                    <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
+                    <p className="text-gray-400">{service.description}</p>
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
+              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
+                <span className="text-xl font-bold">&lt;</span>
+              </CarouselPrevious>
+            </div>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
+              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10">
+                <span className="text-xl font-bold">&gt;</span>
+              </CarouselNext>
             </div>
           </Carousel>
         </div>
