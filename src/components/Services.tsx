@@ -71,7 +71,7 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
+        <div className="max-w-7xl mx-auto relative px-10">
           <Carousel
             opts={{
               align: "start",
@@ -102,12 +102,8 @@ export const Services = () => {
               ))}
             </CarouselContent>
             
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <CarouselPrevious className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10 block" />
-            </div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <CarouselNext className="bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10 block" />
-            </div>
+            <CarouselPrevious className="absolute -left-5 top-1/2 -translate-y-1/2 bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10" />
+            <CarouselNext className="absolute -right-5 top-1/2 -translate-y-1/2 bg-black/50 border-white/20 hover:bg-white/10 text-white h-10 w-10" />
           </Carousel>
         </div>
       </div>
