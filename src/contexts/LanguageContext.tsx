@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -20,7 +19,7 @@ const translations = {
     french: "Franska",
     // Contact form translations
     getInTouch: "Kontakta oss",
-    contactTagline: "Redo att starta ditt nästa projekt? Kontakta oss idag.",
+    contactTagline: "Redo att hitta nästa talang? Kontakta oss idag.",
     name: "Namn",
     yourName: "För- och Efternamn",
     company: "Företag",
