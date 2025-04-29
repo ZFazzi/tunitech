@@ -15,11 +15,12 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-tunitech-dark/80 backdrop-blur-lg" : ""}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-tunitech-dark/90 backdrop-blur-lg shadow-lg" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="hidden md:block">
-            <div className="flex items-baseline space-x-8">
+        <div className="flex justify-center h-16">
+          {/* Desktop menu - centered */}
+          <div className="hidden md:flex items-center justify-center">
+            <div className="flex items-center space-x-1 px-4 py-1 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10">
               <NavLink href="#home">Home</NavLink>
               <NavLink href="#services">Services</NavLink>
               <NavLink href="#values">Values</NavLink>
@@ -27,10 +28,12 @@ export const Navbar = () => {
             </div>
           </div>
           
-          <div className="md:hidden">
+          {/* Mobile menu button - positioned absolutely */}
+          <div className="md:hidden absolute right-4 top-4">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-white p-2"
+              className="text-gray-300 hover:text-white p-2 bg-tunitech-dark/80 backdrop-blur-md rounded-full border border-white/10"
+              aria-label="Toggle menu"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -40,7 +43,7 @@ export const Navbar = () => {
 
       {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/90 backdrop-blur-lg">
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/95 backdrop-blur-lg border-t border-white/10">
           <MobileNavLink href="#home" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
           <MobileNavLink href="#services" onClick={() => setIsOpen(false)}>Services</MobileNavLink>
           <MobileNavLink href="#values" onClick={() => setIsOpen(false)}>Values</MobileNavLink>
@@ -54,7 +57,7 @@ export const Navbar = () => {
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
   <a
     href={href}
-    className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium transition-colors duration-200"
+    className="text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-full"
   >
     {children}
   </a>
@@ -64,7 +67,7 @@ const MobileNavLink = ({ href, onClick, children }: { href: string; onClick: () 
   <a
     href={href}
     onClick={onClick}
-    className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-colors duration-200"
+    className="text-gray-300 hover:text-white hover:bg-white/10 block px-3 py-2 text-base font-medium transition-colors duration-200 rounded-lg"
   >
     {children}
   </a>
