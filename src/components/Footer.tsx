@@ -9,7 +9,7 @@ export const Footer = () => {
 
   return (
     <footer className="bg-black text-white py-12 px-6 md:px-8 lg:px-12 border-t border-white/10">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto text-center">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           
           {/* Contact Information */}
@@ -18,7 +18,7 @@ export const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="space-y-4"
+            className="space-y-4 flex flex-col items-center"
           >
             <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Kontakta oss</h3>
             
@@ -39,7 +39,7 @@ export const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
-            className="space-y-4"
+            className="space-y-4 flex flex-col items-center"
           >
             <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Meny</h3>
             <ul className="space-y-2">
@@ -56,7 +56,7 @@ export const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
-            className="space-y-4"
+            className="space-y-4 flex flex-col items-center"
           >
             <h3 className="text-xl font-bold mb-5 text-tunitech-mint">Sociala medier</h3>
             <div className="flex space-x-4">
