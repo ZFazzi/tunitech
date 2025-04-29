@@ -20,7 +20,7 @@ export const Navbar = () => {
         <div className="flex justify-center h-16">
           {/* Desktop menu - centered */}
           <div className="hidden md:flex items-center justify-center">
-            <div className="flex items-center space-x-1 px-4 py-1 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10">
+            <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
               <NavLink href="#home">Home</NavLink>
               <NavLink href="#services">Services</NavLink>
               <NavLink href="#values">Values</NavLink>
@@ -57,7 +57,7 @@ export const Navbar = () => {
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
   <a
     href={href}
-    className="text-gray-300 hover:text-white hover:bg-white/10 px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-full"
+    className="text-gray-300 hover:text-white hover:bg-white/10 px-5 py-2 text-sm font-medium transition-colors duration-200 rounded-full"
   >
     {children}
   </a>
