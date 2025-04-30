@@ -50,7 +50,23 @@ const translations = {
     webDesigners: "Talangfulla designers som skapar visuellt tilltalande och användarvänliga webbplatser.",
     automationTesters: "Experter på att bygga robusta testramverk för att säkerställa mjukvarukvalitet.",
     scrumMasters: "Erfarna processledare som underlättar agila metoder och team produktivitet.",
-    appDevelopers: "Skickliga utvecklare som skapar innovativa mobila applikationer för olika plattformar."
+    appDevelopers: "Skickliga utvecklare som skapar innovativa mobila applikationer för olika plattformar.",
+    
+    // Service titles
+    frontendDevelopersTitle: "Frontend-utvecklare",
+    aiExpertsTitle: "AI-experter",
+    backendDevelopersTitle: "Backend-utvecklare",
+    uiUxDesignersTitle: "UI/UX-designers",
+    databaseSpecialistsTitle: "Databasspecialister",
+    devOpsEngineersTitle: "DevOps-ingenjörer",
+    securityExpertsTitle: "Säkerhetsexperter",
+    fullStackDevelopersTitle: "Fullstack-utvecklare",
+    mobileDevelopersTitle: "Mobilutvecklare",
+    gameDevelopersTitle: "Spelutvecklare",
+    webDesignersTitle: "Webbdesigners",
+    automationTestersTitle: "Automationstestare",
+    scrumMastersTitle: "Scrum Masters",
+    appDevelopersTitle: "Apputvecklare"
   },
   en: {
     aboutUs: "About Us",
@@ -92,7 +108,23 @@ const translations = {
     webDesigners: "Talented designers creating visually appealing and user-friendly websites.",
     automationTesters: "Experts in building robust testing frameworks to ensure software quality.",
     scrumMasters: "Experienced process facilitators enabling agile methodologies and team productivity.",
-    appDevelopers: "Skilled developers creating innovative mobile applications for various platforms."
+    appDevelopers: "Skilled developers creating innovative mobile applications for various platforms.",
+    
+    // Service titles
+    frontendDevelopersTitle: "Frontend Developers",
+    aiExpertsTitle: "AI Experts",
+    backendDevelopersTitle: "Backend Developers",
+    uiUxDesignersTitle: "UI/UX Designers",
+    databaseSpecialistsTitle: "Database Specialists",
+    devOpsEngineersTitle: "DevOps Engineers",
+    securityExpertsTitle: "Security Experts",
+    fullStackDevelopersTitle: "Full-Stack Developers",
+    mobileDevelopersTitle: "Mobile Developers",
+    gameDevelopersTitle: "Game Developers",
+    webDesignersTitle: "Web Designers",
+    automationTestersTitle: "Automation Testers",
+    scrumMastersTitle: "Scrum Masters",
+    appDevelopersTitle: "App Developers"
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -134,7 +166,23 @@ const translations = {
     webDesigners: "Designers talentueux créant des sites Web attrayants et conviviaux.",
     automationTesters: "Experts dans la création de frameworks de test robustes pour assurer la qualité des logiciels.",
     scrumMasters: "Facilitateurs de processus expérimentés permettant les méthodologies agiles et la productivité de l'équipe.",
-    appDevelopers: "Développeurs qualifiés créant des applications mobiles innovantes pour diverses plateformes."
+    appDevelopers: "Développeurs qualifiés créant des applications mobiles innovantes pour diverses plateformes.",
+    
+    // Service titles
+    frontendDevelopersTitle: "Développeurs Frontend",
+    aiExpertsTitle: "Experts en IA",
+    backendDevelopersTitle: "Développeurs Backend",
+    uiUxDesignersTitle: "Designers UI/UX",
+    databaseSpecialistsTitle: "Spécialistes en Bases de Données",
+    devOpsEngineersTitle: "Ingénieurs DevOps",
+    securityExpertsTitle: "Experts en Sécurité",
+    fullStackDevelopersTitle: "Développeurs Full-Stack",
+    mobileDevelopersTitle: "Développeurs Mobile",
+    gameDevelopersTitle: "Développeurs de Jeux",
+    webDesignersTitle: "Designers Web",
+    automationTestersTitle: "Testeurs d'Automatisation",
+    scrumMastersTitle: "Scrum Masters",
+    appDevelopersTitle: "Développeurs d'Applications"
   }
 };
 

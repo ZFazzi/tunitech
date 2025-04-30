@@ -88,33 +88,6 @@ export const Services = () => {
   const [api, setApi] = useState<any>(null);
   const { language, translations } = useLanguage();
   
-  // Function to get localized service title based on current language
-  const getLocalizedTitle = (service: any) => {
-    // Title mapping based on current language
-    if (language === "sv") {
-      switch(service.title) {
-        case "Frontend Developers": return "Frontend-utvecklare";
-        case "AI Experts": return "AI-experter";
-        case "Backend Developers": return "Backend-utvecklare";
-        case "UI/UX Designers": return "UI/UX-designers";
-        case "Database Specialists": return "Databasspecialister";
-        case "DevOps Engineers": return "DevOps-ingenjörer";
-        case "Security Experts": return "Säkerhetsexperter";
-        case "Full-Stack Developers": return "Fullstack-utvecklare";
-        case "Mobile Developers": return "Mobilutvecklare";
-        case "Game Developers": return "Spelutvecklare";
-        case "Web Designers": return "Webbdesigners";
-        case "Automation Testers": return "Automationstestare";
-        case "Scrum Masters": return "Scrum Masters";
-        case "App Developers": return "Apputvecklare";
-        default: return service.title;
-      }
-    } else {
-      // For English and French, use the original English title
-      return service.title;
-    }
-  };
-  
   return (
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto px-4">
@@ -138,7 +111,14 @@ export const Services = () => {
             setApi={setApi}
           >
             <CarouselContent className="-ml-4">
-              {services.map((service, index) => {                
+              {services.map((service, index) => {
+                // Get the correct title based on language
+                const serviceTitle = language === "sv" ? 
+                  translations.sv[service.translationKey + "Title"] : 
+                  language === "en" ? 
+                  translations.en[service.translationKey + "Title"] :
+                  translations.fr[service.translationKey + "Title"];
+                
                 return (
                   <CarouselItem 
                     key={index} 
@@ -152,7 +132,7 @@ export const Services = () => {
                       className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300 mr-4"
                     >
                       <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
-                      <h3 className="text-xl font-semibold text-white mb-2">{getLocalizedTitle(service)}</h3>
+                      <h3 className="text-xl font-semibold text-white mb-2">{serviceTitle}</h3>
                       <p className="text-gray-400">{translations[language][service.translationKey]}</p>
                     </motion.div>
                   </CarouselItem>
