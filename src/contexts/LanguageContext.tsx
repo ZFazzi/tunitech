@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -36,7 +37,7 @@ const translations = {
     emailFailed: "Det gick inte att skicka ditt meddelande. Försök igen.",
     contactUs: "Kontakta oss",
     // Service descriptions
-    frontendDeveloper: "Expertuvecklare som specialiserar sig på React, Angular, Vue och moderna webbteknologier.",
+    frontendDevelopers: "Expertutvecklare som specialiserar sig på React, Angular, Vue och moderna webbteknologier.",
     aiExperts: "Specialister inom maskininlärning, natural language processing och AI-lösningar.",
     backendDevelopers: "Erfarna ingenjörer som bygger robusta och skalbara serverapplikationer.",
     uiUxDesigners: "Kreativa designers som skapar vackra och intuitiva användargränssnitt och upplevelser.",
@@ -44,7 +45,12 @@ const translations = {
     devOpsEngineers: "Specialister på CI/CD-pipelines, infrastructure as code och molntjänster.",
     securityExperts: "Yrkesverksamma som säkerställer att applikationer är säkra och skyddade från hot.",
     fullStackDevelopers: "Mångsidiga utvecklare som är bekväma med både frontend- och backend-teknologier.",
-    mobileDevelopers: "Specialister inom native och cross-platform mobilapputveckling."
+    mobileDevelopers: "Specialister inom native och cross-platform mobilapputveckling.",
+    gameDevelopers: "Kreativa utvecklare specialiserade på spelmotorer och interaktiva upplevelser.",
+    webDesigners: "Talangfulla designers som skapar visuellt tilltalande och användarvänliga webbplatser.",
+    automationTesters: "Experter på att bygga robusta testramverk för att säkerställa mjukvarukvalitet.",
+    scrumMasters: "Erfarna processledare som underlättar agila metoder och team produktivitet.",
+    appDevelopers: "Skickliga utvecklare som skapar innovativa mobila applikationer för olika plattformar."
   },
   en: {
     aboutUs: "About Us",
@@ -73,7 +79,7 @@ const translations = {
     emailFailed: "Failed to send your message. Please try again.",
     contactUs: "Contact us",
     // Service descriptions
-    frontendDeveloper: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
+    frontendDevelopers: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
     aiExperts: "Specialists in machine learning, natural language processing, and AI solutions.",
     backendDevelopers: "Experienced engineers building robust and scalable server-side applications.",
     uiUxDesigners: "Creative designers crafting beautiful and intuitive user interfaces and experiences.",
@@ -81,7 +87,12 @@ const translations = {
     devOpsEngineers: "Specialists in CI/CD pipelines, infrastructure as code, and cloud services.",
     securityExperts: "Professionals ensuring applications are secure and protected from threats.",
     fullStackDevelopers: "Versatile developers comfortable with both frontend and backend technologies.",
-    mobileDevelopers: "Specialists in native and cross-platform mobile app development."
+    mobileDevelopers: "Specialists in native and cross-platform mobile app development.",
+    gameDevelopers: "Creative developers specialized in game engines and interactive experiences.",
+    webDesigners: "Talented designers creating visually appealing and user-friendly websites.",
+    automationTesters: "Experts in building robust testing frameworks to ensure software quality.",
+    scrumMasters: "Experienced process facilitators enabling agile methodologies and team productivity.",
+    appDevelopers: "Skilled developers creating innovative mobile applications for various platforms."
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -110,7 +121,7 @@ const translations = {
     emailFailed: "Échec de l'envoi de votre message. Veuillez réessayer.",
     contactUs: "Contactez-nous",
     // Service descriptions
-    frontendDeveloper: "Développeurs experts spécialisés en React, Angular, Vue et technologies web modernes.",
+    frontendDevelopers: "Développeurs experts spécialisés en React, Angular, Vue et technologies web modernes.",
     aiExperts: "Spécialistes en apprentissage automatique, traitement du langage naturel et solutions d'IA.",
     backendDevelopers: "Ingénieurs expérimentés construisant des applications robustes et évolutives côté serveur.",
     uiUxDesigners: "Designers créatifs élaborant des interfaces utilisateur et des expériences belles et intuitives.",
@@ -118,7 +129,12 @@ const translations = {
     devOpsEngineers: "Spécialistes des pipelines CI/CD, de l'infrastructure en tant que code et des services cloud.",
     securityExperts: "Professionnels veillant à ce que les applications soient sécurisées et protégées contre les menaces.",
     fullStackDevelopers: "Développeurs polyvalents à l'aise avec les technologies frontend et backend.",
-    mobileDevelopers: "Spécialistes du développement d'applications mobiles natives et multiplateformes."
+    mobileDevelopers: "Spécialistes du développement d'applications mobiles natives et multiplateformes.",
+    gameDevelopers: "Développeurs créatifs spécialisés dans les moteurs de jeu et les expériences interactives.",
+    webDesigners: "Designers talentueux créant des sites Web attrayants et conviviaux.",
+    automationTesters: "Experts dans la création de frameworks de test robustes pour assurer la qualité des logiciels.",
+    scrumMasters: "Facilitateurs de processus expérimentés permettant les méthodologies agiles et la productivité de l'équipe.",
+    appDevelopers: "Développeurs qualifiés créant des applications mobiles innovantes pour diverses plateformes."
   }
 };
 

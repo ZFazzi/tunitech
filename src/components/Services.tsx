@@ -1,4 +1,5 @@
-import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe } from "lucide-react";
+
+import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, Gamepad, AppWindow, Bug, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -8,63 +9,90 @@ import {
   CarouselNext
 } from "@/components/ui/carousel";
 import { useRef, useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const services = [
   {
     icon: Code,
-    title: "Frontend Developer",
-    description: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
+    title: "Frontend Developers",
+    translationKey: "frontendDevelopers",
   },
   {
     icon: BrainCircuit,
     title: "AI Experts",
-    description: "Specialists in machine learning, natural language processing, and AI solutions.",
+    translationKey: "aiExperts",
   },
   {
     icon: Server,
     title: "Backend Developers",
-    description: "Experienced engineers building robust and scalable server-side applications.",
+    translationKey: "backendDevelopers",
   },
   {
     icon: Palette,
     title: "UI/UX Designers",
-    description: "Creative designers crafting beautiful and intuitive user interfaces and experiences.",
+    translationKey: "uiUxDesigners",
   },
   {
     icon: Database,
     title: "Database Specialists",
-    description: "Experts in SQL, NoSQL, data modeling and database optimization.",
+    translationKey: "databaseSpecialists",
   },
   {
     icon: Workflow,
     title: "DevOps Engineers",
-    description: "Specialists in CI/CD pipelines, infrastructure as code, and cloud services.",
+    translationKey: "devOpsEngineers",
   },
   {
     icon: Shield,
     title: "Security Experts",
-    description: "Professionals ensuring applications are secure and protected from threats.",
+    translationKey: "securityExperts",
   },
   {
     icon: Globe,
     title: "Full-Stack Developers",
-    description: "Versatile developers comfortable with both frontend and backend technologies.",
+    translationKey: "fullStackDevelopers",
   },
   {
     icon: Smartphone,
     title: "Mobile Developers",
-    description: "Specialists in native and cross-platform mobile app development.",
+    translationKey: "mobileDevelopers",
+  },
+  {
+    icon: Gamepad,
+    title: "Game Developers",
+    translationKey: "gameDevelopers",
+  },
+  {
+    icon: AppWindow,
+    title: "Web Designers",
+    translationKey: "webDesigners",
+  },
+  {
+    icon: Bug,
+    title: "Automation Testers",
+    translationKey: "automationTesters",
+  },
+  {
+    icon: Users,
+    title: "Scrum Masters",
+    translationKey: "scrumMasters",
+  },
+  {
+    icon: AppWindow,
+    title: "App Developers",
+    translationKey: "appDevelopers",
   },
 ];
 
 export const Services = () => {
   const [api, setApi] = useState<any>(null);
+  const { language, translations } = useLanguage();
   
   return (
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Talents</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{translations[language].ourTalents}</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             Vi erbjuder talanger efter era önskemål inom alla IT-områden
           </p>
@@ -95,7 +123,7 @@ export const Services = () => {
                   >
                     <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
                     <h3 className="text-xl font-semibold text-white mb-2">{service.title}</h3>
-                    <p className="text-gray-400">{service.description}</p>
+                    <p className="text-gray-400">{translations[language][service.translationKey]}</p>
                   </motion.div>
                 </CarouselItem>
               ))}
