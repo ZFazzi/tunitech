@@ -14,7 +14,8 @@ const GradientText = ({ children }: { children: React.ReactNode }) => (
 );
 
 export const Hero = () => {
-  const { language } = useLanguage();
+  const { language, translations } = useLanguage();
+  const t = translations[language];
   
   // These phrases will always be in English regardless of language selection
   const tagline = "Talented Minds, Tailored Solutions";
@@ -38,57 +39,57 @@ export const Hero = () => {
       case "sv":
         return [
           {
-            title: "Talented Minds",
+            title: t.talentedMindsTitle,
             description: "Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
           },
           {
-            title: "Tailored Solutions",
+            title: t.tailoredSolutionsTitle,
             description: "Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
           },
           {
-            title: "Global Reach, Local Impact",
+            title: t.globalReachTitle,
             description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
           },
           {
-            title: "Cost-Efficient, Quality-Driven",
+            title: t.costEfficientTitle,
             description: "Premiumutveckling utan storbolagens overhead-kostnader.",
           }
         ];
       case "fr":
         return [
           {
-            title: "Talented Minds",
+            title: t.talentedMindsTitle,
             description: "Nos développeurs sont motivés, compétents et orientés solutions.",
           },
           {
-            title: "Tailored Solutions",
+            title: t.tailoredSolutionsTitle,
             description: "Nous offrons des développeurs flexibles qui s'adaptent rapidement à vos projets.",
           },
           {
-            title: "Global Reach, Local Impact",
+            title: t.globalReachTitle,
             description: "Nous créons des collaborations transfrontalières qui renforcent votre compétitivité numérique.",
           },
           {
-            title: "Cost-Efficient, Quality-Driven",
+            title: t.costEfficientTitle,
             description: "Développement premium sans les coûts généraux des grandes entreprises.",
           }
         ];
       default: // English
         return [
           {
-            title: "Talented Minds",
+            title: t.talentedMindsTitle,
             description: "Our developers are driven, competent, and solution-oriented.",
           },
           {
-            title: "Tailored Solutions",
+            title: t.tailoredSolutionsTitle,
             description: "We offer flexible developers who quickly adapt to your projects.",
           },
           {
-            title: "Global Reach, Local Impact",
+            title: t.globalReachTitle,
             description: "We create cross-border collaborations that strengthen your digital competitiveness.",
           },
           {
-            title: "Cost-Efficient, Quality-Driven",
+            title: t.costEfficientTitle,
             description: "Premium development without the overhead costs of large companies.",
           }
         ];

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -82,6 +81,12 @@ const translations = {
     scrumMastersTitle: "Scrum Masters",
     appDevelopersTitle: "Apputvecklare",
     
+    // Hero feature titles
+    talentedMindsTitle: "Duktiga Utvecklare",
+    tailoredSolutionsTitle: "Skräddarsydda Lösningar",
+    globalReachTitle: "Global Räckvidd, Lokal Påverkan",
+    costEfficientTitle: "Kostnadseffektivt, Kvalitetsdrivet",
+    
     // Footer translations
     menu: "Meny",
     socialMedia: "Sociala medier",
@@ -160,6 +165,12 @@ const translations = {
     scrumMastersTitle: "Scrum Masters",
     appDevelopersTitle: "App Developers",
     
+    // Hero feature titles
+    talentedMindsTitle: "Talented Minds",
+    tailoredSolutionsTitle: "Tailored Solutions",
+    globalReachTitle: "Global Reach, Local Impact",
+    costEfficientTitle: "Cost-Efficient, Quality-Driven",
+    
     // Footer translations
     menu: "Menu",
     socialMedia: "Social Media",
@@ -237,6 +248,12 @@ const translations = {
     automationTestersTitle: "Testeurs d'Automatisation",
     scrumMastersTitle: "Scrum Masters",
     appDevelopersTitle: "Développeurs d'Applications",
+    
+    // Hero feature titles
+    talentedMindsTitle: "Talents Compétents",
+    tailoredSolutionsTitle: "Solutions Sur Mesure",
+    globalReachTitle: "Portée Mondiale, Impact Local",
+    costEfficientTitle: "Rentable, Axé Sur La Qualité",
     
     // Footer translations
     menu: "Menu",
