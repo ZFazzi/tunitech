@@ -48,7 +48,7 @@ export const Hero = () => {
           },
           {
             title: t.globalReachTitle,
-            description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
+            description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft. Med samma tidszon som Sverige får ni smidigare kommunikation och effektivare samarbete.",
           },
           {
             title: t.costEfficientTitle,
@@ -67,7 +67,7 @@ export const Hero = () => {
           },
           {
             title: t.globalReachTitle,
-            description: "Nous créons des collaborations transfrontalières qui renforcent votre compétitivité numérique.",
+            description: "Nous créons des collaborations transfrontalières qui renforcent votre compétitivité numérique. Avec le même fuseau horaire que la Suède, vous bénéficiez d'une communication plus fluide et d'une collaboration plus efficace.",
           },
           {
             title: t.costEfficientTitle,
@@ -86,7 +86,7 @@ export const Hero = () => {
           },
           {
             title: t.globalReachTitle,
-            description: "We create cross-border collaborations that strengthen your digital competitiveness.",
+            description: "We create cross-border collaborations that strengthen your digital competitiveness. Sharing the same time zone as Sweden provides smoother communication and more efficient collaboration.",
           },
           {
             title: t.costEfficientTitle,

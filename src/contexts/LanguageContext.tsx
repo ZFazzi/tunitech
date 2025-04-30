@@ -82,8 +82,8 @@ const translations = {
     appDevelopersTitle: "Apputvecklare",
     
     // Hero feature titles
-    talentedMindsTitle: "Duktiga Utvecklare",
-    tailoredSolutionsTitle: "Skräddarsydda Lösningar",
+    talentedMindsTitle: "IT-experter",
+    tailoredSolutionsTitle: "Flexibla talanger",
     globalReachTitle: "Global Räckvidd, Lokal Påverkan",
     costEfficientTitle: "Kostnadseffektivt, Kvalitetsdrivet",
     
@@ -166,8 +166,8 @@ const translations = {
     appDevelopersTitle: "App Developers",
     
     // Hero feature titles
-    talentedMindsTitle: "Talented Minds",
-    tailoredSolutionsTitle: "Tailored Solutions",
+    talentedMindsTitle: "IT Experts",
+    tailoredSolutionsTitle: "Flexible Talents",
     globalReachTitle: "Global Reach, Local Impact",
     costEfficientTitle: "Cost-Efficient, Quality-Driven",
     
@@ -250,8 +250,8 @@ const translations = {
     appDevelopersTitle: "Développeurs d'Applications",
     
     // Hero feature titles
-    talentedMindsTitle: "Talents Compétents",
-    tailoredSolutionsTitle: "Solutions Sur Mesure",
+    talentedMindsTitle: "Experts IT",
+    tailoredSolutionsTitle: "Talents Flexibles",
     globalReachTitle: "Portée Mondiale, Impact Local",
     costEfficientTitle: "Rentable, Axé Sur La Qualité",
     
