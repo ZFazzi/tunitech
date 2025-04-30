@@ -1,4 +1,3 @@
-
 import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -9,65 +8,63 @@ import {
   CarouselNext
 } from "@/components/ui/carousel";
 import { useRef, useEffect, useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const services = [
   {
     icon: Code,
-    title: "Frontend-utvecklare",
-    description: "Expertutvedklare specialiserade på React, Angular, Vue och moderna webbtekniker.",
+    title: "Frontend Developer",
+    description: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
   },
   {
     icon: BrainCircuit,
-    title: "AI-experter",
-    description: "Specialister inom maskininlärning, naturlig språkbehandling och AI-lösningar.",
+    title: "AI Experts",
+    description: "Specialists in machine learning, natural language processing, and AI solutions.",
   },
   {
     icon: Server,
-    title: "Backend-utvecklare",
-    description: "Erfarna ingenjörer som bygger robusta och skalbara serverapplikationer.",
+    title: "Backend Developers",
+    description: "Experienced engineers building robust and scalable server-side applications.",
   },
   {
     icon: Palette,
-    title: "UI/UX-designers",
-    description: "Kreativa designers som skapar vackra och intuitiva användargränssnitt och upplevelser.",
+    title: "UI/UX Designers",
+    description: "Creative designers crafting beautiful and intuitive user interfaces and experiences.",
   },
   {
     icon: Database,
-    title: "Databasspecialister",
-    description: "Experter på SQL, NoSQL, datamodellering och databasoptimering.",
+    title: "Database Specialists",
+    description: "Experts in SQL, NoSQL, data modeling and database optimization.",
   },
   {
     icon: Workflow,
-    title: "DevOps-ingenjörer",
-    description: "Specialister på CI/CD-pipelines, infrastruktur som kod och molntjänster.",
+    title: "DevOps Engineers",
+    description: "Specialists in CI/CD pipelines, infrastructure as code, and cloud services.",
   },
   {
     icon: Shield,
-    title: "Säkerhetsexperter",
-    description: "Yrkesverksamma som säkerställer att applikationer är säkra och skyddade mot hot.",
+    title: "Security Experts",
+    description: "Professionals ensuring applications are secure and protected from threats.",
   },
   {
     icon: Globe,
-    title: "Fullstack-utvecklare",
-    description: "Mångsidiga utvecklare som behärskar både frontend- och backendtekniker.",
+    title: "Full-Stack Developers",
+    description: "Versatile developers comfortable with both frontend and backend technologies.",
   },
   {
     icon: Smartphone,
-    title: "Mobilutvecklare",
-    description: "Specialister på native och plattformsoberoende mobilapputveckling.",
+    title: "Mobile Developers",
+    description: "Specialists in native and cross-platform mobile app development.",
   },
 ];
 
 export const Services = () => {
   const [api, setApi] = useState<any>(null);
-  const { language } = useLanguage();
   
   return (
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Våra Talanger</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Talents</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             Vi erbjuder talanger efter era önskemål inom alla IT-områden
           </p>
