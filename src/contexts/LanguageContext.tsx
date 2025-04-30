@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -36,6 +35,20 @@ const translations = {
     formErrorMsg: "Vänligen fyll i alla obligatoriska fält.",
     emailFailed: "Det gick inte att skicka ditt meddelande. Försök igen.",
     contactUs: "Kontakta oss",
+    
+    // Section titles
+    ourValues: "Våra värderingar",
+    
+    // Values translations
+    smartSolutions: "Vi använder den senaste teknologin för att effektivt lösa komplexa problem.",
+    clientCentric: "Din framgång är vår prioritet. Vi arbetar nära dig för att leverera bästa möjliga resultat.",
+    innovation: "Vi utvecklas och anpassas ständigt för att ge dig de senaste teknologiska framstegen.",
+    
+    // Values titles
+    smartSolutionsTitle: "Smarta Lösningar",
+    clientCentricTitle: "Kundfokuserade",
+    innovationTitle: "Innovation",
+    
     // Service descriptions
     frontendDevelopers: "Expertutvecklare som specialiserar sig på React, Angular, Vue och moderna webbteknologier.",
     aiExperts: "Specialister inom maskininlärning, natural language processing och AI-lösningar.",
@@ -94,6 +107,20 @@ const translations = {
     formErrorMsg: "Please fill in all required fields.",
     emailFailed: "Failed to send your message. Please try again.",
     contactUs: "Contact us",
+    
+    // Section titles
+    ourValues: "Our Values",
+    
+    // Values translations
+    smartSolutions: "We leverage cutting-edge technology to solve complex problems efficiently.",
+    clientCentric: "Your success is our priority. We work closely with you to deliver the best results.",
+    innovation: "We constantly evolve and adapt to bring you the latest technological advances.",
+    
+    // Values titles
+    smartSolutionsTitle: "Smart Solutions",
+    clientCentricTitle: "Client-Centric",
+    innovationTitle: "Innovation",
+    
     // Service descriptions
     frontendDevelopers: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
     aiExperts: "Specialists in machine learning, natural language processing, and AI solutions.",
@@ -152,6 +179,20 @@ const translations = {
     formErrorMsg: "Veuillez remplir tous les champs obligatoires.",
     emailFailed: "Échec de l'envoi de votre message. Veuillez réessayer.",
     contactUs: "Contactez-nous",
+    
+    // Section titles
+    ourValues: "Nos Valeurs",
+    
+    // Values translations
+    smartSolutions: "Nous utilisons des technologies de pointe pour résoudre efficacement des problèmes complexes.",
+    clientCentric: "Votre succès est notre priorité. Nous travaillons en étroite collaboration avec vous pour fournir les meilleurs résultats.",
+    innovation: "Nous évoluons et nous adaptons constamment pour vous apporter les dernières avancées technologiques.",
+    
+    // Values titles
+    smartSolutionsTitle: "Solutions Intelligentes",
+    clientCentricTitle: "Centré sur le Client",
+    innovationTitle: "Innovation",
+    
     // Service descriptions
     frontendDevelopers: "Développeurs experts spécialisés en React, Angular, Vue et technologies web modernes.",
     aiExperts: "Spécialistes en apprentissage automatique, traitement du langage naturel et solutions d'IA.",
