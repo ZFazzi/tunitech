@@ -34,7 +34,17 @@ const translations = {
     formError: "Formulärfel",
     formErrorMsg: "Vänligen fyll i alla obligatoriska fält.",
     emailFailed: "Det gick inte att skicka ditt meddelande. Försök igen.",
-    contactUs: "Kontakta oss"
+    contactUs: "Kontakta oss",
+    // Service descriptions
+    frontendDeveloper: "Expertuvecklare som specialiserar sig på React, Angular, Vue och moderna webbteknologier.",
+    aiExperts: "Specialister inom maskininlärning, natural language processing och AI-lösningar.",
+    backendDevelopers: "Erfarna ingenjörer som bygger robusta och skalbara serverapplikationer.",
+    uiUxDesigners: "Kreativa designers som skapar vackra och intuitiva användargränssnitt och upplevelser.",
+    databaseSpecialists: "Experter på SQL, NoSQL, datamodellering och databasoptimering.",
+    devOpsEngineers: "Specialister på CI/CD-pipelines, infrastructure as code och molntjänster.",
+    securityExperts: "Yrkesverksamma som säkerställer att applikationer är säkra och skyddade från hot.",
+    fullStackDevelopers: "Mångsidiga utvecklare som är bekväma med både frontend- och backend-teknologier.",
+    mobileDevelopers: "Specialister inom native och cross-platform mobilapputveckling."
   },
   en: {
     aboutUs: "About Us",
@@ -61,7 +71,17 @@ const translations = {
     formError: "Form error",
     formErrorMsg: "Please fill in all required fields.",
     emailFailed: "Failed to send your message. Please try again.",
-    contactUs: "Contact us"
+    contactUs: "Contact us",
+    // Service descriptions
+    frontendDeveloper: "Expert developers specializing in React, Angular, Vue, and modern web technologies.",
+    aiExperts: "Specialists in machine learning, natural language processing, and AI solutions.",
+    backendDevelopers: "Experienced engineers building robust and scalable server-side applications.",
+    uiUxDesigners: "Creative designers crafting beautiful and intuitive user interfaces and experiences.",
+    databaseSpecialists: "Experts in SQL, NoSQL, data modeling and database optimization.",
+    devOpsEngineers: "Specialists in CI/CD pipelines, infrastructure as code, and cloud services.",
+    securityExperts: "Professionals ensuring applications are secure and protected from threats.",
+    fullStackDevelopers: "Versatile developers comfortable with both frontend and backend technologies.",
+    mobileDevelopers: "Specialists in native and cross-platform mobile app development."
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -88,7 +108,17 @@ const translations = {
     formError: "Erreur de formulaire",
     formErrorMsg: "Veuillez remplir tous les champs obligatoires.",
     emailFailed: "Échec de l'envoi de votre message. Veuillez réessayer.",
-    contactUs: "Contactez-nous"
+    contactUs: "Contactez-nous",
+    // Service descriptions
+    frontendDeveloper: "Développeurs experts spécialisés en React, Angular, Vue et technologies web modernes.",
+    aiExperts: "Spécialistes en apprentissage automatique, traitement du langage naturel et solutions d'IA.",
+    backendDevelopers: "Ingénieurs expérimentés construisant des applications robustes et évolutives côté serveur.",
+    uiUxDesigners: "Designers créatifs élaborant des interfaces utilisateur et des expériences belles et intuitives.",
+    databaseSpecialists: "Experts en SQL, NoSQL, modélisation de données et optimisation de bases de données.",
+    devOpsEngineers: "Spécialistes des pipelines CI/CD, de l'infrastructure en tant que code et des services cloud.",
+    securityExperts: "Professionnels veillant à ce que les applications soient sécurisées et protégées contre les menaces.",
+    fullStackDevelopers: "Développeurs polyvalents à l'aise avec les technologies frontend et backend.",
+    mobileDevelopers: "Spécialistes du développement d'applications mobiles natives et multiplateformes."
   }
 };
 
