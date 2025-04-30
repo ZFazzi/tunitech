@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -79,7 +80,13 @@ const translations = {
     webDesignersTitle: "Webbdesigners",
     automationTestersTitle: "Automationstestare",
     scrumMastersTitle: "Scrum Masters",
-    appDevelopersTitle: "Apputvecklare"
+    appDevelopersTitle: "Apputvecklare",
+    
+    // Footer translations
+    menu: "Meny",
+    socialMedia: "Sociala medier",
+    location: "Stockholm, Sverige",
+    copyright: "© {year} TuniTech. Alla rättigheter reserverade."
   },
   en: {
     aboutUs: "About Us",
@@ -151,7 +158,13 @@ const translations = {
     webDesignersTitle: "Web Designers",
     automationTestersTitle: "Automation Testers",
     scrumMastersTitle: "Scrum Masters",
-    appDevelopersTitle: "App Developers"
+    appDevelopersTitle: "App Developers",
+    
+    // Footer translations
+    menu: "Menu",
+    socialMedia: "Social Media",
+    location: "Stockholm, Sweden",
+    copyright: "© {year} TuniTech. All rights reserved."
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -223,7 +236,13 @@ const translations = {
     webDesignersTitle: "Designers Web",
     automationTestersTitle: "Testeurs d'Automatisation",
     scrumMastersTitle: "Scrum Masters",
-    appDevelopersTitle: "Développeurs d'Applications"
+    appDevelopersTitle: "Développeurs d'Applications",
+    
+    // Footer translations
+    menu: "Menu",
+    socialMedia: "Médias Sociaux",
+    location: "Stockholm, Suède",
+    copyright: "© {year} TuniTech. Tous droits réservés."
   }
 };
 
