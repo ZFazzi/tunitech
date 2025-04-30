@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const GradientText = ({ children }: { children: React.ReactNode }) => (
   <motion.span
@@ -13,6 +14,108 @@ const GradientText = ({ children }: { children: React.ReactNode }) => (
 );
 
 export const Hero = () => {
+  const { language } = useLanguage();
+  
+  // These phrases will always be in English regardless of language selection
+  const tagline = "Talented Minds, Tailored Solutions";
+  const subTagline = "Digital Experts Delivered on Demand";
+  
+  // Paragraph text changes based on language
+  const getParagraphText = () => {
+    switch (language) {
+      case "sv":
+        return "I en värld där teknikutvecklingen aldrig står still krävs skarpa hjärnor för att bygga framtidens lösningar. TuniTech kopplar samman de bästa utvecklarna från Tunisien med innovativa företag i Sverige. Vi bemannar er med högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem. Vår modell bygger på smidighet, effektivitet och innovation – där rätt talang möter rätt behov.";
+      case "fr":
+        return "Dans un monde où le développement technologique ne s'arrête jamais, des esprits vifs sont nécessaires pour construire les solutions de demain. TuniTech connecte les meilleurs développeurs tunisiens avec des entreprises innovantes en Suède. Nous vous dotons de développeurs hautement qualifiés - quand vous en avez besoin, comme vous en avez besoin. Notre modèle est basé sur l'agilité, l'efficacité et l'innovation - où le bon talent rencontre le bon besoin.";
+      default: // English
+        return "In a world where technological development never stands still, sharp minds are needed to build the solutions of tomorrow. TuniTech connects the best developers from Tunisia with innovative companies in Sweden. We staff you with highly qualified developers - when you need them, how you need them. Our model is based on agility, efficiency and innovation - where the right talent meets the right need.";
+    }
+  };
+  
+  // Features text changes based on language
+  const getFeatures = () => {
+    switch (language) {
+      case "sv":
+        return [
+          {
+            title: "Talented Minds",
+            description: "Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
+          },
+          {
+            title: "Tailored Solutions",
+            description: "Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
+          },
+          {
+            title: "Global Reach, Local Impact",
+            description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
+          },
+          {
+            title: "Cost-Efficient, Quality-Driven",
+            description: "Premiumutveckling utan storbolagens overhead-kostnader.",
+          }
+        ];
+      case "fr":
+        return [
+          {
+            title: "Talented Minds",
+            description: "Nos développeurs sont motivés, compétents et orientés solutions.",
+          },
+          {
+            title: "Tailored Solutions",
+            description: "Nous offrons des développeurs flexibles qui s'adaptent rapidement à vos projets.",
+          },
+          {
+            title: "Global Reach, Local Impact",
+            description: "Nous créons des collaborations transfrontalières qui renforcent votre compétitivité numérique.",
+          },
+          {
+            title: "Cost-Efficient, Quality-Driven",
+            description: "Développement premium sans les coûts généraux des grandes entreprises.",
+          }
+        ];
+      default: // English
+        return [
+          {
+            title: "Talented Minds",
+            description: "Our developers are driven, competent, and solution-oriented.",
+          },
+          {
+            title: "Tailored Solutions",
+            description: "We offer flexible developers who quickly adapt to your projects.",
+          },
+          {
+            title: "Global Reach, Local Impact",
+            description: "We create cross-border collaborations that strengthen your digital competitiveness.",
+          },
+          {
+            title: "Cost-Efficient, Quality-Driven",
+            description: "Premium development without the overhead costs of large companies.",
+          }
+        ];
+    }
+  };
+  
+  // Get button text based on language
+  const getButtonText = () => {
+    switch (language) {
+      case "sv": return "Kom igång";
+      case "fr": return "Commencer";
+      default: return "Get Started";
+    }
+  };
+  
+  // Quote text based on language
+  const getQuoteText = () => {
+    switch (language) {
+      case "sv":
+        return "\"Att göra talang tillgänglig över gränser, där intelligens och innovation möts för att skapa smarta, framtidssäkra lösningar.\"";
+      case "fr":
+        return "\"Rendre le talent accessible au-delà des frontières, où l'intelligence et l'innovation se rencontrent pour créer des solutions intelligentes et pérennes.\"";
+      default: // English
+        return "\"Making talent accessible across borders, where intelligence and innovation meet to create smart, future-proof solutions.\"";
+    }
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-tunitech-dark/50 to-tunitech-dark" />
@@ -31,18 +134,15 @@ export const Hero = () => {
           />
           
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
-            <GradientText>Talented Minds, Tailored Solutions</GradientText>
+            <GradientText>{tagline}</GradientText>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-            Digital Experts Delivered on Demand
+            {subTagline}
           </p>
           
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            I en värld där teknikutvecklingen aldrig står still krävs skarpa hjärnor för att bygga framtidens lösningar. 
-            TuniTech kopplar samman de bästa utvecklarna från Tunisien med innovativa företag i Sverige. 
-            Vi bemannar er med högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem. 
-            Vår modell bygger på smidighet, effektivitet och innovation – där rätt talang möter rätt behov.
+            {getParagraphText()}
           </p>
 
           <motion.div 
@@ -64,24 +164,7 @@ export const Hero = () => {
                 }
               }}
             >
-              {[
-                {
-                  title: "Talented Minds",
-                  description: "Våra utvecklare är drivna, kompetenta och lösningsorienterade.",
-                },
-                {
-                  title: "Tailored Solutions",
-                  description: "Vi erbjuder flexibla utvecklare som snabbt anpassar sig efter era projekt.",
-                },
-                {
-                  title: "Global Reach, Local Impact",
-                  description: "Vi skapar gränsöverskridande samarbeten som stärker er digitala konkurrenskraft.",
-                },
-                {
-                  title: "Cost-Efficient, Quality-Driven",
-                  description: "Premiumutveckling utan storbolagens overhead-kostnader.",
-                }
-              ].map((item, index) => (
+              {getFeatures().map((item, index) => (
                 <motion.div
                   key={index}
                   variants={{
@@ -106,7 +189,7 @@ export const Hero = () => {
             transition={{ duration: 0.5 }}
           >
             <GradientText>
-              "Att göra talang tillgänglig över gränser, där intelligens och innovation möts för att skapa smarta, framtidssäkra lösningar."
+              {getQuoteText()}
             </GradientText>
           </motion.div>
           
@@ -117,7 +200,7 @@ export const Hero = () => {
               whileTap={{ scale: 0.95 }}
               className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-medium px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Get Started
+              {getButtonText()}
             </motion.a>
           </div>
         </motion.div>
