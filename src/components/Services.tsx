@@ -84,6 +84,30 @@ const services = [
   },
 ];
 
+// Animation variants for smoother animation
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  }
+};
+
 export const Services = () => {
   const [api, setApi] = useState<any>(null);
   const { language, translations } = useLanguage();
@@ -125,35 +149,39 @@ export const Services = () => {
             className="w-full"
             setApi={setApi}
           >
-            <CarouselContent className="-ml-4">
-              {services.map((service, index) => {
-                // Get the correct title based on language
-                const serviceTitle = language === "sv" ? 
-                  translations.sv[service.translationKey + "Title"] : 
-                  language === "en" ? 
-                  translations.en[service.translationKey + "Title"] :
-                  translations.fr[service.translationKey + "Title"];
-                
-                return (
-                  <CarouselItem 
-                    key={index} 
-                    className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/4"
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300 mr-4"
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+            >
+              <CarouselContent className="-ml-4">
+                {services.map((service, index) => {
+                  // Get the correct title based on language
+                  const serviceTitle = language === "sv" ? 
+                    translations.sv[service.translationKey + "Title"] : 
+                    language === "en" ? 
+                    translations.en[service.translationKey + "Title"] :
+                    translations.fr[service.translationKey + "Title"];
+                  
+                  return (
+                    <CarouselItem 
+                      key={index} 
+                      className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/3 xl:basis-1/4"
                     >
-                      <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
-                      <h3 className="text-xl font-semibold text-white mb-2">{serviceTitle}</h3>
-                      <p className="text-gray-400">{translations[language][service.translationKey]}</p>
-                    </motion.div>
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
+                      <motion.div
+                        variants={itemVariants}
+                        className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300 mr-4"
+                      >
+                        <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
+                        <h3 className="text-xl font-semibold text-white mb-2">{serviceTitle}</h3>
+                        <p className="text-gray-400">{translations[language][service.translationKey]}</p>
+                      </motion.div>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+            </motion.div>
             
             <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
             <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
