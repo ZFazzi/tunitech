@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -120,91 +119,63 @@ export const Advantages = () => {
   const advantages = getAdvantages();
 
   return (
-    <section id="advantages" className="py-16 section-padding bg-tunitech-dark">
-      <div className="max-w-7xl mx-auto px-4">
+    <section id="advantages" className="py-16 md:py-24 bg-tunitech-dark relative">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-2 text-tunitech-mint">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-tunitech-mint">
             {getSectionTitle()}
           </h2>
-          <p className="text-xl md:text-2xl mb-12 text-gray-300">
+          <p className="text-xl md:text-2xl text-gray-300">
             {getSubtitle()}
           </p>
-          
-          <div className="relative">
-            {/* Line */}
-            <div className="absolute left-[7px] top-0 bottom-0 w-0.5 bg-tunitech-mint hidden md:block" />
-            
-            {/* Advantages grid */}
-            <div className="grid md:grid-cols-3 gap-8">
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={{
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.2
-                    }
-                  }
-                }}
-                className="col-span-3 space-y-16"
-              >
-                {/* First row */}
-                <div className="grid md:grid-cols-3 gap-8">
-                  {advantages.slice(0, 3).map((advantage, index) => (
-                    <motion.div
-                      key={index}
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      className="relative"
-                    >
-                      {/* Dot */}
-                      <div className="absolute -left-4 top-2 h-3 w-3 bg-tunitech-mint rounded-full hidden md:block" />
-                      <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
-                        {advantage.title}
-                      </h3>
-                      <p className="text-gray-300">
-                        {advantage.description}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-                
-                {/* Line in the middle */}
-                <div className="h-0.5 w-full bg-tunitech-mint my-8" />
-                
-                {/* Second row */}
-                <div className="grid md:grid-cols-3 gap-8">
-                  {advantages.slice(3).map((advantage, index) => (
-                    <motion.div
-                      key={index}
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      className="relative"
-                    >
-                      {/* Dot */}
-                      <div className="absolute -left-4 top-2 h-3 w-3 bg-tunitech-mint rounded-full hidden md:block" />
-                      <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
-                        {advantage.title}
-                      </h3>
-                      <p className="text-gray-300">
-                        {advantage.description}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </div>
         </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {advantages.slice(0, 3).map((advantage, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="glass-card p-6 border border-tunitech-mint/20 hover:border-tunitech-mint/40 transition-colors duration-300"
+            >
+              <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
+                {advantage.title}
+              </h3>
+              <p className="text-gray-300">
+                {advantage.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="h-px w-full bg-tunitech-mint/30 my-8" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {advantages.slice(3).map((advantage, index) => (
+            <motion.div
+              key={index + 3}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: (index + 3) * 0.1 }}
+              viewport={{ once: true }}
+              className="glass-card p-6 border border-tunitech-mint/20 hover:border-tunitech-mint/40 transition-colors duration-300"
+            >
+              <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
+                {advantage.title}
+              </h3>
+              <p className="text-gray-300">
+                {advantage.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
