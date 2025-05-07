@@ -91,7 +91,14 @@ const translations = {
     menu: "Meny",
     socialMedia: "Sociala medier",
     location: "Stockholm, Sverige",
-    copyright: "© {year} TuniTech. Alla rättigheter reserverade."
+    copyright: "© {year} TuniTech. Alla rättigheter reserverade.",
+    
+    // Team section translations
+    theTeam: "Teamet",
+    teamTagline: "Genom att överbrygga denna klyfta driver vi innovation, tillväxt och en mer inkluderande techindustri.",
+    feliciaDesc: "Med expertis inom den svenska och tunisiska marknaden, kombinerar Felicia strategisk vision med praktisk erfarenhet inom affärsutveckling och rekrytering.",
+    nadiaDesc: "Med en stark bakgrund inom organisationsledning och internationell samordning, kombinerar hon struktur med smidighet för att stödja både kunder och utvecklare.",
+    zakiaDesc: "Med en stark bakgrund inom programutveckling och passion för innovation, överbryggar Zakia teknologi och affärsbehov för att leverera smarta, skalbara lösningar.",
   },
   en: {
     aboutUs: "About Us",
@@ -175,7 +182,14 @@ const translations = {
     menu: "Menu",
     socialMedia: "Social Media",
     location: "Stockholm, Sweden",
-    copyright: "© {year} TuniTech. All rights reserved."
+    copyright: "© {year} TuniTech. All rights reserved.",
+    
+    // Team section translations
+    theTeam: "The Team",
+    teamTagline: "By bridging this gap, we drive innovation, growth, and a more inclusive tech industry.",
+    feliciaDesc: "With expertise in the Swedish and Tunisian markets, Felicia blends strategic vision with hands-on experience in business development and recruitment.",
+    nadiaDesc: "With a strong background in organizational management and international coordination, she combines structure with agility to support both clients and developers.",
+    zakiaDesc: "With a strong background in software development and a passion for innovation, Zakia bridges technology and business needs to deliver smart, scalable solutions.",
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -259,7 +273,14 @@ const translations = {
     menu: "Menu",
     socialMedia: "Médias Sociaux",
     location: "Stockholm, Suède",
-    copyright: "© {year} TuniTech. Tous droits réservés."
+    copyright: "© {year} TuniTech. Tous droits réservés.",
+    
+    // Team section translations
+    theTeam: "L'Équipe",
+    teamTagline: "En comblant cet écart, nous stimulons l'innovation, la croissance et une industrie technologique plus inclusive.",
+    feliciaDesc: "Avec une expertise des marchés suédois et tunisien, Felicia allie vision stratégique et expérience pratique en développement commercial et recrutement.",
+    nadiaDesc: "Avec une solide expérience en gestion organisationnelle et coordination internationale, elle combine structure et agilité pour soutenir à la fois les clients et les développeurs.",
+    zakiaDesc: "Avec une solide expérience en développement de logiciels et une passion pour l'innovation, Zakia fait le lien entre technologie et besoins commerciaux pour offrir des solutions intelligentes et évolutives.",
   }
 };
 
