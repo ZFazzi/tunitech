@@ -23,10 +23,10 @@ const Index = () => {
       <Hero />
       <Advantages />
       <QuoteBlock />
-      <Pricing />
       <AboutUs />
       <Services />
       <Values />
+      <Pricing />
       <Contact />
       <Footer />
     </motion.div>
