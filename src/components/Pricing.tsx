@@ -30,7 +30,7 @@ export const Pricing = () => {
     }
   };
   
-  // Pricing options based on language
+  // Fixed Swedish pricing options
   const getPricingOptions = () => {
     switch (language) {
       case "sv":
@@ -47,7 +47,7 @@ export const Pricing = () => {
   const pricingOptions = getPricingOptions();
   
   return (
-    <section className="py-16 bg-tunitech-dark">
+    <section className="py-16 bg-transparent backdrop-blur-sm">
       <div className="max-w-5xl mx-auto px-4">
         <motion.div 
           className="text-center mb-12"
@@ -71,7 +71,7 @@ export const Pricing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
               viewport={{ once: true }}
-              className="glass-card p-6 border border-white/10 hover:border-tunitech-mint/40 transition-all duration-300"
+              className="backdrop-blur-md bg-white/5 p-6 border border-white/10 hover:border-tunitech-mint/40 rounded-xl transition-all duration-300"
             >
               <h3 className="text-xl font-medium text-center text-white mb-2">{option}</h3>
               <div className="h-1 w-12 mx-auto mt-4 bg-gradient-to-r from-tunitech-blue to-tunitech-mint rounded-full" />

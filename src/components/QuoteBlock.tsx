@@ -21,7 +21,7 @@ export const QuoteBlock = () => {
   const quoteText = getDiversityQuote();
   
   return (
-    <section className="py-12 bg-tunitech-dark">
+    <section className="py-12 bg-transparent backdrop-blur-sm">
       <div className="max-w-4xl mx-auto px-4">
         <motion.div 
           className="flex gap-4 items-center"
