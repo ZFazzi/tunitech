@@ -7,6 +7,7 @@ import { Services } from "@/components/Services";
 import { Values } from "@/components/Values";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { QuoteBlock } from "@/components/QuoteBlock";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Advantages />
+      <QuoteBlock />
       <AboutUs />
       <Services />
       <Values />

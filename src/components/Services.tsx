@@ -111,29 +111,6 @@ export const Services = () => {
   const [api, setApi] = useState<any>(null);
   const { language, translations } = useLanguage();
   
-  // Get quote text based on language
-  const getDiversityQuote = () => {
-    switch (language) {
-      case "sv":
-        return {
-          title: "Mångfald och nya perspektiv",
-          text: "Att arbeta med utvecklare från olika bakgrunder ger nya insikter, perspektiv och innovation till projekten."
-        };
-      case "fr":
-        return {
-          title: "Diversité et nouvelles perspectives",
-          text: "Travailler avec des développeurs de divers horizons apporte de nouvelles idées, perspectives et innovations aux projets."
-        };
-      default: // English
-        return {
-          title: "Diversity and fresh perspectives",
-          text: "Working with developers from diverse backgrounds brings new insights, perspectives, and innovation to projects."
-        };
-    }
-  };
-
-  const diversityQuote = getDiversityQuote();
-  
   return (
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto px-4">
@@ -159,20 +136,6 @@ export const Services = () => {
              language === "en" ? "We offer talents according to your needs in all IT areas" :
              "Nous offrons des talents selon vos besoins dans tous les domaines informatiques"}
           </p>
-
-          {/* Diversity Quote - now more subtle */}
-          <motion.div 
-            className="mt-8 mb-12 max-w-3xl mx-auto bg-black/20 p-5 border-t border-white/5 rounded-md"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-base font-medium mb-2 text-gray-300">
-              {diversityQuote.title}
-            </h3>
-            <p className="text-gray-400 text-sm">"{diversityQuote.text}"</p>
-          </motion.div>
         </div>
 
         <div className="max-w-7xl mx-auto overflow-hidden relative">
