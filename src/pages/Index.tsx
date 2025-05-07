@@ -1,9 +1,9 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { AboutUs } from "@/components/AboutUs";
 import { Services } from "@/components/Services";
 import { Values } from "@/components/Values";
-import { Team } from "@/components/Team";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -18,9 +18,9 @@ const Index = () => {
     >
       <Navbar />
       <Hero />
+      <AboutUs />
       <Services />
       <Values />
-      <Team />
       <Contact />
       <Footer />
     </motion.div>
