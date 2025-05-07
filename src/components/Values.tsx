@@ -28,7 +28,11 @@ export const Values = () => {
     <section id="values" className="section-padding bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{translations[language].ourValues}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
+              {translations[language].ourValues}
+            </span>
+          </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             {language === "sv" ? "Vägledda av excellens och innovation i allt vi gör" : 
              language === "en" ? "Guided by excellence and innovation in everything we do" :

@@ -86,7 +86,11 @@ Message: ${formData.message}`;
     <section id="contact" className="section-padding bg-gradient-to-b from-black to-tunitech-dark">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t.getInTouch || "Get in Touch"}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
+              {t.getInTouch || "Get in Touch"}
+            </span>
+          </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             {t.contactTagline || "Ready to start your next project? Contact us today."}
           </p>
