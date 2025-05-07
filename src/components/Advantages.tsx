@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -127,8 +128,10 @@ export const Advantages = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-tunitech-mint">
-            {getSectionTitle()}
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
+              {getSectionTitle()}
+            </span>
           </h2>
           <p className="text-xl md:text-2xl text-gray-300">
             {getSubtitle()}

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -31,8 +32,6 @@ export const AboutUs = () => {
               {getSectionTitle()}
             </span>
           </h2>
-          
-          
         </motion.div>
       </div>
     </section>
