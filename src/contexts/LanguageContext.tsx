@@ -90,6 +90,10 @@ const translations = {
     globalReachTitle: "Global Räckvidd, Lokal Påverkan",
     costEfficientTitle: "Kostnadseffektivt, Kvalitetsdrivet",
     
+    // Advantages section titles
+    advantagesTitle: "Fördelar",
+    advantagesSubtitle: "att arbeta med IT-utvecklare från Tunisien",
+    
     // Footer translations
     menu: "Meny",
     socialMedia: "Sociala medier",
@@ -177,6 +181,10 @@ const translations = {
     globalReachTitle: "Global Reach, Local Impact",
     costEfficientTitle: "Cost-Efficient, Quality-Driven",
     
+    // Advantages section titles
+    advantagesTitle: "Advantages",
+    advantagesSubtitle: "working with IT developers from Tunisia",
+    
     // Footer translations
     menu: "Menu",
     socialMedia: "Social Media",
@@ -263,6 +271,10 @@ const translations = {
     tailoredSolutionsTitle: "Talents Flexibles",
     globalReachTitle: "Portée Mondiale, Impact Local",
     costEfficientTitle: "Rentable, Axé Sur La Qualité",
+    
+    // Advantages section titles
+    advantagesTitle: "Avantages",
+    advantagesSubtitle: "de travailler avec des développeurs IT de Tunisie",
     
     // Footer translations
     menu: "Menu",
