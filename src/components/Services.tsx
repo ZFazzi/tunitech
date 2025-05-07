@@ -1,4 +1,3 @@
-
 import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, Gamepad, AppWindow, Bug, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -161,20 +160,18 @@ export const Services = () => {
              "Nous offrons des talents selon vos besoins dans tous les domaines informatiques"}
           </p>
 
-          {/* Diversity Quote */}
+          {/* Diversity Quote - now more subtle */}
           <motion.div 
-            className="mt-8 mb-12 glass-card p-6 max-w-3xl mx-auto"
+            className="mt-8 mb-12 max-w-3xl mx-auto bg-black/20 p-5 border-t border-white/5 rounded-md"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-xl font-bold mb-3">
-              <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-                {diversityQuote.title}
-              </span>
+            <h3 className="text-base font-medium mb-2 text-gray-300">
+              {diversityQuote.title}
             </h3>
-            <p className="text-gray-300 italic">"{diversityQuote.text}"</p>
+            <p className="text-gray-400 text-sm">"{diversityQuote.text}"</p>
           </motion.div>
         </div>
 
