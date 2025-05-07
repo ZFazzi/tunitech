@@ -21,8 +21,10 @@ export const QuoteBlock = () => {
   const quoteText = getDiversityQuote();
   
   return (
-    <section className="py-16 relative z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-tunitech-mint/10 to-tunitech-blue/10 blur-xl"></div>
+    <section className="py-16 relative overflow-hidden">
+      {/* Subtil gradient som överlagrar bakgrunden */}
+      <div className="absolute inset-0 bg-gradient-radial from-white/5 via-white/3 to-transparent blur-2xl opacity-60 z-0"></div>
+      
       <motion.div 
         className="max-w-4xl mx-auto px-8 relative z-10"
         initial={{ opacity: 0 }}
@@ -31,7 +33,7 @@ export const QuoteBlock = () => {
         viewport={{ once: true, margin: "-50px" }}
       >
         <motion.div 
-          className="glass-effect p-10 relative z-10"
+          className="glass-effect p-10 relative"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
