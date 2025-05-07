@@ -19,7 +19,7 @@ export const AboutUs = () => {
   };
 
   return (
-    <section id="about" className="py-20 section-padding bg-tunitech-dark">
+    <section id="about" className="py-20 section-padding bg-transparent">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

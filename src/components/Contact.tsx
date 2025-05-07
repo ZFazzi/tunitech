@@ -83,7 +83,7 @@ Message: ${formData.message}`;
   };
 
   return (
-    <section id="contact" className="section-padding bg-gradient-to-b from-black to-tunitech-dark">
+    <section id="contact" className="section-padding bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.h2 

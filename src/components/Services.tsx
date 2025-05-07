@@ -1,3 +1,4 @@
+
 import { Code, Server, Smartphone, Workflow, BrainCircuit, Palette, Database, Shield, Globe, Gamepad, AppWindow, Bug, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -112,7 +113,7 @@ export const Services = () => {
   const { language, translations } = useLanguage();
   
   return (
-    <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
+    <section id="services" className="section-padding bg-transparent">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <motion.h2 
@@ -184,8 +185,8 @@ export const Services = () => {
               </CarouselContent>
             </motion.div>
             
-            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
-            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/50 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
+            <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/20 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
+            <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/20 border-white/20 hover:bg-white/10 text-white h-12 w-12 rounded-full" />
           </Carousel>
         </div>
       </div>

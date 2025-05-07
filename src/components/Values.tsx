@@ -25,7 +25,7 @@ export const Values = () => {
   const { language, translations } = useLanguage();
   
   return (
-    <section id="values" className="section-padding bg-black">
+    <section id="values" className="section-padding bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.h2 
