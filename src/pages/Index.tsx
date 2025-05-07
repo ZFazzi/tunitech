@@ -20,19 +20,16 @@ const Index = () => {
       className="min-h-screen bg-gradient-to-b from-tunitech-dark to-black/90 text-white overflow-hidden"
     >
       <div className="relative z-10">
-        <div className="absolute inset-0 bg-[url('/lovable-uploads/d0c39a01-0fd1-4def-a437-d7d7fb59e2b3.png')] bg-cover bg-center opacity-10 blur-sm"></div>
-        <div className="relative z-20">
-          <Navbar />
-          <Hero />
-          <Advantages />
-          <QuoteBlock />
-          <AboutUs />
-          <Services />
-          <Values />
-          <Pricing />
-          <Contact />
-          <Footer />
-        </div>
+        <Navbar />
+        <Hero />
+        <Advantages />
+        <QuoteBlock />
+        <AboutUs />
+        <Services />
+        <Values />
+        <Pricing />
+        <Contact />
+        <Footer />
       </div>
     </motion.div>
   );
