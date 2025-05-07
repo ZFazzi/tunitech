@@ -17,9 +17,6 @@ const translations = {
     swedish: "Svenska",
     english: "Engelska",
     french: "Franska",
-    // About Us section
-    aboutUsSection: "Om oss",
-    
     // Contact form translations
     getInTouch: "Kontakta oss",
     contactTagline: "Redo att hitta nästa talang? Kontakta oss idag.",
@@ -104,9 +101,6 @@ const translations = {
     swedish: "Swedish",
     english: "English",
     french: "French",
-    // About Us section
-    aboutUsSection: "About Us",
-    
     // Contact form translations
     getInTouch: "Get in Touch",
     contactTagline: "Ready to start your next project? Contact us today.",
@@ -191,9 +185,6 @@ const translations = {
     swedish: "Suédois",
     english: "Anglais",
     french: "Français",
-    // About Us section
-    aboutUsSection: "À propos de nous",
-    
     // Contact form translations
     getInTouch: "Contactez-nous",
     contactTagline: "Prêt à démarrer votre prochain projet? Contactez-nous dès aujourd'hui.",
