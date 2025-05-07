@@ -84,25 +84,25 @@ const services = [
   },
 ];
 
-// Animation variants for smoother animation
+// Animation variants with synchronized timing
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1
+      staggerChildren: 0.02,
+      delayChildren: 0
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.2,
       ease: "easeOut"
     }
   }
@@ -153,7 +153,8 @@ export const Services = () => {
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: "-50px" }}
+              className="w-full"
             >
               <CarouselContent className="-ml-4">
                 {services.map((service, index) => {
@@ -171,6 +172,7 @@ export const Services = () => {
                     >
                       <motion.div
                         variants={itemVariants}
+                        custom={index}
                         className="glass-card p-6 h-full group hover:bg-white/10 transition-all duration-300 mr-4"
                       >
                         <service.icon className="w-12 h-12 text-tunitech-mint mb-4 group-hover:text-tunitech-blue transition-colors duration-300" />
