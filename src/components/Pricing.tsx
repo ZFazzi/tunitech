@@ -34,11 +34,11 @@ export const Pricing = () => {
   const getPricingOptions = () => {
     switch (language) {
       case "sv":
-        return ["Timvis/Daglig taxa", "Månatlig fast pris", "Projektbaserad prissättning"];
+        return ["Pris per timme/dag", "Pris per månad", "Pris per projekt"];
       case "fr":
-        return ["Tarif horaire/journalier", "Prix fixe mensuel", "Tarification basée sur le projet"];
+        return ["Prix par heure/jour", "Prix par mois", "Prix par projet"];
       default: // English
-        return ["Hourly/Daily Rate", "Monthly Fixed Price", "Project-Based Pricing"];
+        return ["Price per hour/day", "Price per month", "Price per project"];
     }
   };
   
