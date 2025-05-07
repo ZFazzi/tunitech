@@ -57,6 +57,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
       keyframes: {
         "fade-up": {
           "0%": {
@@ -76,10 +80,15 @@ export default {
             opacity: "1",
           },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "0.8" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
-        "fade-up": "fade-up 0.5s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
+        "fade-up": "fade-up 0.8s ease-out forwards",
+        "fade-in": "fade-in 0.6s ease-out forwards",
+        "pulse-subtle": "pulse-subtle 4s ease-in-out infinite",
       },
     },
   },

@@ -16,19 +16,24 @@ const Index = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-transparent backdrop-blur-sm text-white"
+      transition={{ duration: 0.8 }}
+      className="min-h-screen bg-gradient-to-b from-tunitech-dark to-black/90 text-white overflow-hidden"
     >
-      <Navbar />
-      <Hero />
-      <Advantages />
-      <QuoteBlock />
-      <AboutUs />
-      <Services />
-      <Values />
-      <Pricing />
-      <Contact />
-      <Footer />
+      <div className="relative z-10">
+        <div className="absolute inset-0 bg-[url('/lovable-uploads/d0c39a01-0fd1-4def-a437-d7d7fb59e2b3.png')] bg-cover bg-center opacity-10 blur-sm"></div>
+        <div className="relative z-20">
+          <Navbar />
+          <Hero />
+          <Advantages />
+          <QuoteBlock />
+          <AboutUs />
+          <Services />
+          <Values />
+          <Pricing />
+          <Contact />
+          <Footer />
+        </div>
+      </div>
     </motion.div>
   );
 };

@@ -47,23 +47,28 @@ export const Pricing = () => {
   const pricingOptions = getPricingOptions();
   
   return (
-    <section className="py-16 bg-transparent backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto px-4">
+    <section className="py-24 bg-transparent relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-radial from-tunitech-mint/5 to-transparent opacity-70"></div>
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <CircleDollarSign className="w-10 h-10 mx-auto mb-4 text-tunitech-mint" />
-          <h2 className="text-3xl font-bold mb-4 text-tunitech-mint">{pricingTitle}</h2>
-          <p className="text-lg text-gray-300 max-w-xl mx-auto">
+          <CircleDollarSign className="w-12 h-12 mx-auto mb-6 text-tunitech-mint" />
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-tunitech-mint to-tunitech-blue bg-clip-text text-transparent">
+              {pricingTitle}
+            </span>
+          </h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             {pricingDescription}
           </p>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {pricingOptions.map((option, index) => (
             <motion.div
               key={index}
@@ -71,10 +76,10 @@ export const Pricing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
               viewport={{ once: true }}
-              className="backdrop-blur-md bg-white/5 p-6 border border-white/10 hover:border-tunitech-mint/40 rounded-xl transition-all duration-300"
+              className="glass-effect p-8 hover:shadow-lg hover:border-tunitech-mint/30 transition-all duration-500"
             >
-              <h3 className="text-xl font-medium text-center text-white mb-2">{option}</h3>
-              <div className="h-1 w-12 mx-auto mt-4 bg-gradient-to-r from-tunitech-blue to-tunitech-mint rounded-full" />
+              <h3 className="text-2xl font-medium text-center text-white mb-6">{option}</h3>
+              <div className="h-1 w-16 mx-auto bg-gradient-to-r from-tunitech-blue to-tunitech-mint rounded-full" />
             </motion.div>
           ))}
         </div>

@@ -21,23 +21,32 @@ export const QuoteBlock = () => {
   const quoteText = getDiversityQuote();
   
   return (
-    <section className="py-12 bg-transparent backdrop-blur-sm">
-      <div className="max-w-4xl mx-auto px-4">
+    <section className="py-16 bg-transparent">
+      <motion.div 
+        className="max-w-4xl mx-auto px-8 relative"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true, margin: "-50px" }}
+      >
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-tunitech-mint/10 to-tunitech-blue/10 blur-xl"></div>
         <motion.div 
-          className="flex gap-4 items-center backdrop-blur-md bg-white/5 p-6 border border-white/10 hover:border-tunitech-mint/40 rounded-xl transition-all duration-300"
+          className="glass-effect p-10 relative z-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          <Quote className="text-tunitech-mint w-10 h-10 flex-shrink-0" />
-          <div>
-            <p className="text-gray-300 italic">
-              {quoteText}
-            </p>
+          <div className="flex gap-6 items-center">
+            <Quote className="text-tunitech-mint w-14 h-14 flex-shrink-0" />
+            <div>
+              <p className="text-xl md:text-2xl text-gray-300 italic leading-relaxed">
+                "{quoteText}"
+              </p>
+            </div>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 };
