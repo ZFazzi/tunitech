@@ -10,24 +10,15 @@ export const QuoteBlock = () => {
   const getDiversityQuote = () => {
     switch (language) {
       case "sv":
-        return {
-          title: "Mångfald och nya perspektiv",
-          text: "Att arbeta med utvecklare från olika bakgrunder ger nya insikter, perspektiv och innovation till projekten."
-        };
+        return "Att arbeta med utvecklare från olika bakgrunder ger nya insikter, perspektiv och innovation till projekten.";
       case "fr":
-        return {
-          title: "Diversité et nouvelles perspectives",
-          text: "Travailler avec des développeurs de divers horizons apporte de nouvelles idées, perspectives et innovations aux projets."
-        };
+        return "Travailler avec des développeurs de divers horizons apporte de nouvelles idées, perspectives et innovations aux projets.";
       default: // English
-        return {
-          title: "Diversity and fresh perspectives",
-          text: "Working with developers from diverse backgrounds brings new insights, perspectives, and innovation to projects."
-        };
+        return "Working with developers from diverse backgrounds brings new insights, perspectives, and innovation to projects.";
     }
   };
 
-  const diversityQuote = getDiversityQuote();
+  const quoteText = getDiversityQuote();
   
   return (
     <section className="py-12 bg-tunitech-dark">
@@ -41,11 +32,8 @@ export const QuoteBlock = () => {
         >
           <Quote className="text-tunitech-mint w-12 h-12 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-xl font-medium mb-2 text-white">
-              {diversityQuote.title}
-            </h3>
-            <p className="text-gray-300">
-              {diversityQuote.text}
+            <p className="text-gray-300 italic">
+              {quoteText}
             </p>
           </div>
         </motion.div>
