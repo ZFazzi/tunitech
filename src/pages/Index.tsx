@@ -8,6 +8,7 @@ import { Values } from "@/components/Values";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { QuoteBlock } from "@/components/QuoteBlock";
+import { Pricing } from "@/components/Pricing";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -22,6 +23,7 @@ const Index = () => {
       <Hero />
       <Advantages />
       <QuoteBlock />
+      <Pricing />
       <AboutUs />
       <Services />
       <Values />
