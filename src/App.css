@@ -37,3 +37,9 @@
   z-index: -1;
   pointer-events: none;
 }
+
+html, body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
