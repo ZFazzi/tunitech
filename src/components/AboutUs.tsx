@@ -146,6 +146,75 @@ export const AboutUs = () => {
     }
   };
 
+  // Get "Why us?" title based on language
+  const getWhyUsTitle = () => {
+    switch (language) {
+      case "sv":
+        return "Varför oss?";
+      case "fr":
+        return "Pourquoi nous?";
+      default: // English
+        return "Why us?";
+    }
+  };
+
+  // Get "Why us?" content based on language
+  const getWhyUsContent = () => {
+    switch (language) {
+      case "sv":
+        return (
+          <>
+            <p className="mb-4">
+              Att hitta topptalanger inom tech är svårare än någonsin.
+            </p>
+            <p className="mb-4">
+              Svenska företag växer snabbt men kämpar med att få tillgång till rätt kompetens vid rätt tidpunkt.
+            </p>
+            <p className="mb-4">
+              Samtidigt finns det briljanta utvecklare i Tunisien som är ivriga att få möjlighet att använda sina kunskaper på en global arena – men som saknar direkta vägar in på den svenska marknaden.
+            </p>
+            <p className="mb-4">
+              Det finns ett gap mellan potential och möjlighet – och det bromsar innovation, mångfald och tillväxt.
+            </p>
+          </>
+        );
+      case "fr":
+        return (
+          <>
+            <p className="mb-4">
+              Trouver des talents technologiques de premier ordre est plus difficile que jamais.
+            </p>
+            <p className="mb-4">
+              Les entreprises suédoises se développent rapidement mais ont du mal à accéder à la bonne expertise au bon moment.
+            </p>
+            <p className="mb-4">
+              Pendant ce temps, de brillants développeurs en Tunisie sont désireux d'opportunités pour appliquer leurs compétences sur une scène mondiale – mais manquent de voies d'accès directes au marché suédois.
+            </p>
+            <p className="mb-4">
+              Il existe un écart entre le potentiel et l'opportunité – et cela ralentit l'innovation, la diversité et la croissance.
+            </p>
+          </>
+        );
+      default: // English
+        return (
+          <>
+            <p className="mb-4">
+              Finding top tech talent is harder than ever.
+            </p>
+            <p className="mb-4">
+              Swedish companies are growing fast but struggle to access the right expertise at the right time.
+            </p>
+            <p className="mb-4">
+              Meanwhile, brilliant developers in Tunisia are eager for opportunities to apply their skills on a global stage – but lack direct pathways into the Swedish market.
+            </p>
+            <p className="mb-4">
+              There is a gap between potential and opportunity – and it's slowing innovation, diversity, and growth.
+            </p>
+          </>
+        );
+    }
+  };
+
   return (
     <section id="about" className="py-20 section-padding bg-transparent">
       <div className="max-w-7xl mx-auto px-6">
@@ -199,6 +268,21 @@ export const AboutUs = () => {
             </h3>
             <div className="text-white/90 text-lg leading-relaxed">
               {getOurGoalContent()}
+            </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            viewport={{ once: true }}
+            className="bg-black/20 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/10"
+          >
+            <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
+              {getWhyUsTitle()}
+            </h3>
+            <div className="text-white/90 text-lg leading-relaxed">
+              {getWhyUsContent()}
             </div>
           </motion.div>
         </motion.div>
