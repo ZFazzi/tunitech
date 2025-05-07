@@ -21,7 +21,7 @@ export const QuoteBlock = () => {
   const quoteText = getDiversityQuote();
   
   return (
-    <section className="py-16 bg-transparent">
+    <section className="py-16 relative z-10">
       <motion.div 
         className="max-w-4xl mx-auto px-8 relative"
         initial={{ opacity: 0 }}
