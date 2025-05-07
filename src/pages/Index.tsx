@@ -17,7 +17,7 @@ const Index = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen bg-gradient-to-b from-tunitech-dark to-black/90 text-white"
+      className="min-h-screen text-white"
     >
       <div className="fixed inset-0 w-full h-full bg-gradient-to-b from-tunitech-dark to-black/90 -z-10"></div>
       <div className="relative z-10">
