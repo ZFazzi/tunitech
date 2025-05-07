@@ -1,4 +1,3 @@
-
 import { Facebook, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -20,11 +19,22 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4 text-left"
           >
-            <h3 className="text-xl font-bold mb-5">
+            <motion.h3 
+              className="text-xl font-bold mb-5"
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.2,
+                type: "spring",
+                stiffness: 100 
+              }}
+              viewport={{ once: true }}
+            >
               <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
                 {t.contactUs}
               </span>
-            </h3>
+            </motion.h3>
             
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-tunitech-mint" />
@@ -50,11 +60,22 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4 text-left"
           >
-            <h3 className="text-xl font-bold mb-5">
+            <motion.h3 
+              className="text-xl font-bold mb-5"
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.2,
+                type: "spring",
+                stiffness: 100 
+              }}
+              viewport={{ once: true }}
+            >
               <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
                 {t.menu}
               </span>
-            </h3>
+            </motion.h3>
             <ul className="space-y-2">
               <li><a href="#home" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.aboutUs}</a></li>
               <li><a href="#services" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.ourTalents}</a></li>
@@ -71,11 +92,22 @@ export const Footer = () => {
             viewport={{ once: true }}
             className="space-y-4 text-left"
           >
-            <h3 className="text-xl font-bold mb-5">
+            <motion.h3 
+              className="text-xl font-bold mb-5"
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.2,
+                type: "spring",
+                stiffness: 100 
+              }}
+              viewport={{ once: true }}
+            >
               <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
                 {t.socialMedia}
               </span>
-            </h3>
+            </motion.h3>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">
                 <Facebook className="w-6 h-6" />

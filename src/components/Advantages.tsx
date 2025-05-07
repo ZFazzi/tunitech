@@ -128,11 +128,22 @@ export const Advantages = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.2,
+              type: "spring",
+              stiffness: 100 
+            }}
+            viewport={{ once: true }}
+          >
             <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
               {getSectionTitle()}
             </span>
-          </h2>
+          </motion.h2>
           <p className="text-xl md:text-2xl text-gray-300">
             {getSubtitle()}
           </p>

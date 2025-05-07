@@ -92,11 +92,22 @@ export const Services = () => {
     <section id="services" className="section-padding bg-gradient-to-b from-tunitech-dark to-black">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.2,
+              type: "spring",
+              stiffness: 100 
+            }}
+            viewport={{ once: true }}
+          >
             <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
               {translations[language].ourTalents}
             </span>
-          </h2>
+          </motion.h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
             {language === "sv" ? "Vi erbjuder talanger efter era önskemål inom alla IT-områden" : 
              language === "en" ? "We offer talents according to your needs in all IT areas" :
