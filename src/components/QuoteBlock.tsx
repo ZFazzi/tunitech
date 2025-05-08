@@ -22,9 +22,6 @@ export const QuoteBlock = () => {
   
   return (
     <section className="py-16 relative overflow-hidden bg-black">
-      {/* Modified background overlay to be more subtle and prevent overlap */}
-      <div className="absolute inset-0 bg-gradient-radial from-white/5 via-transparent to-transparent opacity-40 z-0"></div>
-      
       <motion.div 
         className="max-w-4xl mx-auto px-8 relative z-10"
         initial={{ opacity: 0 }}

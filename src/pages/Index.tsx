@@ -17,8 +17,14 @@ const Index = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen text-white flex flex-col bg-black"
+      className="min-h-screen text-white flex flex-col bg-black relative overflow-hidden"
     >
+      {/* 🔆 Global radial light gradient */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="w-full h-full bg-gradient-radial from-white/10 via-transparent to-transparent opacity-10 blur-3xl"></div>
+      </div>
+
+      {/* Content */}
       <div className="relative z-10 flex-grow flex flex-col bg-black">
         <Navbar />
         <Hero />
