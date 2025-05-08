@@ -17,9 +17,8 @@ const Index = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen text-white flex flex-col"
+      className="min-h-screen text-white flex flex-col bg-black"
     >
-      <div className="fixed inset-0 w-full h-full bg-black -z-10"></div>
       <div className="relative z-10 flex-grow flex flex-col">
         <Navbar />
         <Hero />
