@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Clock, Users, BriefCase, User } from "lucide-react";
+import { Clock, Users, Briefcase, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Flexibility = () => {
@@ -19,7 +19,7 @@ export const Flexibility = () => {
       description: translations[language].teamOptions || "They can join an existing team or lead their own projects."
     },
     {
-      icon: BriefCase,
+      icon: Briefcase,
       title: translations[language].assignmentLengthTitle || "Assignment Length",
       description: translations[language].assignmentLength || "They are available for short-term or long-term assignments."
     },
