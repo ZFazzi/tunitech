@@ -19,7 +19,7 @@ const Index = () => {
       transition={{ duration: 0.8 }}
       className="min-h-screen text-white flex flex-col"
     >
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-b from-tunitech-dark to-black/90 -z-10"></div>
+      <div className="fixed inset-0 w-full h-full bg-black -z-10"></div>
       <div className="relative z-10 flex-grow flex flex-col">
         <Navbar />
         <Hero />
