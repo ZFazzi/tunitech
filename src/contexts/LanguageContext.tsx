@@ -5,7 +5,7 @@ type Language = "sv" | "en" | "fr";
 interface LanguageContextType {
   language: Language;
   setLanguage: (language: Language) => void;
-  translations: Record<Language, Record<string, string>>;
+  translations: Record<Language, string>;
 }
 
 const translations = {
@@ -64,22 +64,6 @@ const translations = {
     mobileDevelopers: "Specialister inom native och cross-platform mobilapputveckling.",
     gameDevelopers: "Kreativa utvecklare specialiserade på spelmotorer och interaktiva upplevelser.",
     webDesigners: "Talangfulla designers som skapar visuellt tilltalande och användarvänliga webbplatser.",
-    automationTesters: "Experter på att bygga robusta testramverk för att säkerställa mjukvarukvalitet.",
-    scrumMasters: "Erfarna processledare som underlättar agila metoder och team produktivitet.",
-    appDevelopers: "Skickliga utvecklare som skapar innovativa mobila applikationer för olika plattformar.",
-    
-    // Service titles
-    frontendDevelopersTitle: "Frontend-utvecklare",
-    aiExpertsTitle: "AI-experter",
-    backendDevelopersTitle: "Backend-utvecklare",
-    uiUxDesignersTitle: "UI/UX-designers",
-    databaseSpecialistsTitle: "Databasspecialister",
-    devOpsEngineersTitle: "DevOps-ingenjörer",
-    securityExpertsTitle: "Säkerhetsexperter",
-    fullStackDevelopersTitle: "Fullstack-utvecklare",
-    mobileDevelopersTitle: "Mobilutvecklare",
-    gameDevelopersTitle: "Spelutvecklare",
-    webDesignersTitle: "Webbdesigners",
     automationTestersTitle: "Automationstestare",
     scrumMastersTitle: "Scrum Masters",
     appDevelopersTitle: "Apputvecklare",
@@ -98,7 +82,35 @@ const translations = {
     menu: "Meny",
     socialMedia: "Sociala medier",
     location: "Stockholm, Sverige",
-    copyright: "© {year} TuniTech. Alla rättigheter reserverade."
+    copyright: "© {year} TuniTech. Alla rättigheter reserverade.",
+    webDesigners: "Talangfulla designers som skapar visuellt tilltalande och användarvänliga webbplatser.",
+    automationTesters: "Experter på att bygga robusta testramverk för att säkerställa mjukvarukvalitet.",
+    scrumMasters: "Erfarna processledare som underlättar agila metoder och team produktivitet.",
+    appDevelopers: "Skickliga utvecklare som skapar innovativa mobila applikationer för olika plattformar.",
+    
+    // Service titles
+    frontendDevelopersTitle: "Frontend-utvecklare",
+    aiExpertsTitle: "AI-experter",
+    backendDevelopersTitle: "Backend-utvecklare",
+    uiUxDesignersTitle: "UI/UX-designers",
+    databaseSpecialistsTitle: "Databasspecialister",
+    devOpsEngineersTitle: "DevOps-ingenjörer",
+    securityExpertsTitle: "Säkerhetsexperter",
+    fullStackDevelopersTitle: "Fullstack-utvecklare",
+    mobileDevelopersTitle: "Mobilutvecklare",
+    gameDevelopersTitle: "Spelutvecklare",
+    webDesignersTitle: "Webbdesigners",
+    // Flexibility section
+    whyUsTitle: "Varför oss?",
+    flexibilitySubtitle: "Din önskan är vårt uppdrag",
+    contractOptionsTitle: "Flexibla timmar",
+    contractOptions: "Våra talanger kan kontrakteras på heltid, deltid eller per timme.",
+    teamOptionsTitle: "Teamintegration",
+    teamOptions: "De kan gå med i ett befintligt team eller leda egna projekt.",
+    assignmentLengthTitle: "Uppdragslängd",
+    assignmentLength: "De är tillgängliga för kort- eller långsiktiga uppdrag.",
+    experienceLevelsTitle: "Erfarenhetsnivåer",
+    experienceLevels: "De varierar från nyfikna nyutexaminerade till seniora experter.",
   },
   en: {
     aboutUs: "About Us",
@@ -189,7 +201,18 @@ const translations = {
     menu: "Menu",
     socialMedia: "Social Media",
     location: "Stockholm, Sweden",
-    copyright: "© {year} TuniTech. All rights reserved."
+    copyright: "© {year} TuniTech. All rights reserved.",
+    // Flexibility section
+    whyUsTitle: "Why us?",
+    flexibilitySubtitle: "Your wish is our demand",
+    contractOptionsTitle: "Flexible Hours",
+    contractOptions: "Our talents can be contracted full-time, part-time, or on an hourly basis.",
+    teamOptionsTitle: "Team Integration",
+    teamOptions: "They can join an existing team or lead their own projects.",
+    assignmentLengthTitle: "Assignment Length",
+    assignmentLength: "They are available for short-term or long-term assignments.",
+    experienceLevelsTitle: "Experience Levels",
+    experienceLevels: "They range from curious recent graduates to senior experts.",
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -280,7 +303,18 @@ const translations = {
     menu: "Menu",
     socialMedia: "Médias Sociaux",
     location: "Stockholm, Suède",
-    copyright: "© {year} TuniTech. Tous droits réservés."
+    copyright: "© {year} TuniTech. Tous droits réservés.",
+    // Flexibility section
+    whyUsTitle: "Pourquoi nous?",
+    flexibilitySubtitle: "Votre souhait est notre demande",
+    contractOptionsTitle: "Horaires flexibles",
+    contractOptions: "Nos talents peuvent être engagés à temps plein, à temps partiel ou à l'heure.",
+    teamOptionsTitle: "Intégration d'équipe",
+    teamOptions: "Ils peuvent rejoindre une équipe existante ou diriger leurs propres projets.",
+    assignmentLengthTitle: "Durée des missions",
+    assignmentLength: "Ils sont disponibles pour des missions à court ou à long terme.",
+    experienceLevelsTitle: "Niveaux d'expérience",
+    experienceLevels: "Ils vont des diplômés récents et curieux aux experts seniors.",
   }
 };
 
