@@ -26,7 +26,8 @@
   z-index: 1;
 }
 
-.section-transition::before {
+/* Removing the gradient transition that might be causing overlap */
+/* .section-transition::before {
   content: "";
   position: absolute;
   top: -50px;
@@ -36,7 +37,7 @@
   background: linear-gradient(to top, rgba(26, 31, 44, 0.5), transparent);
   z-index: -1;
   pointer-events: none;
-}
+} */
 
 html, body {
   min-height: 100vh;
@@ -52,6 +53,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: black !important; /* Ensure background is always black */
 }
 
 #root {

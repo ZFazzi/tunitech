@@ -19,7 +19,7 @@ const Index = () => {
       transition={{ duration: 0.8 }}
       className="min-h-screen text-white flex flex-col bg-black"
     >
-      <div className="relative z-10 flex-grow flex flex-col">
+      <div className="relative z-10 flex-grow flex flex-col bg-black">
         <Navbar />
         <Hero />
         <Advantages />
