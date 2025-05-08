@@ -120,7 +120,7 @@ export const Advantages = () => {
   const advantages = getAdvantages();
 
   return (
-    <section id="advantages" className="py-16 md:py-24 bg-black relative">
+    <section id="advantages" className="py-16 md:py-24 bg-tunitech-dark relative">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

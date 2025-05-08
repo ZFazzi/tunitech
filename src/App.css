@@ -1,63 +1,42 @@
-
 #root {
-  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 2rem;
   text-align: center;
 }
 
-.glass-effect {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.gradient-text {
-  background: linear-gradient(90deg, #4CD6B3, #3BB5E9);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.section-transition {
-  position: relative;
-  z-index: 1;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-/* Removing the gradient transition that might be causing overlap */
-/* .section-transition::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: linear-gradient(to top, rgba(26, 31, 44, 0.5), transparent);
-  z-index: -1;
-  pointer-events: none;
-} */
-
-html, body {
-  min-height: 100vh;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  margin: 0;
-  padding: 0;
-  background-color: black;
+.card {
+  padding: 2em;
 }
 
-body {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: black !important; /* Ensure background is always black */
-}
-
-#root {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.read-the-docs {
+  color: #888;
 }
