@@ -1,131 +1,94 @@
 
-import { Facebook, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 
 export const Footer = () => {
   const { language, translations } = useLanguage();
   const t = translations[language];
+  
+  const currentYear = new Date().getFullYear();
+  const copyright = t.copyright.replace("{year}", currentYear.toString());
 
   return (
-    <footer className="bg-transparent text-white py-12 px-6 md:px-8 lg:px-12 border-t border-white/10">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          
-          {/* Contact Information */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="space-y-4 text-left"
-          >
-            <motion.h3 
-              className="text-xl font-bold mb-5"
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.2,
-                type: "spring",
-                stiffness: 100 
-              }}
-              viewport={{ once: true }}
-            >
-              <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-                {t.contactUs}
-              </span>
-            </motion.h3>
+    <footer className="bg-tunitech-dark/90 backdrop-blur-lg border-t border-white/10 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="md:flex md:justify-between">
+          {/* Logo and Contact */}
+          <div className="mb-8 md:mb-0 space-y-6">
+            {/* Logo */}
+            <div className="flex items-center">
+              <span className="font-bold text-white text-2xl">Tuni<span className="text-blue-400">Tech</span></span>
+            </div>
             
-            <div className="flex items-center space-x-3">
-              <Mail className="w-5 h-5 text-tunitech-mint" />
+            {/* Contact Information */}
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <MapPin size={20} className="mr-2 text-blue-400" />
+                <span className="text-gray-300">{t.location}</span>
+              </div>
+              
               <a 
-                href="mailto:hello@tunitech.se" 
-                className="text-gray-300 hover:text-white hover:underline transition-colors"
+                href="#contact"
+                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
               >
-                hello@tunitech.se
+                {t.contactUs}
               </a>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-16">
+            {/* Menu */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">{t.menu}</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#home" className="text-gray-300 hover:text-white transition-colors duration-200">{t.aboutUs}</a>
+                </li>
+                <li>
+                  <a href="#services" className="text-gray-300 hover:text-white transition-colors duration-200">{t.ourTalents}</a>
+                </li>
+                <li>
+                  <a href="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200">{t.pricing}</a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t.contact}</a>
+                </li>
+              </ul>
             </div>
             
-            <div className="flex items-center space-x-3">
-              <MapPin className="w-5 h-5 text-tunitech-mint" />
-              <p className="text-gray-300">{t.location}</p>
+            {/* Social Media */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white">{t.socialMedia}</h3>
+              <ul className="flex space-x-4">
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
+                    <Facebook size={20} />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
+                    <Twitter size={20} />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
+                    <Instagram size={20} />
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">
+                    <Linkedin size={20} />
+                  </a>
+                </li>
+              </ul>
             </div>
-          </motion.div>
-          
-          {/* Menu Items */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="space-y-4 text-left"
-          >
-            <motion.h3 
-              className="text-xl font-bold mb-5"
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.2,
-                type: "spring",
-                stiffness: 100 
-              }}
-              viewport={{ once: true }}
-            >
-              <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-                {t.menu}
-              </span>
-            </motion.h3>
-            <ul className="space-y-2">
-              <li><a href="#home" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.aboutUs}</a></li>
-              <li><a href="#services" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.ourTalents}</a></li>
-              <li><a href="#values" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.career}</a></li>
-              <li><a href="#contact" className="text-gray-300 hover:text-white hover:underline transition-colors">{t.contact}</a></li>
-            </ul>
-          </motion.div>
-          
-          {/* Social Media */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="space-y-4 text-left"
-          >
-            <motion.h3 
-              className="text-xl font-bold mb-5"
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.2,
-                type: "spring",
-                stiffness: 100 
-              }}
-              viewport={{ once: true }}
-            >
-              <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-                {t.socialMedia}
-              </span>
-            </motion.h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                <Facebook className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                <Instagram className="w-6 h-6" />
-              </a>
-              <a href="https://www.linkedin.com/company/tunitech-sweden" className="text-gray-300 hover:text-white transition-colors">
-                <Linkedin className="w-6 h-6" />
-              </a>
-            </div>
-          </motion.div>
+          </div>
         </div>
         
-        {/* Copyright Section */}
-        <div className="mt-12 pt-6 border-t border-white/10 text-center text-gray-400 text-sm">
-          <p>{t.copyright.replace('{year}', new Date().getFullYear().toString())}</p>
+        {/* Copyright */}
+        <div className="mt-12 border-t border-white/10 pt-6">
+          <p className="text-sm text-gray-400 text-center">{copyright}</p>
         </div>
       </div>
     </footer>

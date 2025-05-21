@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -11,8 +12,8 @@ interface LanguageContextType {
 const translations = {
   sv: {
     aboutUs: "Om oss",
-    ourTalents: "Våra talanger",
-    career: "Karriär",
+    ourTalents: "Våra utvecklare",
+    pricing: "Prismodell",
     contact: "Kontakt",
     swedish: "Svenska",
     english: "Engelska",
@@ -102,8 +103,8 @@ const translations = {
   },
   en: {
     aboutUs: "About Us",
-    ourTalents: "Our Talents",
-    career: "Career",
+    ourTalents: "Our Developers",
+    pricing: "Pricing",
     contact: "Contact",
     swedish: "Swedish",
     english: "English",
@@ -193,8 +194,8 @@ const translations = {
   },
   fr: {
     aboutUs: "À propos de nous",
-    ourTalents: "Nos talents",
-    career: "Carrière",
+    ourTalents: "Nos développeurs",
+    pricing: "Tarification",
     contact: "Contact",
     swedish: "Suédois",
     english: "Anglais",

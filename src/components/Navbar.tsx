@@ -33,7 +33,7 @@ export const Navbar = () => {
             <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
               <NavLink href="#home">{t.aboutUs}</NavLink>
               <NavLink href="#services">{t.ourTalents}</NavLink>
-              <NavLink href="#values">{t.career}</NavLink>
+              <NavLink href="#pricing">{t.pricing}</NavLink>
               <NavLink href="#contact">{t.contact}</NavLink>
               
               {/* Language dropdown integrated within the menu bar */}
@@ -113,7 +113,7 @@ export const Navbar = () => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/95 backdrop-blur-lg border-t border-white/10">
           <MobileNavLink href="#home" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
           <MobileNavLink href="#services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
-          <MobileNavLink href="#values" onClick={() => setIsOpen(false)}>{t.career}</MobileNavLink>
+          <MobileNavLink href="#pricing" onClick={() => setIsOpen(false)}>{t.pricing}</MobileNavLink>
           <MobileNavLink href="#contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
         </div>
       </div>
