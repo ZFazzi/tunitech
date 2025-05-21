@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type Language = "sv" | "en" | "fr";
@@ -99,7 +98,9 @@ const translations = {
     menu: "Meny",
     socialMedia: "Sociala medier",
     location: "Stockholm, Sverige",
-    copyright: "© {year} TuniTech. Alla rättigheter reserverade."
+    copyright: "© {year} TuniTech. Alla rättigheter reserverade.",
+    cookieConsent: "Vi använder cookies för att förbättra din upplevelse. Genom att fortsätta besöka denna webbplats samtycker du till vår användning av cookies.",
+    acceptCookies: "Acceptera",
   },
   en: {
     aboutUs: "About Us",
@@ -190,7 +191,9 @@ const translations = {
     menu: "Menu",
     socialMedia: "Social Media",
     location: "Stockholm, Sweden",
-    copyright: "© {year} TuniTech. All rights reserved."
+    copyright: "© {year} TuniTech. All rights reserved.",
+    cookieConsent: "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
+    acceptCookies: "Accept",
   },
   fr: {
     aboutUs: "À propos de nous",
@@ -281,7 +284,9 @@ const translations = {
     menu: "Menu",
     socialMedia: "Médias Sociaux",
     location: "Stockholm, Suède",
-    copyright: "© {year} TuniTech. Tous droits réservés."
+    copyright: "© {year} TuniTech. Tous droits réservés.",
+    cookieConsent: "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
+    acceptCookies: "Accept",
   }
 };
 

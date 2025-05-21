@@ -4,6 +4,7 @@ import { Mail, Send } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FormData {
   name: string;
@@ -47,7 +48,21 @@ export const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Create a mailto link to open the user's email client
+      // Save to Supabase
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([
+          { 
+            name: formData.name,
+            email: formData.email,
+            company: formData.company || null,
+            message: formData.message
+          }
+        ]);
+      
+      if (error) throw error;
+      
+      // Create a mailto link to open the user's email client as a backup
       const subject = `Contact Form: ${formData.name} from ${formData.company || 'N/A'}`;
       const body = `Name: ${formData.name}
 Email: ${formData.email}
