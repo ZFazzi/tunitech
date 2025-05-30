@@ -48,8 +48,8 @@ export const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Save to Supabase
-      const { error } = await supabase
+      // Save to Supabase using type assertion to work around the types issue
+      const { error } = await (supabase as any)
         .from('contact_submissions')
         .insert([
           { 
