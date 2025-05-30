@@ -71,7 +71,7 @@ export const Pricing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
               viewport={{ once: true }}
-              className="backdrop-blur-md bg-white/5 p-6 border border-white/10 hover:border-tunitech-mint/40 rounded-xl transition-all duration-300"
+              className="backdrop-blur-md bg-white/5 p-6 border border-white/5 rounded-lg"
             >
               <h3 className="text-xl font-medium text-center text-white mb-2">{option}</h3>
               <div className="h-1 w-12 mx-auto mt-4 bg-gradient-to-r from-tunitech-blue to-tunitech-mint rounded-full" />

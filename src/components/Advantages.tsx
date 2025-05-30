@@ -157,7 +157,7 @@ export const Advantages = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="glass-card p-6 border border-tunitech-mint/20 hover:border-tunitech-mint/40 transition-colors duration-300"
+              className="bg-black/10 backdrop-blur-sm rounded-lg p-6 border border-white/5"
             >
               <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
                 {advantage.title}
@@ -179,7 +179,7 @@ export const Advantages = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: (index + 3) * 0.1 }}
               viewport={{ once: true }}
-              className="glass-card p-6 border border-tunitech-mint/20 hover:border-tunitech-mint/40 transition-colors duration-300"
+              className="bg-black/10 backdrop-blur-sm rounded-lg p-6 border border-white/5"
             >
               <h3 className="text-xl font-bold mb-3 text-tunitech-mint">
                 {advantage.title}

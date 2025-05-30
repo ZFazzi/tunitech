@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -246,7 +247,7 @@ export const AboutUs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
-            className="bg-black/20 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/10"
+            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
           >
             <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
               {getWhatWeDoTitle()}
@@ -261,7 +262,7 @@ export const AboutUs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
-            className="bg-black/20 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/10"
+            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
           >
             <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
               {getOurGoalTitle()}
@@ -276,7 +277,7 @@ export const AboutUs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
             viewport={{ once: true }}
-            className="bg-black/20 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/10"
+            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
           >
             <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
               {getWhyUsTitle()}

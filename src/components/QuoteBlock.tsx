@@ -24,7 +24,7 @@ export const QuoteBlock = () => {
     <section className="py-12 bg-transparent backdrop-blur-sm">
       <div className="max-w-4xl mx-auto px-4">
         <motion.div 
-          className="flex gap-4 items-center backdrop-blur-md bg-white/5 p-6 border border-white/10 hover:border-tunitech-mint/40 rounded-xl transition-all duration-300"
+          className="flex gap-4 items-center backdrop-blur-md bg-white/5 p-6 border border-white/5 rounded-lg"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
