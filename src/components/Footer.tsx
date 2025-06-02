@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 
@@ -10,7 +9,7 @@ export const Footer = () => {
   const copyright = t.copyright.replace("{year}", currentYear.toString());
 
   return (
-    <footer className="bg-tunitech-dark/90 backdrop-blur-lg border-t border-white/10 py-8">
+    <footer className="bg-tunitech-dark/90 backdrop-blur-lg border-t border-white/10 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="md:flex md:justify-between">
           {/* Logo and Contact */}
