@@ -17,7 +17,11 @@ export const Footer = () => {
           <div className="mb-8 md:mb-0 space-y-6">
             {/* Logo */}
             <div className="flex items-center">
-              <span className="font-bold text-white text-2xl">Tuni<span className="text-blue-400">Tech</span></span>
+              <img 
+                src="/lovable-uploads/45c83552-0727-4db6-b02c-5e5fec1f7a86.png" 
+                alt="TuniTech Logo" 
+                className="h-12 w-auto"
+              />
             </div>
             
             {/* Contact Information */}
