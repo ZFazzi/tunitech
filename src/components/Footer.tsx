@@ -13,7 +13,7 @@ export const Footer = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="md:flex md:justify-between">
           {/* Logo and Contact */}
-          <div className="mb-8 md:mb-0 space-y-6">
+          <div className="mb-8 md:mb-0 space-y-2">
             {/* Logo */}
             <div className="space-y-4">
               <img 
@@ -24,7 +24,7 @@ export const Footer = () => {
             </div>
             
             {/* Contact Information */}
-            <div className="space-y-4">
+            <div className="space-y-4 mt-6">
               <div className="flex items-center">
                 <MapPin size={20} className="mr-2 text-blue-400" />
                 <span className="text-gray-300">{t.location}</span>
