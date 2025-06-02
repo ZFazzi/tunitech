@@ -1,4 +1,3 @@
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 
@@ -16,7 +15,7 @@ export const Footer = () => {
           {/* Logo and Contact */}
           <div className="mb-8 md:mb-0 space-y-6">
             {/* Logo */}
-            <div className="flex items-center">
+            <div className="space-y-4">
               <img 
                 src="/lovable-uploads/45c83552-0727-4db6-b02c-5e5fec1f7a86.png" 
                 alt="TuniTech Logo" 
