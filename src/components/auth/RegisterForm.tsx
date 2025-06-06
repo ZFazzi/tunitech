@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './AuthProvider';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,16 @@ export const RegisterForm = () => {
   const [userType, setUserType] = useState<'customer' | 'developer'>('customer');
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
+
+  // Check if a role was pre-selected from the role selection component
+  useEffect(() => {
+    const selectedRole = sessionStorage.getItem('selectedRole');
+    if (selectedRole && (selectedRole === 'customer' || selectedRole === 'developer')) {
+      setUserType(selectedRole);
+      // Clear it after using it
+      sessionStorage.removeItem('selectedRole');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

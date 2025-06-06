@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { RoleSelection } from "./RoleSelection";
 
 const GradientText = ({ children }: { children: React.ReactNode }) => (
   <motion.span
@@ -17,6 +19,7 @@ const GradientText = ({ children }: { children: React.ReactNode }) => (
 export const Hero = () => {
   const { language, translations } = useLanguage();
   const navigate = useNavigate();
+  const [showRoleSelection, setShowRoleSelection] = useState(false);
   const t = translations[language];
   
   // These phrases will always be in English regardless of language selection
@@ -44,49 +47,55 @@ export const Hero = () => {
   };
 
   const handleGetStarted = () => {
-    navigate('/auth');
+    setShowRoleSelection(true);
   };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-tunitech-dark/50 to-tunitech-dark" />
-      
-      {/* Background tech image */}
-      <div className="absolute inset-0 opacity-10">
-        <img 
-          src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5" 
-          alt="Technology background" 
-          className="w-full h-full object-cover"
-        />
-      </div>
-      
-      <div className="max-w-6xl mx-auto text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="space-y-10"
-        >
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
-            <GradientText>{tagline}</GradientText>
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
-            {getParagraphText()}
-          </p>
-          
-          <div className="mt-16">
-            <motion.button
-              onClick={handleGetStarted}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
-            >
-              {getButtonText()}
-            </motion.button>
-          </div>
-        </motion.div>
-      </div>
-    </section>
+    <>
+      <section id="home" className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-tunitech-dark/50 to-tunitech-dark" />
+        
+        {/* Background tech image */}
+        <div className="absolute inset-0 opacity-10">
+          <img 
+            src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5" 
+            alt="Technology background" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-10"
+          >
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
+              <GradientText>{tagline}</GradientText>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
+              {getParagraphText()}
+            </p>
+            
+            <div className="mt-16">
+              <motion.button
+                onClick={handleGetStarted}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
+              >
+                {getButtonText()}
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {showRoleSelection && (
+        <RoleSelection onClose={() => setShowRoleSelection(false)} />
+      )}
+    </>
   );
 };
