@@ -1,4 +1,6 @@
+
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 
 export const Footer = () => {
@@ -30,12 +32,12 @@ export const Footer = () => {
                 <span className="text-gray-300">{t.location}</span>
               </div>
               
-              <a 
-                href="#contact"
+              <Link 
+                to="/contact"
                 className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900"
               >
                 {t.contactUs}
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -46,16 +48,16 @@ export const Footer = () => {
               <h3 className="text-lg font-semibold text-white">{t.menu}</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#home" className="text-gray-300 hover:text-white transition-colors duration-200">{t.aboutUs}</a>
+                  <Link to="/about" className="text-gray-300 hover:text-white transition-colors duration-200">{t.aboutUs}</Link>
                 </li>
                 <li>
-                  <a href="#services" className="text-gray-300 hover:text-white transition-colors duration-200">{t.ourTalents}</a>
+                  <Link to="/services" className="text-gray-300 hover:text-white transition-colors duration-200">{t.ourTalents}</Link>
                 </li>
                 <li>
-                  <a href="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200">{t.pricing}</a>
+                  <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors duration-200">{t.pricing}</Link>
                 </li>
                 <li>
-                  <a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t.contact}</a>
+                  <Link to="/contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t.contact}</Link>
                 </li>
               </ul>
             </div>

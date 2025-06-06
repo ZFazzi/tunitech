@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Menu, X, Globe } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
@@ -31,10 +32,10 @@ export const Navbar = () => {
           {/* Desktop menu - centered */}
           <div className="hidden md:flex items-center justify-center">
             <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
-              <NavLink href="#home">{t.aboutUs}</NavLink>
-              <NavLink href="#services">{t.ourTalents}</NavLink>
-              <NavLink href="#pricing">{t.pricing}</NavLink>
-              <NavLink href="#contact">{t.contact}</NavLink>
+              <NavLink to="/about">{t.aboutUs}</NavLink>
+              <NavLink to="/services">{t.ourTalents}</NavLink>
+              <NavLink to="/pricing">{t.pricing}</NavLink>
+              <NavLink to="/contact">{t.contact}</NavLink>
               
               {/* Language dropdown integrated within the menu bar */}
               <DropdownMenu>
@@ -111,31 +112,31 @@ export const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/95 backdrop-blur-lg border-t border-white/10">
-          <MobileNavLink href="#home" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
-          <MobileNavLink href="#services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
-          <MobileNavLink href="#pricing" onClick={() => setIsOpen(false)}>{t.pricing}</MobileNavLink>
-          <MobileNavLink href="#contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
+          <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
+          <MobileNavLink to="/services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
+          <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)}>{t.pricing}</MobileNavLink>
+          <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
         </div>
       </div>
     </nav>
   );
 };
 
-const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <a
-    href={href}
+const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+  <Link
+    to={to}
     className="text-gray-300 hover:text-white hover:bg-white/10 px-5 py-2 text-sm font-medium transition-colors duration-200 rounded-full"
   >
     {children}
-  </a>
+  </Link>
 );
 
-const MobileNavLink = ({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) => (
-  <a
-    href={href}
+const MobileNavLink = ({ to, onClick, children }: { to: string; onClick: () => void; children: React.ReactNode }) => (
+  <Link
+    to={to}
     onClick={onClick}
     className="text-gray-300 hover:text-white hover:bg-white/10 block px-3 py-2 text-base font-medium transition-colors duration-200 rounded-lg"
   >
     {children}
-  </a>
+  </Link>
 );

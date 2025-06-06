@@ -1,13 +1,10 @@
 
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { Advantages } from "@/components/Advantages";
+import { Services } from "@/components/Services";
 import { Footer } from "@/components/Footer";
-import { QuoteBlock } from "@/components/QuoteBlock";
-import { Values } from "@/components/Values";
 import { motion } from "framer-motion";
 
-const Index = () => {
+const ServicesPage = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -16,13 +13,12 @@ const Index = () => {
       className="min-h-screen bg-transparent backdrop-blur-sm text-white"
     >
       <Navbar />
-      <Hero />
-      <Advantages />
-      <QuoteBlock />
-      <Values />
+      <div className="pt-16">
+        <Services />
+      </div>
       <Footer />
     </motion.div>
   );
 };
 
-export default Index;
+export default ServicesPage;
