@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const AboutUs = () => {
   const { language, translations } = useLanguage();
@@ -18,203 +19,94 @@ export const AboutUs = () => {
     }
   };
 
-  // Get "What we do" title based on language
-  const getWhatWeDoTitle = () => {
+  // Get card data based on language
+  const getCardData = () => {
     switch (language) {
       case "sv":
-        return "Vad vi gör";
+        return [
+          {
+            title: "Vad vi gör",
+            content: "Vi rekryterar och matchar Tunisiens bästa utvecklare med svenska företag – snabbt och träffsäkert."
+          },
+          {
+            title: "Vårt mål",
+            content: "Att vara förstahandsvalet för svenska företag som söker flexibel, högkvalitativ IT-kompetens."
+          },
+          {
+            title: "Varför oss?",
+            content: "Vi bygger en bro mellan två länder och skapar möjligheter för både företag och utvecklare."
+          },
+          {
+            title: "Vår styrka",
+            content: "Stark marknadsnärvaro, digitala plattformar och strategiska partnerskap för rätt talent vid rätt tidpunkt."
+          },
+          {
+            title: "Global vision",
+            content: "Vi sätter Tunisien på teknikkartan och förändrar hur företag samarbetar över gränserna."
+          },
+          {
+            title: "Långsiktigt fokus",
+            content: "Vi bygger pålitliga relationer där våra kunder känner sig säkra på vår expertis och nätverk."
+          }
+        ];
       case "fr":
-        return "Ce que nous faisons";
+        return [
+          {
+            title: "Ce que nous faisons",
+            content: "Nous recrutons et associons les meilleurs développeurs de Tunisie avec des entreprises suédoises – rapidement et avec précision."
+          },
+          {
+            title: "Notre objectif",
+            content: "Être le premier choix pour les entreprises suédoises à la recherche de talents informatiques flexibles et de haute qualité."
+          },
+          {
+            title: "Pourquoi nous?",
+            content: "Nous construisons un pont entre deux pays et créons des opportunités pour les entreprises et les développeurs."
+          },
+          {
+            title: "Notre force",
+            content: "Présence forte sur le marché, plateformes numériques et partenariats stratégiques pour le bon talent au bon moment."
+          },
+          {
+            title: "Vision globale",
+            content: "Nous mettons la Tunisie sur la carte technologique et transformons la collaboration internationale."
+          },
+          {
+            title: "Focus long terme",
+            content: "Nous établissons des relations fiables où nos clients ont confiance en notre expertise et réseau."
+          }
+        ];
       default: // English
-        return "What we do";
+        return [
+          {
+            title: "What we do",
+            content: "We recruit and match Tunisia's top developers with Swedish companies – quickly and accurately."
+          },
+          {
+            title: "Our Goal",
+            content: "To be the go-to choice for Swedish companies seeking flexible, high-quality IT talent."
+          },
+          {
+            title: "Why us?",
+            content: "We build a bridge between two countries and create opportunities for both companies and developers."
+          },
+          {
+            title: "Our Strength",
+            content: "Strong market presence, digital platforms, and strategic partnerships for the right talent at the right time."
+          },
+          {
+            title: "Global Vision",
+            content: "We put Tunisia on the tech map and transform how companies collaborate across borders."
+          },
+          {
+            title: "Long-term Focus",
+            content: "We build reliable relationships where our clients feel confident in our expertise and network."
+          }
+        ];
     }
   };
 
-  // Get "What we do" content based on language
-  const getWhatWeDoContent = () => {
-    switch (language) {
-      case "sv":
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech rekryterar, bemannar och matchar Tunisiens främsta utvecklare med svenska företag – snabbt, smidigt och träffsäkert.
-            </p>
-            <p className="mb-4">
-              Med stark marknadsnärvaro, digitala plattformar och strategiska partnerskap skapar vi en dynamisk och flexibel lösning för företag som behöver rätt kompetens vid rätt tidpunkt.
-            </p>
-            <p className="mb-4">
-              TuniTech gör det enkelt att hitta expertis och bygger en bro mellan två länder för en starkare och mer global techindustri.
-            </p>
-          </>
-        );
-      case "fr":
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech recrute, dote en personnel et associe les meilleurs développeurs de Tunisie avec des entreprises suédoises – rapidement, facilement et avec précision.
-            </p>
-            <p className="mb-4">
-              Avec une forte présence sur le marché, des plateformes numériques et des partenariats stratégiques, nous créons une solution dynamique et flexible pour les entreprises ayant besoin du bon talent au bon moment.
-            </p>
-            <p className="mb-4">
-              TuniTech facilite la recherche d'expertise et construit un pont entre deux pays pour une industrie technologique plus forte et plus globale.
-            </p>
-          </>
-        );
-      default: // English
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech recruits, staffs, and matches Tunisia's top developers with Swedish companies – quickly, smoothly, and accurately.
-            </p>
-            <p className="mb-4">
-              With a strong market presence, digital platforms, and strategic partnerships, we create a dynamic and flexible solution for companies needing the right talent at the right time.
-            </p>
-            <p className="mb-4">
-              TuniTech makes it easy to find expertise and builds a bridge between two countries for a stronger and more global tech industry.
-            </p>
-          </>
-        );
-    }
-  };
-
-  // Get "Our Goal" title based on language
-  const getOurGoalTitle = () => {
-    switch (language) {
-      case "sv":
-        return "Vårt mål";
-      case "fr":
-        return "Notre objectif";
-      default: // English
-        return "Our Goal";
-    }
-  };
-
-  // Get "Our Goal" content based on language
-  const getOurGoalContent = () => {
-    switch (language) {
-      case "sv":
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech kommer att vara förstahandsvalet för svenska företag som söker flexibel, högkvalitativ IT-kompetens och en pålitlig partner inom teknisk bemanning och rekrytering.
-            </p>
-            <p className="mb-4">
-              Vi kommer att bygga långsiktiga relationer där våra kunder känner sig säkra på vår expertis och vårt nätverk av tunisiska topputvecklare.
-            </p>
-            <p className="mb-4">
-              Samtidigt kommer vi att vara en attraktiv arbetsgivare för utvecklare i Tunisien som sträver efter att arbeta internationellt och utveckla sina karriärer.
-            </p>
-            <p className="mb-4">
-              Genom vårt arbete kommer vi att sätta Tunisien på teknikkartan och förändra hur företag hittar, anställer och samarbetar med talanger över gränserna.
-            </p>
-          </>
-        );
-      case "fr":
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech sera le premier choix pour les entreprises suédoises à la recherche de talents informatiques flexibles et de haute qualité, ainsi qu'un partenaire de confiance en matière de dotation en personnel et de recrutement.
-            </p>
-            <p className="mb-4">
-              Nous établirons des relations à long terme où nos clients auront confiance en notre expertise et en notre réseau de développeurs tunisiens de premier plan.
-            </p>
-            <p className="mb-4">
-              En même temps, nous serons un employeur attrayant pour les développeurs en Tunisie qui aspirent à travailler à l'international et à développer leur carrière.
-            </p>
-            <p className="mb-4">
-              Grâce à notre travail, nous mettrons la Tunisie sur la carte technologique et transformerons la façon dont les entreprises trouvent, recrutent et collaborent avec des talents au-delà des frontières.
-            </p>
-          </>
-        );
-      default: // English
-        return (
-          <>
-            <p className="mb-4">
-              TuniTech will be the go-to choice for Swedish companies seeking flexible, high-quality IT talent and a trusted partner in tech staffing and recruitment.
-            </p>
-            <p className="mb-4">
-              We will build long-term relationships where our clients feel confident in our expertise and our network of top Tunisian developers.
-            </p>
-            <p className="mb-4">
-              At the same time, we will be an attractive employer for developers in Tunisia who aspire to work internationally and grow their careers.
-            </p>
-            <p className="mb-4">
-              Through our work, we will put Tunisia on the tech map and transform how companies find, hire, and collaborate with talent across borders.
-            </p>
-          </>
-        );
-    }
-  };
-
-  // Get "Why us?" title based on language
-  const getWhyUsTitle = () => {
-    switch (language) {
-      case "sv":
-        return "Varför oss?";
-      case "fr":
-        return "Pourquoi nous?";
-      default: // English
-        return "Why us?";
-    }
-  };
-
-  // Get "Why us?" content based on language
-  const getWhyUsContent = () => {
-    switch (language) {
-      case "sv":
-        return (
-          <>
-            <p className="mb-4">
-              Att hitta topptalanger inom tech är svårare än någonsin.
-            </p>
-            <p className="mb-4">
-              Svenska företag växer snabbt men kämpar med att få tillgång till rätt kompetens vid rätt tidpunkt.
-            </p>
-            <p className="mb-4">
-              Samtidigt finns det briljanta utvecklare i Tunisien som är ivriga att få möjlighet att använda sina kunskaper på en global arena – men som saknar direkta vägar in på den svenska marknaden.
-            </p>
-            <p className="mb-4">
-              Det finns ett gap mellan potential och möjlighet – och det bromsar innovation, mångfald och tillväxt.
-            </p>
-          </>
-        );
-      case "fr":
-        return (
-          <>
-            <p className="mb-4">
-              Trouver des talents technologiques de premier ordre est plus difficile que jamais.
-            </p>
-            <p className="mb-4">
-              Les entreprises suédoises se développent rapidement mais ont du mal à accéder à la bonne expertise au bon moment.
-            </p>
-            <p className="mb-4">
-              Pendant ce temps, de brillants développeurs en Tunisie sont désireux d'opportunités pour appliquer leurs compétences sur une scène mondiale – mais manquent de voies d'accès directes au marché suédois.
-            </p>
-            <p className="mb-4">
-              Il existe un écart entre le potentiel et l'opportunité – et cela ralentit l'innovation, la diversité et la croissance.
-            </p>
-          </>
-        );
-      default: // English
-        return (
-          <>
-            <p className="mb-4">
-              Finding top tech talent is harder than ever.
-            </p>
-            <p className="mb-4">
-              Swedish companies are growing fast but struggle to access the right expertise at the right time.
-            </p>
-            <p className="mb-4">
-              Meanwhile, brilliant developers in Tunisia are eager for opportunities to apply their skills on a global stage – but lack direct pathways into the Swedish market.
-            </p>
-            <p className="mb-4">
-              There is a gap between potential and opportunity – and it's slowing innovation, diversity, and growth.
-            </p>
-          </>
-        );
-    }
-  };
+  const cardData = getCardData();
 
   return (
     <section id="about" className="py-20 section-padding bg-transparent">
@@ -223,7 +115,7 @@ export const AboutUs = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-6"
+          className="space-y-12"
         >
           <motion.h2 
             className="text-3xl md:text-4xl font-bold mb-12 text-center"
@@ -242,50 +134,31 @@ export const AboutUs = () => {
             </span>
           </motion.h2>
           
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
-          >
-            <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
-              {getWhatWeDoTitle()}
-            </h3>
-            <div className="text-white/90 text-lg leading-relaxed">
-              {getWhatWeDoContent()}
-            </div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
-          >
-            <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
-              {getOurGoalTitle()}
-            </h3>
-            <div className="text-white/90 text-lg leading-relaxed">
-              {getOurGoalContent()}
-            </div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            viewport={{ once: true }}
-            className="bg-black/10 backdrop-blur-sm rounded-lg p-8 border border-white/5"
-          >
-            <h3 className="text-2xl md:text-3xl font-bold mb-6 text-tunitech-mint">
-              {getWhyUsTitle()}
-            </h3>
-            <div className="text-white/90 text-lg leading-relaxed">
-              {getWhyUsContent()}
-            </div>
-          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cardData.map((card, index) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.1 + 0.3 
+                }}
+                viewport={{ once: true }}
+              >
+                <Card className="bg-black/10 backdrop-blur-sm border border-white/10 hover:border-tunitech-mint/30 transition-all duration-300 h-full">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-4 text-tunitech-mint">
+                      {card.title}
+                    </h3>
+                    <p className="text-white/90 leading-relaxed">
+                      {card.content}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
