@@ -53,6 +53,7 @@ export const Navbar = () => {
   const handleSignOut = async () => {
     await signOut();
     setIsOpen(false);
+    // Navigation is handled in AuthProvider signOut method
   };
 
   const t = translations[language];
