@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,13 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ isOpen, onClose })
     // Store the selected role in sessionStorage so the auth page can use it
     sessionStorage.setItem('selectedRole', role);
     onClose();
-    navigate('/auth');
+    
+    // Navigate directly to the appropriate onboarding page
+    if (role === 'developer') {
+      navigate('/developer-onboarding');
+    } else {
+      navigate('/customer-onboarding');
+    }
   };
 
   const getTexts = () => {
