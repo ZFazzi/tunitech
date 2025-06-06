@@ -153,8 +153,8 @@ export const DeveloperDashboard = () => {
 
       if (validMatches.length === 0) {
         console.log('DeveloperDashboard: No valid matches found');
-        // Try to create matches for this developer
-        await createMatchesForDeveloper(developerId);
+        // Try to generate matches using existing project requirements
+        await generateMatchesForDeveloper(developerId);
       }
     } catch (error: any) {
       console.error('DeveloperDashboard: Error in fetchMatches:', error);
@@ -162,25 +162,47 @@ export const DeveloperDashboard = () => {
     }
   };
 
-  const createMatchesForDeveloper = async (developerId: string) => {
+  const generateMatchesForDeveloper = async (developerId: string) => {
     try {
-      console.log('DeveloperDashboard: Creating matches for developer:', developerId);
+      console.log('DeveloperDashboard: Generating matches for developer:', developerId);
       
-      // Call the database function to create matches
-      const { data, error } = await supabase.rpc('create_project_matches_for_developer', {
-        dev_id: developerId
-      });
+      // First, get all active project requirements
+      const { data: requirements, error: reqError } = await supabase
+        .from('project_requirements')
+        .select('id')
+        .eq('is_active', true);
 
-      if (error) {
-        console.error('DeveloperDashboard: Error creating matches:', error);
+      if (reqError) {
+        console.error('DeveloperDashboard: Error fetching requirements:', reqError);
         return;
       }
 
-      console.log('DeveloperDashboard: Matches created, refreshing...');
-      // Refresh matches after creating them
-      await fetchMatches(developerId);
+      console.log('DeveloperDashboard: Found active requirements:', requirements?.length || 0);
+
+      // Generate matches for each requirement
+      if (requirements && requirements.length > 0) {
+        for (const req of requirements) {
+          try {
+            const { error: matchError } = await supabase.rpc('generate_project_matches', {
+              req_id: req.id
+            });
+            
+            if (matchError) {
+              console.error('DeveloperDashboard: Error generating matches for requirement:', req.id, matchError);
+            }
+          } catch (err) {
+            console.error('DeveloperDashboard: Error in generate_project_matches call:', err);
+          }
+        }
+
+        console.log('DeveloperDashboard: Finished generating matches, refreshing...');
+        // Small delay to ensure the database has processed the changes
+        setTimeout(() => {
+          fetchMatches(developerId);
+        }, 1000);
+      }
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error in createMatchesForDeveloper:', error);
+      console.error('DeveloperDashboard: Error in generateMatchesForDeveloper:', error);
     }
   };
 
