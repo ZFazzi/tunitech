@@ -17,25 +17,24 @@ const Auth = () => {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Check for email confirmation success
+    // Check for password recovery FIRST - this takes priority
     const type = searchParams.get('type');
+    if (type === 'recovery') {
+      // Redirect to the reset password page with all parameters
+      const params = new URLSearchParams(window.location.search);
+      navigate(`/reset-password?${params.toString()}`);
+      return; // Exit early, don't process other checks
+    }
+
+    // Check for email confirmation success
     const tokenHash = searchParams.get('token_hash');
-    
     if (type === 'signup' && tokenHash) {
       toast.success('E-post verifierad! Du kan nu logga in.');
       // Clear the URL parameters
       window.history.replaceState({}, document.title, '/auth');
     }
-
-    // Check for password recovery - redirect to reset password page
-    if (type === 'recovery') {
-      // Redirect to the reset password page with all parameters
-      const params = new URLSearchParams(window.location.search);
-      navigate(`/reset-password?${params.toString()}`);
-      return;
-    }
     
-    // Check if user is already authenticated and redirect
+    // Check if user is already authenticated and redirect (only if not a recovery flow)
     if (!loading && user && user.email_confirmed_at) {
       const userType = user.user_metadata?.user_type;
       console.log('User type:', userType);

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,9 @@ export const ForgotPasswordForm = ({ onBack }: ForgotPasswordFormProps) => {
     setLoading(true);
 
     try {
+      // Use the current origin for the redirect URL
       const redirectUrl = `${window.location.origin}/reset-password`;
+      console.log('Sending password reset email with redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
