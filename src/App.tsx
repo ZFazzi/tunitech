@@ -13,7 +13,10 @@ import ServicesPage from "./pages/Services";
 import ContactPage from "./pages/ContactPage";
 import Auth from "./pages/Auth";
 import CustomerOnboarding from "./pages/CustomerOnboarding";
+import DeveloperOnboarding from "./pages/DeveloperOnboarding";
 import ProjectRequirement from "./pages/ProjectRequirement";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import DeveloperDashboard from "./pages/DeveloperDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,7 +37,10 @@ const App = () => (
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/customer-onboarding" element={<CustomerOnboarding />} />
+              <Route path="/developer-onboarding" element={<DeveloperOnboarding />} />
               <Route path="/project-requirement" element={<ProjectRequirement />} />
+              <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+              <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

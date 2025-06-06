@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './AuthProvider';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,11 +22,37 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      const { data, error } = await signIn(email, password);
       if (error) throw error;
       
-      toast.success('Inloggning lyckades!');
-      navigate('/dashboard');
+      if (data.user) {
+        // Check user type from metadata
+        const userType = data.user.user_metadata?.user_type;
+        
+        if (userType === 'customer') {
+          // Check if customer profile exists
+          const { data: customer } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('user_id', data.user.id)
+            .single();
+          
+          navigate(customer ? '/customer-dashboard' : '/customer-onboarding');
+        } else if (userType === 'developer') {
+          // Check if developer profile exists
+          const { data: developer } = await supabase
+            .from('developers')
+            .select('id')
+            .eq('user_id', data.user.id)
+            .single();
+          
+          navigate(developer ? '/developer-dashboard' : '/developer-onboarding');
+        } else {
+          navigate('/customer-dashboard'); // Default fallback
+        }
+        
+        toast.success('Inloggning lyckades!');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Något gick fel vid inloggning');
     } finally {
