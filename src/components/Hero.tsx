@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -60,12 +61,6 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="space-y-8"
         >
-          <img
-            src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
-            alt="Tunitech Logo"
-            className="h-28 md:h-32 lg:h-36 mx-auto mb-8"
-          />
-          
           <h1 className="text-3xl md:text-5xl lg:text-5xl font-bold tracking-tight text-white">
             <GradientText>{tagline}</GradientText>
           </h1>
