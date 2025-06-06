@@ -69,7 +69,7 @@ export const Navbar = () => {
                 <img
                   src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
                   alt="Tunitech Logo"
-                  className="h-14 md:h-18 transition-all duration-300 group-hover:scale-105"
+                  className="h-16 md:h-20 transition-all duration-300 group-hover:scale-105"
                   style={{
                     filter: 'drop-shadow(0 0 10px rgba(76, 214, 179, 0.3)) drop-shadow(0 0 20px rgba(59, 181, 233, 0.2))'
                   }}
