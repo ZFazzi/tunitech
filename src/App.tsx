@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CustomerOnboarding from "./pages/CustomerOnboarding";
 import DeveloperOnboarding from "./pages/DeveloperOnboarding";
 import ProjectRequirement from "./pages/ProjectRequirement";
+import ProjectSpecification from "./pages/ProjectSpecification";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DeveloperDashboard from "./pages/DeveloperDashboard";
 import DeveloperProfile from "./pages/DeveloperProfile";
@@ -42,6 +42,7 @@ const App = () => (
               <Route path="/customer-onboarding" element={<CustomerOnboarding />} />
               <Route path="/developer-onboarding" element={<DeveloperOnboarding />} />
               <Route path="/project-requirement" element={<ProjectRequirement />} />
+              <Route path="/project-specification/:id" element={<ProjectSpecification />} />
               <Route path="/customer-dashboard" element={<CustomerDashboard />} />
               <Route path="/developer-dashboard" element={<DeveloperDashboard />} />
               <Route path="/developer-profile" element={<DeveloperProfile />} />

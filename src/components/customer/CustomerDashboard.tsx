@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Star, Calendar, Building, Users, Bell } from 'lucide-react';
+import { Plus, Star, Calendar, Building, Users, Bell, Edit } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -305,30 +304,44 @@ export const CustomerDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>Mina Projekt</CardTitle>
-            <CardDescription>Välj ett projekt för att se matchningar</CardDescription>
+            <CardDescription>Klicka på ett projekt för att se eller redigera kravspecifikationen</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                    selectedProject === project.id 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => {
-                    setSelectedProject(project.id);
-                    fetchMatches(project.id);
-                  }}
-                >
-                  <h4 className="font-semibold text-gray-900 mb-1">
-                    {project.project_description.substring(0, 60)}...
-                  </h4>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {new Date(project.created_at).toLocaleDateString('sv-SE')}
+                <div key={project.id} className="space-y-2">
+                  <div
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                      selectedProject === project.id 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => {
+                      setSelectedProject(project.id);
+                      fetchMatches(project.id);
+                    }}
+                  >
+                    <h4 className="font-semibold text-gray-900 mb-1">
+                      {project.project_description.substring(0, 60)}...
+                    </h4>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {new Date(project.created_at).toLocaleDateString('sv-SE')}
+                    </div>
                   </div>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/project-specification/${project.id}`);
+                    }}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Visa/Redigera kravspec
+                  </Button>
                 </div>
               ))}
               
