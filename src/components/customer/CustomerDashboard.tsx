@@ -8,115 +8,115 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, Users, Clock, Star } from 'lucide-react';
+import { Plus, Star, Calendar, Building, Users, Bell } from 'lucide-react';
+
+interface Customer {
+  id: string;
+  company_name: string;
+  contact_name: string;
+}
 
 interface ProjectRequirement {
   id: string;
   project_description: string;
   technical_skills: string;
   experience_level: string;
+  employment_type: string;
+  start_date: string;
+  project_duration: string;
   created_at: string;
-  is_active: boolean;
 }
 
 interface ProjectMatch {
   id: string;
   match_score: number;
   status: string;
+  customer_interested_at: string | null;
+  developer_approved_at: string | null;
   developer: {
     id: string;
-    first_name: string;
-    last_name: string;
     experience_level: string;
     technical_skills: string[];
+    years_of_experience: number;
+    industry_experience: string[];
     cv_summary: string;
     hourly_rate: number;
-    portfolio_url: string;
-    linkedin_url: string;
-    github_url: string;
   };
 }
 
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read_at: string | null;
+  created_at: string;
+}
+
 export const CustomerDashboard = () => {
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [projects, setProjects] = useState<ProjectRequirement[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [matches, setMatches] = useState<ProjectMatch[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProjects();
+    fetchCustomerData();
   }, [user]);
 
-  useEffect(() => {
-    if (selectedProject) {
-      fetchMatches(selectedProject);
-    }
-  }, [selectedProject]);
-
-  const fetchProjects = async () => {
-    if (!user) {
-      console.log('No user found');
-      return;
-    }
-
-    console.log('Fetching projects for user:', user.id);
+  const fetchCustomerData = async () => {
+    if (!user) return;
 
     try {
-      // First get customer profile
-      const { data: customer, error: customerError } = await supabase
+      const { data: customerData, error: customerError } = await supabase
         .from('customers')
-        .select('id')
+        .select('*')
         .eq('user_id', user.id)
         .single();
 
-      console.log('Customer lookup result:', { customer, customerError });
-
-      if (customerError) {
-        if (customerError.code === 'PGRST116') {
-          console.log('No customer profile found, redirecting to onboarding');
-          navigate('/customer-onboarding');
-          return;
-        }
-        throw customerError;
-      }
-
-      if (!customer) {
-        console.log('Customer is null, redirecting to onboarding');
+      if (customerError && customerError.code === 'PGRST116') {
         navigate('/customer-onboarding');
         return;
       }
 
-      console.log('Found customer:', customer.id);
+      if (customerError) throw customerError;
+      setCustomer(customerData);
 
-      // Then get project requirements
-      const { data, error } = await supabase
-        .from('project_requirements')
-        .select('*')
-        .eq('customer_id', customer.id)
-        .order('created_at', { ascending: false });
-
-      console.log('Project requirements query result:', { data, error });
-
-      if (error) throw error;
-      
-      console.log('Found projects:', data?.length || 0);
-      setProjects(data || []);
-      
-      if (data && data.length > 0 && !selectedProject) {
-        setSelectedProject(data[0].id);
-      }
+      await Promise.all([
+        fetchProjects(customerData.id),
+        fetchNotifications()
+      ]);
     } catch (error: any) {
-      console.error('Error fetching projects:', error);
-      toast.error('Kunde inte hämta projekt: ' + error.message);
+      toast.error('Kunde inte hämta kunddata');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchProjects = async (customerId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('project_requirements')
+        .select('*')
+        .eq('customer_id', customerId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProjects(data || []);
+
+      if (data && data.length > 0) {
+        setSelectedProject(data[0].id);
+        fetchMatches(data[0].id);
+      }
+    } catch (error: any) {
+      toast.error('Kunde inte hämta projekt');
+    }
+  };
+
   const fetchMatches = async (projectId: string) => {
-    console.log('Fetching matches for project:', projectId);
     try {
       const { data, error } = await supabase
         .from('project_matches')
@@ -124,27 +124,84 @@ export const CustomerDashboard = () => {
           *,
           developer:developers (
             id,
-            first_name,
-            last_name,
             experience_level,
             technical_skills,
+            years_of_experience,
+            industry_experience,
             cv_summary,
-            hourly_rate,
-            portfolio_url,
-            linkedin_url,
-            github_url
+            hourly_rate
           )
         `)
         .eq('project_requirement_id', projectId)
         .order('match_score', { ascending: false });
 
-      console.log('Matches query result:', { data, error });
-
       if (error) throw error;
       setMatches(data || []);
     } catch (error: any) {
-      console.error('Error fetching matches:', error);
       toast.error('Kunde inte hämta matchningar');
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setNotifications(data || []);
+    } catch (error: any) {
+      console.error('Kunde inte hämta notifikationer:', error);
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read_at: new Date().toISOString() })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+      
+      setNotifications(prev => prev.map(notif => 
+        notif.id === notificationId 
+          ? { ...notif, read_at: new Date().toISOString() }
+          : notif
+      ));
+    } catch (error: any) {
+      console.error('Kunde inte markera notifikation som läst:', error);
+    }
+  };
+
+  const showInterest = async (matchId: string) => {
+    try {
+      const { error } = await supabase
+        .from('project_matches')
+        .update({ 
+          customer_interested_at: new Date().toISOString(),
+          status: 'customer_interested'
+        })
+        .eq('id', matchId);
+
+      if (error) throw error;
+
+      setMatches(prev => prev.map(match => 
+        match.id === matchId 
+          ? { 
+              ...match, 
+              customer_interested_at: new Date().toISOString(),
+              status: 'customer_interested'
+            }
+          : match
+      ));
+
+      toast.success('Intresse anmält! Utvecklaren kommer att få en notifikation.');
+    } catch (error: any) {
+      toast.error('Kunde inte anmäla intresse');
     }
   };
 
@@ -154,8 +211,30 @@ export const CustomerDashboard = () => {
     return 'text-red-500';
   };
 
+  const getMatchStatus = (match: ProjectMatch) => {
+    if (match.developer_approved_at && match.customer_interested_at) {
+      return { label: 'Matchad - Schemalägg möte', color: 'bg-green-500' };
+    }
+    if (match.customer_interested_at) {
+      return { label: 'Intresse anmält', color: 'bg-blue-500' };
+    }
+    return { label: 'Väntande', color: 'bg-gray-500' };
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Laddar...</div>;
+  }
+
+  if (!customer) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 text-center">
+        <h1 className="text-2xl font-bold text-white mb-4">Kundprofil saknas</h1>
+        <p className="text-gray-400 mb-6">Du måste skapa en kundprofil först.</p>
+        <Button onClick={() => navigate('/customer-onboarding')}>
+          Skapa Kundprofil
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -165,185 +244,232 @@ export const CustomerDashboard = () => {
       transition={{ duration: 0.5 }}
       className="max-w-7xl mx-auto p-6"
     >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Kundpanel</h1>
-        <p className="text-gray-400">Hantera dina projekt och se matchningar</p>
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Välkommen, {customer.contact_name}!
+          </h1>
+          <p className="text-gray-400">{customer.company_name}</p>
+        </div>
+        <Button onClick={() => navigate('/project-requirement')}>
+          <Plus className="w-4 h-4 mr-2" />
+          Ny Kravspecifikation
+        </Button>
       </div>
 
+      {/* Notifikationer */}
+      {notifications.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Bell className="w-5 h-5 mr-2" />
+              Notifikationer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {notifications.map((notification) => (
+                <div 
+                  key={notification.id}
+                  className={`p-3 rounded-lg border ${
+                    notification.read_at ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{notification.title}</h4>
+                      <p className="text-gray-600 text-sm">{notification.message}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {new Date(notification.created_at).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                    {!notification.read_at && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markNotificationAsRead(notification.id)}
+                      >
+                        Markera som läst
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Projects List */}
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Mina Projekt</span>
-                <Button onClick={() => navigate('/project-requirement')} size="sm">
-                  Nytt Projekt
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {/* Projektlista */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Mina Projekt</CardTitle>
+            <CardDescription>Välj ett projekt för att se matchningar</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
               {projects.map((project) => (
                 <div
                   key={project.id}
-                  className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                     selectedProject === project.id 
                       ? 'border-blue-500 bg-blue-50' 
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={() => setSelectedProject(project.id)}
+                  onClick={() => {
+                    setSelectedProject(project.id);
+                    fetchMatches(project.id);
+                  }}
                 >
-                  <h3 className="font-semibold text-sm mb-2 text-gray-900">
+                  <h4 className="font-semibold text-gray-900 mb-1">
                     {project.project_description.substring(0, 60)}...
-                  </h3>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{new Date(project.created_at).toLocaleDateString('sv-SE')}</span>
-                    <Badge variant={project.is_active ? 'default' : 'secondary'}>
-                      {project.is_active ? 'Aktiv' : 'Inaktiv'}
-                    </Badge>
+                  </h4>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {new Date(project.created_at).toLocaleDateString('sv-SE')}
                   </div>
                 </div>
               ))}
               
               {projects.length === 0 && (
-                <p className="text-gray-500 text-center py-8">
-                  Inga projekt ännu. Skapa ditt första projekt!
-                </p>
+                <div className="text-center py-6">
+                  <Building className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">Inga projekt än</p>
+                  <Button onClick={() => navigate('/project-requirement')}>
+                    Skapa första projektet
+                  </Button>
+                </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Matches */}
+        {/* Matchningar */}
         <div className="lg:col-span-2">
-          {selectedProject ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
-                  Matchade Utvecklare
-                </CardTitle>
-                <CardDescription>
-                  Utvecklare som matchar ditt projekt sorterade efter matchningspoäng
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Users className="w-5 h-5 mr-2" />
+                Utvecklarmatchningar
+              </CardTitle>
+              <CardDescription>
+                {selectedProject ? 'Utvecklare som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedProject ? (
                 <div className="space-y-6">
-                  {matches.map((match) => (
-                    <div key={match.id} className="border rounded-lg p-6 bg-white">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900">
-                            {match.developer.first_name} {match.developer.last_name}
-                          </h3>
-                          <div className="flex items-center mt-1">
-                            <Badge variant="outline" className="mr-2">
-                              {match.developer.experience_level}
-                            </Badge>
-                            <div className="flex items-center">
+                  {matches.map((match) => {
+                    const status = getMatchStatus(match);
+                    return (
+                      <div key={match.id} className="border rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center mb-2">
                               <Star className={`w-4 h-4 mr-1 ${getScoreColor(match.match_score)}`} />
                               <span className={`font-semibold ${getScoreColor(match.match_score)}`}>
                                 {match.match_score}% match
                               </span>
+                              <Badge variant="outline" className="ml-4">
+                                {match.developer.experience_level}
+                              </Badge>
                             </div>
-                          </div>
-                        </div>
-                        
-                        {match.developer.hourly_rate && (
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-gray-900">
-                              {match.developer.hourly_rate} SEK
-                            </div>
-                            <div className="text-sm text-gray-500">per timme</div>
-                          </div>
-                        )}
-                      </div>
-
-                      <p className="text-gray-600 mb-4">
-                        {match.developer.cv_summary}
-                      </p>
-
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Tekniska färdigheter:</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {match.developer.technical_skills.map((skill, index) => (
-                            <Badge key={index} variant="secondary">
-                              {skill}
+                            <Badge className={status.color + ' text-white'}>
+                              {status.label}
                             </Badge>
-                          ))}
+                          </div>
+                          
+                          <div className="text-right">
+                            {match.developer.hourly_rate && (
+                              <p className="text-sm text-gray-600">
+                                {match.developer.hourly_rate} SEK/tim
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center space-x-4">
-                        {match.developer.portfolio_url && (
-                          <a
-                            href={match.developer.portfolio_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center text-blue-600 hover:text-blue-800"
-                          >
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            Portfolio
-                          </a>
-                        )}
-                        {match.developer.linkedin_url && (
-                          <a
-                            href={match.developer.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center text-blue-600 hover:text-blue-800"
-                          >
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            LinkedIn
-                          </a>
-                        )}
-                        {match.developer.github_url && (
-                          <a
-                            href={match.developer.github_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center text-blue-600 hover:text-blue-800"
-                          >
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            GitHub
-                          </a>
-                        )}
-                      </div>
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">Utvecklarens meriter:</h4>
+                          <p className="text-gray-600 text-sm mb-3">
+                            {match.developer.cv_summary || 'Ingen sammanfattning tillgänglig'}
+                          </p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-1">Tekniska färdigheter:</h5>
+                              <div className="flex flex-wrap gap-1">
+                                {match.developer.technical_skills?.map((skill, index) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {skill}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <h5 className="font-medium text-gray-900 mb-1">Branschexpertis:</h5>
+                              <div className="flex flex-wrap gap-1">
+                                {match.developer.industry_experience?.map((exp, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {exp}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-gray-500 mt-2">
+                            {match.developer.years_of_experience} års erfarenhet
+                          </p>
+                        </div>
 
-                      <div className="mt-4 pt-4 border-t">
-                        <Button className="w-full">
-                          Kontakta utvecklare
-                        </Button>
+                        {!match.customer_interested_at && (
+                          <Button 
+                            onClick={() => showInterest(match.id)}
+                            className="w-full"
+                          >
+                            Anmäl intresse
+                          </Button>
+                        )}
+
+                        {match.customer_interested_at && match.developer_approved_at && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-green-800 mb-2">🎉 Matchning bekräftad!</h4>
+                            <p className="text-green-700 text-sm mb-3">
+                              Både du och utvecklaren har visat intresse. Nu kan ni schemalägga ett möte.
+                            </p>
+                            <Button variant="outline" className="w-full">
+                              Schemalägg möte
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {matches.length === 0 && (
                     <div className="text-center py-12">
-                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <Star className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         Inga matchningar än
                       </h3>
                       <p className="text-gray-500">
-                        Vi söker fortfarande efter lämpliga utvecklare för ditt projekt.
+                        Vi söker kontinuerligt efter utvecklare som matchar ditt projekt.
                       </p>
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-12">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Välj ett projekt
-                </h3>
-                <p className="text-gray-500">
-                  Välj ett projekt från listan för att se matchningar.
-                </p>
-              </CardContent>
-            </Card>
-          )}
+              ) : (
+                <div className="text-center py-12">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">
+                    Välj ett projekt från listan till vänster för att se matchningar.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </motion.div>

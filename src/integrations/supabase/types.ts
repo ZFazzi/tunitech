@@ -165,30 +165,72 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          id: string
+          message: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message: string
+          read_at?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       project_matches: {
         Row: {
           created_at: string | null
+          customer_interested_at: string | null
+          developer_approved_at: string | null
           developer_id: string | null
           id: string
           match_score: number
+          meeting_scheduled_at: string | null
           project_requirement_id: string | null
           status: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          customer_interested_at?: string | null
+          developer_approved_at?: string | null
           developer_id?: string | null
           id?: string
           match_score: number
+          meeting_scheduled_at?: string | null
           project_requirement_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          customer_interested_at?: string | null
+          developer_approved_at?: string | null
           developer_id?: string | null
           id?: string
           match_score?: number
+          meeting_scheduled_at?: string | null
           project_requirement_id?: string | null
           status?: string | null
           updated_at?: string | null
