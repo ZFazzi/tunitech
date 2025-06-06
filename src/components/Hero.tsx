@@ -1,6 +1,7 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 const GradientText = ({ children }: { children: React.ReactNode }) => (
   <motion.span
@@ -15,6 +16,7 @@ const GradientText = ({ children }: { children: React.ReactNode }) => (
 
 export const Hero = () => {
   const { language, translations } = useLanguage();
+  const navigate = useNavigate();
   const t = translations[language];
   
   // These phrases will always be in English regardless of language selection
@@ -39,6 +41,10 @@ export const Hero = () => {
       case "fr": return "Commencer";
       default: return "Get Started";
     }
+  };
+
+  const handleGetStarted = () => {
+    navigate('/auth');
   };
 
   return (
@@ -70,14 +76,14 @@ export const Hero = () => {
           </p>
           
           <div className="mt-16">
-            <motion.a
-              href="#contact"
+            <motion.button
+              onClick={handleGetStarted}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
             >
               {getButtonText()}
-            </motion.a>
+            </motion.button>
           </div>
         </motion.div>
       </div>

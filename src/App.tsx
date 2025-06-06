@@ -5,11 +5,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { AuthProvider } from "./components/auth/AuthProvider";
 import { CookieConsent } from "./components/CookieConsent";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import ServicesPage from "./pages/Services";
 import ContactPage from "./pages/ContactPage";
+import Auth from "./pages/Auth";
+import CustomerOnboarding from "./pages/CustomerOnboarding";
+import ProjectRequirement from "./pages/ProjectRequirement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,19 +22,24 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
-        <Toaster />
-        <Sonner />
-        <CookieConsent />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <CookieConsent />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/customer-onboarding" element={<CustomerOnboarding />} />
+              <Route path="/project-requirement" element={<ProjectRequirement />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
