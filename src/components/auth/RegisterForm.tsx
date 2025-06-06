@@ -21,12 +21,24 @@ export const RegisterForm = () => {
     setLoading(true);
 
     try {
-      const { error } = await signUp(email, password, { user_type: userType });
+      // Use current domain for email redirect
+      const redirectUrl = `${window.location.origin}/auth`;
+      
+      const { error } = await signUp(email, password, { 
+        user_type: userType,
+        emailRedirectTo: redirectUrl
+      });
+      
       if (error) throw error;
       
-      toast.success('Registrering lyckades! Kontrollera din e-post för verifiering.');
+      toast.success('Registrering lyckades! Kontrollera din e-post för verifiering. Du kommer att omdirigeras hit när du klickar på länken.');
     } catch (error: any) {
-      toast.error(error.message || 'Något gick fel vid registrering');
+      console.error('Registration error:', error);
+      if (error.message?.includes('User already registered')) {
+        toast.error('En användare med denna e-postadress finns redan. Försök logga in istället.');
+      } else {
+        toast.error(error.message || 'Något gick fel vid registrering');
+      }
     } finally {
       setLoading(false);
     }

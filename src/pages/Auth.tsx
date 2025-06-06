@@ -1,12 +1,52 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { toast } from 'sonner';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    // Check for email confirmation success
+    const type = searchParams.get('type');
+    const tokenHash = searchParams.get('token_hash');
+    
+    if (type === 'signup' && tokenHash) {
+      toast.success('E-post verifierad! Du kan nu logga in.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, '/auth');
+    }
+    
+    // Check if user is already authenticated and redirect
+    if (!loading && user && user.email_confirmed_at) {
+      const userType = user.user_metadata?.user_type;
+      console.log('User type:', userType);
+      
+      if (userType === 'customer') {
+        navigate('/customer-onboarding');
+      } else if (userType === 'developer') {
+        navigate('/developer-onboarding');
+      } else {
+        navigate('/customer-onboarding'); // Default fallback
+      }
+    }
+  }, [searchParams, user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black flex items-center justify-center">
+        <div className="text-white">Laddar...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black flex items-center justify-center p-6">

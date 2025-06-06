@@ -31,9 +31,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Handle email confirmation
+        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+          console.log('User email confirmed, redirecting...');
+          // Small delay to ensure state is updated
+          setTimeout(() => {
+            window.location.href = '/auth';
+          }, 1000);
+        }
       }
     );
 
@@ -41,11 +51,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, metadata?: any) => {
+    const { emailRedirectTo, ...otherMetadata } = metadata || {};
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: metadata
+        data: otherMetadata,
+        emailRedirectTo: emailRedirectTo || `${window.location.origin}/auth`
       }
     });
     return { data, error };
