@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './AuthProvider';
@@ -52,12 +51,14 @@ export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
           
           navigate(developer ? '/developer-dashboard' : '/developer-onboarding');
         } else {
-          navigate('/customer-dashboard'); // Default fallback
+          // Default fallback for users without user_type
+          navigate('/customer-onboarding');
         }
         
         toast.success('Inloggning lyckades!');
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error(error.message || 'Något gick fel vid inloggning');
     } finally {
       setLoading(false);
