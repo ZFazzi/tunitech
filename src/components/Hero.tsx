@@ -27,11 +27,11 @@ export const Hero = () => {
   const getParagraphText = () => {
     switch (language) {
       case "sv":
-        return "TuniTech kopplar samman de bästa utvecklarna från Tunisien med innovativa företag i Sverige. Vi levererar högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem.";
+        return "TuniTech kopplar samman de bästa utvecklarna med innovativa företag i Sverige. Vi levererar högkvalificerade utvecklare – när ni behöver dem, hur ni behöver dem.";
       case "fr":
-        return "TuniTech connecte les meilleurs développeurs tunisiens avec des entreprises innovantes en Suède. Nous livrons des développeurs hautement qualifiés - quand vous en avez besoin, comme vous en avez besoin.";
+        return "TuniTech connecte les meilleurs développeurs avec des entreprises innovantes en Suède. Nous livrons des développeurs hautement qualifiés - quand vous en avez besoin, comme vous en avez besoin.";
       default: // English
-        return "TuniTech connects the best developers from Tunisia with innovative companies in Sweden. We deliver highly qualified developers - when you need them, how you need them.";
+        return "TuniTech connects the best developers with innovative companies in Sweden. We deliver highly qualified developers - when you need them, how you need them.";
     }
   };
   
