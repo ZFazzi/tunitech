@@ -198,7 +198,7 @@ export const DeveloperDashboard = () => {
             status: 'developer_approved'
           }
         : { 
-            status: 'declined',
+            status: 'developer_declined',
             developer_approved_at: null
           };
 
@@ -246,7 +246,7 @@ export const DeveloperDashboard = () => {
     if (match.customer_interested_at) {
       return { label: 'Kunden har visat intresse', color: 'bg-yellow-500', icon: Star };
     }
-    if (match.status === 'declined') {
+    if (match.status === 'developer_declined') {
       return { label: 'Avböjt', color: 'bg-red-500', icon: X };
     }
     return { label: 'Väntande svar', color: 'bg-gray-500', icon: AlertCircle };
@@ -488,7 +488,7 @@ export const DeveloperDashboard = () => {
                           </div>
                         )}
 
-                        {!match.developer_approved_at && match.status !== 'declined' && (
+                        {!match.developer_approved_at && match.status !== 'developer_declined' && (
                           <div className="flex space-x-3">
                             <Button 
                               onClick={() => updateMatchStatus(match.id, true)}
