@@ -1,6 +1,8 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Services } from "@/components/Services";
+import { DeveloperShowcase } from "@/components/DeveloperShowcase";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 
@@ -25,6 +27,8 @@ const ServicesPage = () => {
         <Navbar />
         <div className="pt-16">
           <Services />
+          <DeveloperShowcase />
+          <TestimonialsSection />
         </div>
         <Footer />
       </div>
