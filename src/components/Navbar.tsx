@@ -61,14 +61,21 @@ export const Navbar = () => {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-tunitech-dark/95 backdrop-blur-lg shadow-xl border-b border-white/10" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo - positioned to the left and made larger */}
+          {/* Logo - positioned to the left and made larger with gradient effect */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
-              <img
-                src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
-                alt="Tunitech Logo"
-                className="h-14 md:h-18 hover:opacity-80 transition-opacity duration-200"
-              />
+              <div className="relative group">
+                <img
+                  src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
+                  alt="Tunitech Logo"
+                  className="h-14 md:h-18 transition-all duration-300 group-hover:scale-105"
+                  style={{
+                    filter: 'drop-shadow(0 0 10px rgba(76, 214, 179, 0.3)) drop-shadow(0 0 20px rgba(59, 181, 233, 0.2))'
+                  }}
+                />
+                {/* Gradient overlay effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-tunitech-mint/20 to-tunitech-blue/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay" />
+              </div>
             </Link>
           </div>
 
