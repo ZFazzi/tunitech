@@ -35,15 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Handle email confirmation
-        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-          console.log('User email confirmed, redirecting...');
-          // Small delay to ensure state is updated
-          setTimeout(() => {
-            window.location.href = '/auth';
-          }, 1000);
-        }
       }
     );
 
