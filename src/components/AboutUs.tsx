@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +25,7 @@ export const AboutUs = () => {
         return [
           {
             title: "Vad vi gör",
-            content: "Vi rekryterar och matchar Tunisiens bästa utvecklare med svenska företag – snabbt och träffsäkert."
+            content: "Vi rekryterar och matchar Nordafrikas bästa utvecklare med svenska företag – snabbt och träffsäkert."
           },
           {
             title: "Vårt mål",
@@ -41,7 +40,7 @@ export const AboutUs = () => {
         return [
           {
             title: "Ce que nous faisons",
-            content: "Nous recrutons et associons les meilleurs développeurs de Tunisie avec des entreprises suédoises – rapidement et avec précision."
+            content: "Nous recrutons et associons les meilleurs développeurs d'Afrique du Nord avec des entreprises suédoises – rapidement et avec précision."
           },
           {
             title: "Notre objectif",
@@ -56,7 +55,7 @@ export const AboutUs = () => {
         return [
           {
             title: "What we do",
-            content: "We recruit and match Tunisia's top developers with Swedish companies – quickly and accurately."
+            content: "We recruit and match North Africa's top developers with Swedish companies – quickly and accurately."
           },
           {
             title: "Our Goal",

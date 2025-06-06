@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -17,7 +16,7 @@ export const Advantages = () => {
           },
           {
             title: "Hög kompetensnivå",
-            description: "Starka tekniska universitet i Tunisien"
+            description: "Starka tekniska universitet i Nordafrika"
           },
           {
             title: "Kulturell närhet till Europa",
@@ -44,7 +43,7 @@ export const Advantages = () => {
           },
           {
             title: "Niveau de compétence élevé",
-            description: "Universités techniques solides en Tunisie"
+            description: "Universités techniques solides en Afrique du Nord"
           },
           {
             title: "Proximité culturelle avec l'Europe",
@@ -71,7 +70,7 @@ export const Advantages = () => {
           },
           {
             title: "High skill level",
-            description: "Strong technical universities in Tunisia"
+            description: "Strong technical universities in North Africa"
           },
           {
             title: "Cultural proximity to Europe",
@@ -109,11 +108,11 @@ export const Advantages = () => {
   const getSubtitle = () => {
     switch (language) {
       case "sv":
-        return "att arbeta med IT-utvecklare från Tunisien";
+        return "att arbeta med IT-utvecklare från Nordafrika";
       case "fr":
-        return "de travailler avec des développeurs IT de Tunisie";
+        return "de travailler avec des développeurs IT d'Afrique du Nord";
       default:
-        return "working with IT developers from Tunisia";
+        return "working with IT developers from North Africa";
     }
   };
   

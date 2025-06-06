@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -14,11 +13,11 @@ const WorldMap = () => {
   const getTitle = () => {
     switch (language) {
       case "sv":
-        return "Geografiska fördelar - Sverige & Tunisien";
+        return "Geografiska fördelar - Sverige & Nordafrika";
       case "fr":
-        return "Avantages géographiques - Suède & Tunisie";
+        return "Avantages géographiques - Suède & Afrique du Nord";
       default:
-        return "Geographic Advantages - Sweden & Tunisia";
+        return "Geographic Advantages - Sweden & North Africa";
     }
   };
 
@@ -78,7 +77,7 @@ const WorldMap = () => {
     // Tunisia marker
     const tunisiaMarker = new mapboxgl.Marker({ color: '#3BB5E9' })
       .setLngLat([9.5375, 33.8869]) // Tunis coordinates
-      .setPopup(new mapboxgl.Popup().setHTML('<h3>Tunisien</h3><p>Tunis</p>'))
+      .setPopup(new mapboxgl.Popup().setHTML('<h3>Nordafrika</h3><p>Tunis</p>'))
       .addTo(map.current);
 
     // Add a line connecting Sweden and Tunisia
