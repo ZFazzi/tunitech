@@ -11,7 +11,7 @@ export const Footer = () => {
   const copyright = t.copyright.replace("{year}", currentYear.toString());
 
   return (
-    <footer className="bg-tunitech-dark/90 backdrop-blur-lg border-t border-white/10 py-12">
+    <footer className="bg-tunitech-dark/90 backdrop-blur-lg border-t border-white/10 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="md:flex md:justify-between">
           {/* Logo and Contact */}
@@ -52,9 +52,6 @@ export const Footer = () => {
                 </li>
                 <li>
                   <Link to="/services" className="text-gray-300 hover:text-white transition-colors duration-200">{t.ourTalents}</Link>
-                </li>
-                <li>
-                  <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors duration-200">{t.pricing}</Link>
                 </li>
                 <li>
                   <Link to="/contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t.contact}</Link>

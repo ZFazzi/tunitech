@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -34,7 +33,6 @@ export const Navbar = () => {
             <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
               <NavLink to="/about">{t.aboutUs}</NavLink>
               <NavLink to="/services">{t.ourTalents}</NavLink>
-              <NavLink to="/pricing">{t.pricing}</NavLink>
               <NavLink to="/contact">{t.contact}</NavLink>
               
               {/* Language dropdown integrated within the menu bar */}
@@ -114,7 +112,6 @@ export const Navbar = () => {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-tunitech-dark/95 backdrop-blur-lg border-t border-white/10">
           <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
           <MobileNavLink to="/services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
-          <MobileNavLink to="/pricing" onClick={() => setIsOpen(false)}>{t.pricing}</MobileNavLink>
           <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
         </div>
       </div>
