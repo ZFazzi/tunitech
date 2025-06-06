@@ -12,6 +12,7 @@ import About from "./pages/About";
 import ServicesPage from "./pages/Services";
 import ContactPage from "./pages/ContactPage";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import CustomerOnboarding from "./pages/CustomerOnboarding";
 import DeveloperOnboarding from "./pages/DeveloperOnboarding";
 import ProjectRequirement from "./pages/ProjectRequirement";
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/customer-onboarding" element={<CustomerOnboarding />} />
               <Route path="/developer-onboarding" element={<DeveloperOnboarding />} />
               <Route path="/project-requirement" element={<ProjectRequirement />} />

@@ -27,9 +27,12 @@ const Auth = () => {
       window.history.replaceState({}, document.title, '/auth');
     }
 
-    // Check for password recovery
-    if (type === 'recovery' && tokenHash) {
-      toast.success('Klicka på länken i e-postmeddelandet för att återställa ditt lösenord.');
+    // Check for password recovery - redirect to reset password page
+    if (type === 'recovery') {
+      // Redirect to the reset password page with all parameters
+      const params = new URLSearchParams(window.location.search);
+      navigate(`/reset-password?${params.toString()}`);
+      return;
     }
     
     // Check if user is already authenticated and redirect
