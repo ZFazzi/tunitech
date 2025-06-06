@@ -73,16 +73,16 @@ export const AboutUs = () => {
   const cardData = getCardData();
 
   return (
-    <section id="about" className="py-20 section-padding bg-tunitech-dark/30">
+    <section id="about" className="py-24 section-padding bg-tunitech-dark/30">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-12"
+          className="space-y-16"
         >
           <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-12 text-center"
+            className="text-4xl md:text-5xl font-bold mb-16 text-center"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ 
@@ -110,12 +110,12 @@ export const AboutUs = () => {
                 }}
                 viewport={{ once: true }}
               >
-                <Card className="bg-black/20 backdrop-blur-sm border border-white/20 hover:border-tunitech-mint/50 transition-all duration-300 h-full">
+                <Card className="bg-black/20 backdrop-blur-sm border border-white/20 hover:border-tunitech-mint/50 transition-all duration-300 h-full hover:shadow-lg hover:scale-105">
                   <CardContent className="p-8 text-center">
-                    <h3 className="text-xl font-bold mb-4 text-tunitech-mint">
+                    <h3 className="text-xl font-bold mb-6 text-tunitech-mint">
                       {card.title}
                     </h3>
-                    <p className="text-white/90 leading-relaxed">
+                    <p className="text-white/90 leading-relaxed text-base">
                       {card.content}
                     </p>
                   </CardContent>

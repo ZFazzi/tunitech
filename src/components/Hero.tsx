@@ -59,22 +59,22 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-8"
+          className="space-y-10"
         >
-          <h1 className="text-3xl md:text-5xl lg:text-5xl font-bold tracking-tight text-white">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
             <GradientText>{tagline}</GradientText>
           </h1>
           
-          <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
             {getParagraphText()}
           </p>
           
-          <div className="mt-12">
+          <div className="mt-16">
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-medium px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+              className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
             >
               {getButtonText()}
             </motion.a>
