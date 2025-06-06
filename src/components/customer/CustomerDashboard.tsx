@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -5,9 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Star, Calendar, Building, Users, Bell, Edit } from 'lucide-react';
+import { Plus, Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -34,12 +36,22 @@ interface ProjectMatch {
   developer_approved_at: string | null;
   developer: {
     id: string;
+    first_name: string;
+    last_name: string;
     experience_level: string;
     technical_skills: string[];
     years_of_experience: number;
     industry_experience: string[];
     cv_summary: string;
     hourly_rate: number;
+    location: string;
+    languages: string[];
+    certifications: string[];
+    education: string;
+    profile_picture_url: string;
+    linkedin_url: string;
+    github_url: string;
+    portfolio_url: string;
   };
 }
 
@@ -123,12 +135,22 @@ export const CustomerDashboard = () => {
           *,
           developer:developers (
             id,
+            first_name,
+            last_name,
             experience_level,
             technical_skills,
             years_of_experience,
             industry_experience,
             cv_summary,
-            hourly_rate
+            hourly_rate,
+            location,
+            languages,
+            certifications,
+            education,
+            profile_picture_url,
+            linkedin_url,
+            github_url,
+            portfolio_url
           )
         `)
         .eq('project_requirement_id', projectId)
@@ -218,6 +240,15 @@ export const CustomerDashboard = () => {
       return { label: 'Intresse anmält', color: 'bg-blue-500' };
     }
     return { label: 'Väntande', color: 'bg-gray-500' };
+  };
+
+  const getExperienceLevelLabel = (level: string) => {
+    const labels: { [key: string]: string } = {
+      'junior': 'Junior',
+      'medior': 'Medior',
+      'senior': 'Senior'
+    };
+    return labels[level] || level;
   };
 
   if (loading) {
@@ -375,74 +406,191 @@ export const CustomerDashboard = () => {
                 <div className="space-y-6">
                   {matches.map((match) => {
                     const status = getMatchStatus(match);
+                    const developer = match.developer;
+                    
                     return (
-                      <div key={match.id} className="border rounded-lg p-6">
-                        <div className="flex items-start justify-between mb-4">
+                      <div key={match.id} className="border rounded-lg p-6 bg-white">
+                        {/* Developer Header */}
+                        <div className="flex items-start gap-4 mb-6">
+                          <Avatar className="h-16 w-16">
+                            <AvatarImage src={developer.profile_picture_url || undefined} />
+                            <AvatarFallback className="text-lg">
+                              {developer.first_name[0]}{developer.last_name[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                          
                           <div className="flex-1">
-                            <div className="flex items-center mb-2">
-                              <Star className={`w-4 h-4 mr-1 ${getScoreColor(match.match_score)}`} />
-                              <span className={`font-semibold ${getScoreColor(match.match_score)}`}>
-                                {match.match_score}% match
-                              </span>
-                              <Badge variant="outline" className="ml-4">
-                                {match.developer.experience_level}
-                              </Badge>
-                            </div>
-                            <Badge className={status.color + ' text-white'}>
-                              {status.label}
-                            </Badge>
-                          </div>
-                          
-                          <div className="text-right">
-                            {match.developer.hourly_rate && (
-                              <p className="text-sm text-gray-600">
-                                {match.developer.hourly_rate} SEK/tim
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="mb-4">
-                          <h4 className="font-semibold text-gray-900 mb-2">Utvecklarens meriter:</h4>
-                          <p className="text-gray-600 text-sm mb-3">
-                            {match.developer.cv_summary || 'Ingen sammanfattning tillgänglig'}
-                          </p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h5 className="font-medium text-gray-900 mb-1">Tekniska färdigheter:</h5>
-                              <div className="flex flex-wrap gap-1">
-                                {match.developer.technical_skills?.map((skill, index) => (
-                                  <Badge key={index} variant="secondary" className="text-xs">
-                                    {skill}
-                                  </Badge>
-                                ))}
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-900">
+                                  {developer.first_name} {developer.last_name}
+                                </h3>
+                                <p className="text-gray-600">
+                                  {getExperienceLevelLabel(developer.experience_level)} Utvecklare
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <div className="flex items-center mb-1">
+                                  <Star className={`w-5 h-5 mr-1 ${getScoreColor(match.match_score)}`} />
+                                  <span className={`text-xl font-bold ${getScoreColor(match.match_score)}`}>
+                                    {match.match_score}%
+                                  </span>
+                                </div>
+                                <Badge className={status.color + ' text-white'}>
+                                  {status.label}
+                                </Badge>
                               </div>
                             </div>
                             
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              <Badge variant="outline">
+                                <User className="w-3 h-3 mr-1" />
+                                {developer.years_of_experience} års erfarenhet
+                              </Badge>
+                              {developer.hourly_rate && (
+                                <Badge variant="outline">
+                                  <DollarSign className="w-3 h-3 mr-1" />
+                                  {developer.hourly_rate} SEK/tim
+                                </Badge>
+                              )}
+                              {developer.location && (
+                                <Badge variant="outline">
+                                  <MapPin className="w-3 h-3 mr-1" />
+                                  {developer.location}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Developer Details */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                          {/* CV Summary */}
+                          {developer.cv_summary && (
+                            <div className="md:col-span-2">
+                              <h4 className="font-semibold text-gray-900 mb-2">Om utvecklaren:</h4>
+                              <p className="text-gray-600 text-sm leading-relaxed">
+                                {developer.cv_summary}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {/* Technical Skills */}
+                          <div>
+                            <h4 className="font-semibold text-gray-900 mb-2">Tekniska färdigheter:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {developer.technical_skills?.map((skill, index) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Industry Experience */}
+                          {developer.industry_experience && developer.industry_experience.length > 0 && (
                             <div>
-                              <h5 className="font-medium text-gray-900 mb-1">Branschexpertis:</h5>
+                              <h4 className="font-semibold text-gray-900 mb-2">Branschexpertis:</h4>
                               <div className="flex flex-wrap gap-1">
-                                {match.developer.industry_experience?.map((exp, index) => (
+                                {developer.industry_experience.map((exp, index) => (
                                   <Badge key={index} variant="outline" className="text-xs">
                                     {exp}
                                   </Badge>
                                 ))}
                               </div>
                             </div>
-                          </div>
+                          )}
                           
-                          <p className="text-sm text-gray-500 mt-2">
-                            {match.developer.years_of_experience} års erfarenhet
-                          </p>
+                          {/* Languages */}
+                          {developer.languages && developer.languages.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                                <Languages className="w-4 h-4 mr-1" />
+                                Språk:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {developer.languages.map((language, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {language}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Certifications */}
+                          {developer.certifications && developer.certifications.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                                <Award className="w-4 h-4 mr-1" />
+                                Certifieringar:
+                              </h4>
+                              <div className="flex flex-wrap gap-1">
+                                {developer.certifications.map((cert, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs">
+                                    {cert}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Education */}
+                          {developer.education && (
+                            <div className="md:col-span-2">
+                              <h4 className="font-semibold text-gray-900 mb-2">Utbildning:</h4>
+                              <p className="text-gray-600 text-sm">{developer.education}</p>
+                            </div>
+                          )}
                         </div>
 
+                        {/* Social Links */}
+                        {(developer.linkedin_url || developer.github_url || developer.portfolio_url) && (
+                          <div className="border-t pt-4 mb-6">
+                            <h4 className="font-semibold text-gray-900 mb-3">Länkar:</h4>
+                            <div className="flex flex-wrap gap-3">
+                              {developer.linkedin_url && (
+                                <a 
+                                  href={developer.linkedin_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                                >
+                                  LinkedIn →
+                                </a>
+                              )}
+                              {developer.github_url && (
+                                <a 
+                                  href={developer.github_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center text-gray-700 hover:text-gray-900 text-sm"
+                                >
+                                  GitHub →
+                                </a>
+                              )}
+                              {developer.portfolio_url && (
+                                <a 
+                                  href={developer.portfolio_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center text-green-600 hover:text-green-800 text-sm"
+                                >
+                                  Portfolio →
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
                         {!match.customer_interested_at && (
                           <Button 
                             onClick={() => showInterest(match.id)}
                             className="w-full"
+                            size="lg"
                           >
-                            Anmäl intresse
+                            Anmäl intresse för denna utvecklare
                           </Button>
                         )}
 
