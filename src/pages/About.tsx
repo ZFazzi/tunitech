@@ -1,6 +1,6 @@
 
 import { Navbar } from "@/components/Navbar";
-import { AboutUs } from "@/components/AboutUs";
+import { TeamSection } from "@/components/TeamSection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 
@@ -24,7 +24,7 @@ const About = () => {
       <div className="relative z-10">
         <Navbar />
         <div className="pt-16">
-          <AboutUs />
+          <TeamSection />
         </div>
         <Footer />
       </div>
