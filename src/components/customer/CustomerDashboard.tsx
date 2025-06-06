@@ -263,8 +263,8 @@ export const CustomerDashboard = () => {
       const { data, error } = await supabase
         .from('project_matches')
         .update({ 
-          customer_interested_at: new Date().toISOString(),
-          status: 'customer_interested'
+          customer_interested_at: new Date().toISOString()
+          // Don't update status - let it remain as 'pending' until both parties are interested
         })
         .eq('id', matchId)
         .select(); // Add select to get the updated data back
@@ -282,8 +282,8 @@ export const CustomerDashboard = () => {
           match.id === matchId 
             ? { 
                 ...match, 
-                customer_interested_at: new Date().toISOString(),
-                status: 'customer_interested'
+                customer_interested_at: new Date().toISOString()
+                // Keep the original status
               }
             : match
         );
