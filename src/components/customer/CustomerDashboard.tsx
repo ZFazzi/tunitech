@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -9,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User } from 'lucide-react';
+import { Plus, Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -398,7 +397,7 @@ export const CustomerDashboard = () => {
                 Utvecklarmatchningar
               </CardTitle>
               <CardDescription>
-                {selectedProject ? 'Utvecklare som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
+                {selectedProject ? 'Anonyma utvecklarprofiler som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -410,20 +409,17 @@ export const CustomerDashboard = () => {
                     
                     return (
                       <div key={match.id} className="border rounded-lg p-6 bg-white">
-                        {/* Developer Header */}
+                        {/* Developer Header - Anonymized */}
                         <div className="flex items-start gap-4 mb-6">
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={developer.profile_picture_url || undefined} />
-                            <AvatarFallback className="text-lg">
-                              {developer.first_name[0]}{developer.last_name[0]}
-                            </AvatarFallback>
-                          </Avatar>
+                          <div className="h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center">
+                            <User className="w-8 h-8 text-gray-500" />
+                          </div>
                           
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <div>
                                 <h3 className="text-xl font-bold text-gray-900">
-                                  {developer.first_name} {developer.last_name}
+                                  Anonym Utvecklare #{match.id.substring(0, 8)}
                                 </h3>
                                 <p className="text-gray-600">
                                   {getExperienceLevelLabel(developer.experience_level)} Utvecklare
@@ -468,7 +464,7 @@ export const CustomerDashboard = () => {
                           {/* CV Summary */}
                           {developer.cv_summary && (
                             <div className="md:col-span-2">
-                              <h4 className="font-semibold text-gray-900 mb-2">Om utvecklaren:</h4>
+                              <h4 className="font-semibold text-gray-900 mb-2">Professionell sammanfattning:</h4>
                               <p className="text-gray-600 text-sm leading-relaxed">
                                 {developer.cv_summary}
                               </p>
@@ -544,61 +540,44 @@ export const CustomerDashboard = () => {
                           )}
                         </div>
 
-                        {/* Social Links */}
-                        {(developer.linkedin_url || developer.github_url || developer.portfolio_url) && (
-                          <div className="border-t pt-4 mb-6">
-                            <h4 className="font-semibold text-gray-900 mb-3">Länkar:</h4>
-                            <div className="flex flex-wrap gap-3">
-                              {developer.linkedin_url && (
-                                <a 
-                                  href={developer.linkedin_url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                        {/* Action Buttons */}
+                        {!match.customer_interested_at && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div className="flex items-start space-x-3">
+                              <Eye className="w-5 h-5 text-blue-600 mt-0.5" />
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-blue-900 mb-1">Intresserad av denna utvecklare?</h4>
+                                <p className="text-blue-800 text-sm mb-3">
+                                  Genom att anmäla intresse kommer utvecklaren att få en notifikation och kan välja att godkänna projektet. 
+                                  Först när båda parter har visat intresse kommer ni kunna se varandras kontaktuppgifter.
+                                </p>
+                                <Button 
+                                  onClick={() => showInterest(match.id)}
+                                  className="w-full bg-blue-600 hover:bg-blue-700"
+                                  size="lg"
                                 >
-                                  LinkedIn →
-                                </a>
-                              )}
-                              {developer.github_url && (
-                                <a 
-                                  href={developer.github_url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center text-gray-700 hover:text-gray-900 text-sm"
-                                >
-                                  GitHub →
-                                </a>
-                              )}
-                              {developer.portfolio_url && (
-                                <a 
-                                  href={developer.portfolio_url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="flex items-center text-green-600 hover:text-green-800 text-sm"
-                                >
-                                  Portfolio →
-                                </a>
-                              )}
+                                  <Star className="w-4 h-4 mr-2" />
+                                  Anmäl intresse för denna utvecklare
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         )}
 
-                        {/* Action Buttons */}
-                        {!match.customer_interested_at && (
-                          <Button 
-                            onClick={() => showInterest(match.id)}
-                            className="w-full"
-                            size="lg"
-                          >
-                            Anmäl intresse för denna utvecklare
-                          </Button>
+                        {match.customer_interested_at && !match.developer_approved_at && (
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-yellow-800 mb-2">⏳ Väntar på utvecklarens svar</h4>
+                            <p className="text-yellow-700 text-sm">
+                              Du har anmält intresse för denna utvecklare. Vi väntar nu på att utvecklaren ska godkänna projektet.
+                            </p>
+                          </div>
                         )}
 
                         {match.customer_interested_at && match.developer_approved_at && (
                           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                             <h4 className="font-semibold text-green-800 mb-2">🎉 Matchning bekräftad!</h4>
                             <p className="text-green-700 text-sm mb-3">
-                              Både du och utvecklaren har visat intresse. Nu kan ni schemalägga ett möte.
+                              Både du och utvecklaren har visat intresse. Nu kan ni schemalägga ett möte och utbyta kontaktuppgifter.
                             </p>
                             <Button variant="outline" className="w-full">
                               Schemalägg möte
