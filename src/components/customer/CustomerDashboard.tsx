@@ -51,6 +51,7 @@ interface ProjectMatch {
     linkedin_url: string;
     github_url: string;
     portfolio_url: string;
+    ai_generated_title: string | null;
   };
 }
 
@@ -204,7 +205,8 @@ export const CustomerDashboard = () => {
             profile_picture_url,
             linkedin_url,
             github_url,
-            portfolio_url
+            portfolio_url,
+            ai_generated_title
           )
         `)
         .eq('project_requirement_id', projectId)
@@ -374,430 +376,430 @@ export const CustomerDashboard = () => {
     );
   }
 
+  // Find the selected project for display
+  const selectedProjectData = projects.find(p => p.id === selectedProject);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-      <Navbar />
-      <div className="pt-20 pb-10">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Välkommen, {customer.contact_name}!
-              </h1>
-              <p className="text-muted-foreground">{customer.company_name}</p>
-            </div>
-            <Button onClick={() => navigate('/project-requirement')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Ny Kravspecifikation
-            </Button>
-          </div>
+    <div className="container mx-auto px-4">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Välkommen, {customer.contact_name}!
+          </h1>
+          <p className="text-muted-foreground">{customer.company_name}</p>
+        </div>
+        <Button onClick={() => navigate('/project-requirement')}>
+          <Plus className="w-4 h-4 mr-2" />
+          Ny Kravspecifikation
+        </Button>
+      </div>
 
-          {/* Notifikationer */}
-          {notifications.length > 0 && (
-            <Card className="mb-6 bg-card border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center text-card-foreground">
-                  <Bell className="w-5 h-5 mr-2" />
-                  Notifikationer
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {notifications.map((notification) => (
-                    <div 
-                      key={notification.id}
-                      className={`p-3 rounded-lg border ${
-                        notification.read_at ? 'bg-muted/50 border-border' : 'bg-accent/50 border-accent'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-card-foreground">{notification.title}</h4>
-                          <p className="text-muted-foreground text-sm">{notification.message}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {new Date(notification.created_at).toLocaleDateString('sv-SE')}
-                          </p>
-                        </div>
-                        {!notification.read_at && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => markNotificationAsRead(notification.id)}
-                          >
-                            Markera som läst
-                          </Button>
-                        )}
-                      </div>
+      {/* Notifikationer */}
+      {notifications.length > 0 && (
+        <Card className="mb-6 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center text-card-foreground">
+              <Bell className="w-5 h-5 mr-2" />
+              Notifikationer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {notifications.map((notification) => (
+                <div 
+                  key={notification.id}
+                  className={`p-3 rounded-lg border ${
+                    notification.read_at ? 'bg-muted/50 border-border' : 'bg-accent/50 border-accent'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-card-foreground">{notification.title}</h4>
+                      <p className="text-muted-foreground text-sm">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(notification.created_at).toLocaleDateString('sv-SE')}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Utvecklarteam */}
-          {teamMembers.length > 0 && (
-            <Card className="mb-6 bg-card border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center text-card-foreground">
-                  <Users className="w-5 h-5 mr-2" />
-                  Ditt Utvecklarteam
-                </CardTitle>
-                <CardDescription>Utvecklare som är anställda av ditt företag</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {teamMembers.map((member) => (
-                    <div key={member.id} className="border border-border rounded-lg p-4 bg-card">
-                      <div className="flex items-start space-x-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={member.developer.profile_picture_url} />
-                          <AvatarFallback>
-                            {member.developer.first_name[0]}{member.developer.last_name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-card-foreground truncate">
-                            {member.developer.first_name} {member.developer.last_name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground">
-                            {getExperienceLevelLabel(member.developer.experience_level)} Utvecklare
-                          </p>
-                          {member.role_in_team && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {member.role_in_team}
-                            </p>
-                          )}
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">
-                              <Briefcase className="w-3 h-3 mr-1" />
-                              {member.developer.years_of_experience} år
-                            </Badge>
-                            {member.developer.hourly_rate && (
-                              <Badge variant="outline" className="text-xs">
-                                <DollarSign className="w-3 h-3 mr-1" />
-                                {member.developer.hourly_rate} SEK/tim
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Anställd: {new Date(member.hired_at).toLocaleDateString('sv-SE')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Projektlista */}
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-card-foreground">Mina Projekt</CardTitle>
-                <CardDescription>Klicka på ett projekt för att se eller redigera kravspecifikationen</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {projects.map((project) => (
-                    <div key={project.id} className="space-y-2">
-                      <div
-                        className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                          selectedProject === project.id 
-                            ? 'border-primary bg-accent' 
-                            : 'border-border hover:border-primary/50'
-                        }`}
-                        onClick={() => {
-                          setSelectedProject(project.id);
-                          fetchMatches(project.id);
-                        }}
-                      >
-                        <h4 className="font-semibold text-card-foreground mb-1">
-                          {project.project_description.substring(0, 60)}...
-                        </h4>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          {new Date(project.created_at).toLocaleDateString('sv-SE')}
-                        </div>
-                      </div>
-                      
+                    {!notification.read_at && (
                       <Button
                         size="sm"
                         variant="outline"
-                        className="w-full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/project-specification/${project.id}`);
-                        }}
+                        onClick={() => markNotificationAsRead(notification.id)}
                       >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Visa/Redigera kravspec
+                        Markera som läst
                       </Button>
-                    </div>
-                  ))}
-                  
-                  {projects.length === 0 && (
-                    <div className="text-center py-6">
-                      <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground mb-4">Inga projekt än</p>
-                      <Button onClick={() => navigate('/project-requirement')}>
-                        Skapa första projektet
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Utvecklarmatchningar */}
-            <Card className="bg-card/50 backdrop-blur-sm border-white/10">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">
-                  Utvecklarmatchningar
-                </CardTitle>
-                <CardDescription>
-                  {selectedProject ? 'Utvecklarprofiler som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedProject && matches && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-card-foreground">
-                        Matchningar för: {selectedProject.project_description.substring(0, 50)}...
-                      </h3>
-                      <Badge variant="secondary">
-                        {matches.length} matchning{matches.length !== 1 ? 'ar' : ''}
-                      </Badge>
-                    </div>
-
-                    {matches.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground mb-4">
-                          Inga matchningar hittades för detta projekt ännu.
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Nya matchningar genereras automatiskt när utvecklare registrerar sig.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="grid gap-4">
-                        {matches.map((match) => {
-                          const developer = match.developers;
-                          if (!developer) return null;
-
-                          const isInterested = match.customer_interested_at !== null;
-                          const isDeveloperApproved = match.developer_approved_at !== null;
-                          const isMutualMatch = isInterested && isDeveloperApproved;
-
-                          return (
-                            <Card key={match.id} className="bg-background/50 border-border/50">
-                              <CardContent className="p-6">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div>
-                                    <h3 className="text-xl font-bold text-card-foreground">
-                                      {developer.ai_generated_title || `${getExperienceLevelLabel(developer.experience_level)} ${developer.technical_skills?.[0] || 'Utvecklare'}`}
-                                    </h3>
-                                    <p className="text-muted-foreground">
-                                      {developer.years_of_experience} års erfarenhet
-                                    </p>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="flex items-center mb-2">
-                                      <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                                      <span className="font-semibold text-card-foreground">
-                                        {match.match_score}% matchning
-                                      </span>
-                                    </div>
-                                    {developer.hourly_rate && (
-                                      <p className="text-muted-foreground">
-                                        {developer.hourly_rate} SEK/tim
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                  <Badge variant="outline">
-                                    <User className="w-3 h-3 mr-1" />
-                                    {developer.years_of_experience} års erfarenhet
-                                  </Badge>
-                                  {developer.hourly_rate && (
-                                    <Badge variant="outline">
-                                      <DollarSign className="w-3 h-3 mr-1" />
-                                      {developer.hourly_rate} SEK/tim
-                                    </Badge>
-                                  )}
-                                  {developer.location && (
-                                    <Badge variant="outline">
-                                      <MapPin className="w-3 h-3 mr-1" />
-                                      {developer.location}
-                                    </Badge>
-                                  )}
-                                </div>
-
-                                {/* Developer Details */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                  {/* CV Summary */}
-                                  {developer.cv_summary && (
-                                    <div className="md:col-span-2">
-                                      <h4 className="font-semibold text-card-foreground mb-2">Professionell sammanfattning:</h4>
-                                      <p className="text-muted-foreground text-sm leading-relaxed">
-                                        {developer.cv_summary}
-                                      </p>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Technical Skills */}
-                                  <div>
-                                    <h4 className="font-semibold text-card-foreground mb-2">Tekniska färdigheter:</h4>
-                                    <div className="flex flex-wrap gap-1">
-                                      {developer.technical_skills?.map((skill, index) => (
-                                        <Badge key={index} variant="secondary" className="text-xs">
-                                          {skill}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Industry Experience */}
-                                  {developer.industry_experience && developer.industry_experience.length > 0 && (
-                                    <div>
-                                      <h4 className="font-semibold text-card-foreground mb-2">Branschexpertis:</h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {developer.industry_experience.map((exp, index) => (
-                                          <Badge key={index} variant="outline" className="text-xs">
-                                            {exp}
-                                          </Badge>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Languages */}
-                                  {developer.languages && developer.languages.length > 0 && (
-                                    <div>
-                                      <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
-                                        <Languages className="w-4 h-4 mr-1" />
-                                        Språk:
-                                      </h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {developer.languages.map((language, index) => (
-                                          <Badge key={index} variant="outline" className="text-xs">
-                                            {language}
-                                          </Badge>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Certifications */}
-                                  {developer.certifications && developer.certifications.length > 0 && (
-                                    <div>
-                                      <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
-                                        <Award className="w-4 h-4 mr-1" />
-                                        Certifieringar:
-                                      </h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {developer.certifications.map((cert, index) => (
-                                          <Badge key={index} variant="outline" className="text-xs">
-                                            {cert}
-                                          </Badge>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Education */}
-                                  {developer.education && (
-                                    <div className="md:col-span-2">
-                                      <h4 className="font-semibold text-card-foreground mb-2">Utbildning:</h4>
-                                      <p className="text-muted-foreground text-sm">{developer.education}</p>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Action Buttons */}
-                                {!match.customer_interested_at && !isHired && (
-                                  <div className="bg-accent/20 border border-accent rounded-lg p-4 mb-4">
-                                    <div className="flex items-start space-x-3">
-                                      <Eye className="w-5 h-5 text-accent-foreground mt-0.5" />
-                                      <div className="flex-1">
-                                        <h4 className="font-semibold text-accent-foreground mb-1">Intresserad av denna utvecklare?</h4>
-                                        <p className="text-accent-foreground/80 text-sm mb-3">
-                                          Genom att anmäla intresse kommer utvecklaren att få en notifikation och kan välja att godkänna projektet. 
-                                          Först när båda parter har visat intresse kommer ni kunna se varandras kontaktuppgifter.
-                                        </p>
-                                        <Button 
-                                          onClick={() => {
-                                            console.log('Button clicked for match:', match.id);
-                                            showInterest(match.id);
-                                          }}
-                                          className="w-full bg-tunitech-blue hover:bg-tunitech-blue/90 text-foreground"
-                                          size="lg"
-                                          disabled={match.customer_interested_at !== null}
-                                        >
-                                          <Star className="w-4 h-4 mr-2" />
-                                          Anmäl intresse för denna utvecklare
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {match.customer_interested_at && !match.developer_approved_at && !isHired && (
-                                  <div className="bg-secondary/20 border border-secondary rounded-lg p-4">
-                                    <h4 className="font-semibold text-secondary-foreground mb-2">⏳ Väntar på utvecklarens svar</h4>
-                                    <p className="text-secondary-foreground/80 text-sm">
-                                      Du har anmält intresse för denna utvecklare. Vi väntar nu på att utvecklaren ska godkänna projektet.
-                                    </p>
-                                  </div>
-                                )}
-
-                                {canHire && (
-                                  <div className="bg-tunitech-mint/20 border border-tunitech-mint rounded-lg p-4">
-                                    <h4 className="font-semibold text-foreground mb-2">🎉 Matchning bekräftad!</h4>
-                                    <p className="text-muted-foreground text-sm mb-3">
-                                      Både du och utvecklaren har visat intresse. Nu kan du anställa utvecklaren för ditt team.
-                                    </p>
-                                    <div className="flex gap-3">
-                                      <Button 
-                                        onClick={() => hireDeveloper(match.id, developer.id)}
-                                        className="flex-1 bg-tunitech-mint hover:bg-tunitech-mint/90 text-foreground"
-                                      >
-                                        <UserPlus className="w-4 h-4 mr-2" />
-                                        Anställ utvecklare
-                                      </Button>
-                                      <Button variant="outline" className="flex-1">
-                                        Schemalägg möte först
-                                      </Button>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {isHired && (
-                                  <div className="bg-green-500/20 border border-green-500 rounded-lg p-4">
-                                    <h4 className="font-semibold text-foreground mb-2">✅ Utvecklaren är anställd</h4>
-                                    <p className="text-muted-foreground text-sm">
-                                      Denna utvecklare är nu en del av ditt team och finns listad ovan under "Ditt Utvecklarteam".
-                                    </p>
-                                  </div>
-                                )}
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
                     )}
                   </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Utvecklarteam */}
+      {teamMembers.length > 0 && (
+        <Card className="mb-6 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center text-card-foreground">
+              <Users className="w-5 h-5 mr-2" />
+              Ditt Utvecklarteam
+            </CardTitle>
+            <CardDescription>Utvecklare som är anställda av ditt företag</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamMembers.map((member) => (
+                <div key={member.id} className="border border-border rounded-lg p-4 bg-card">
+                  <div className="flex items-start space-x-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={member.developer.profile_picture_url} />
+                      <AvatarFallback>
+                        {member.developer.first_name[0]}{member.developer.last_name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-card-foreground truncate">
+                        {member.developer.first_name} {member.developer.last_name}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {getExperienceLevelLabel(member.developer.experience_level)} Utvecklare
+                      </p>
+                      {member.role_in_team && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {member.role_in_team}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          <Briefcase className="w-3 h-3 mr-1" />
+                          {member.developer.years_of_experience} år
+                        </Badge>
+                        {member.developer.hourly_rate && (
+                          <Badge variant="outline" className="text-xs">
+                            <DollarSign className="w-3 h-3 mr-1" />
+                            {member.developer.hourly_rate} SEK/tim
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Anställd: {new Date(member.hired_at).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Projektlista */}
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-card-foreground">Mina Projekt</CardTitle>
+            <CardDescription>Klicka på ett projekt för att se eller redigera kravspecifikationen</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {projects.map((project) => (
+                <div key={project.id} className="space-y-2">
+                  <div
+                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                      selectedProject === project.id 
+                        ? 'border-primary bg-accent' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                    onClick={() => {
+                      setSelectedProject(project.id);
+                      fetchMatches(project.id);
+                    }}
+                  >
+                    <h4 className="font-semibold text-card-foreground mb-1">
+                      {project.project_description.substring(0, 60)}...
+                    </h4>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {new Date(project.created_at).toLocaleDateString('sv-SE')}
+                    </div>
+                  </div>
+                  
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/project-specification/${project.id}`);
+                    }}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Visa/Redigera kravspec
+                  </Button>
+                </div>
+              ))}
+              
+              {projects.length === 0 && (
+                <div className="text-center py-6">
+                  <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground mb-4">Inga projekt än</p>
+                  <Button onClick={() => navigate('/project-requirement')}>
+                    Skapa första projektet
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Utvecklarmatchningar */}
+        <Card className="lg:col-span-2 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-card-foreground">
+              Utvecklarmatchningar
+            </CardTitle>
+            <CardDescription>
+              {selectedProject ? 'Utvecklarprofiler som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {selectedProject && matches && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-card-foreground">
+                    Matchningar för: {selectedProjectData?.project_description.substring(0, 50)}...
+                  </h3>
+                  <Badge variant="secondary">
+                    {matches.length} matchning{matches.length !== 1 ? 'ar' : ''}
+                  </Badge>
+                </div>
+
+                {matches.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground mb-4">
+                      Inga matchningar hittades för detta projekt ännu.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Nya matchningar genereras automatiskt när utvecklare registrerar sig.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {matches.map((match) => {
+                      const developer = match.developer;
+                      if (!developer) return null;
+
+                      const isInterested = match.customer_interested_at !== null;
+                      const isDeveloperApproved = match.developer_approved_at !== null;
+                      const isMutualMatch = isInterested && isDeveloperApproved;
+                      const isHired = match.status === 'hired';
+                      const canHire = isMutualMatch && !isHired;
+
+                      return (
+                        <Card key={match.id} className="bg-background/50 border-border/50">
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <h3 className="text-xl font-bold text-card-foreground">
+                                  {developer.ai_generated_title || `${getExperienceLevelLabel(developer.experience_level)} ${developer.technical_skills?.[0] || 'Utvecklare'}`}
+                                </h3>
+                                <p className="text-muted-foreground">
+                                  {developer.first_name} {developer.last_name} • {developer.years_of_experience} års erfarenhet
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <div className="flex items-center mb-2">
+                                  <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                                  <span className="font-semibold text-card-foreground">
+                                    {match.match_score}% matchning
+                                  </span>
+                                </div>
+                                {developer.hourly_rate && (
+                                  <p className="text-muted-foreground">
+                                    {developer.hourly_rate} SEK/tim
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              <Badge variant="outline">
+                                <User className="w-3 h-3 mr-1" />
+                                {developer.years_of_experience} års erfarenhet
+                              </Badge>
+                              {developer.hourly_rate && (
+                                <Badge variant="outline">
+                                  <DollarSign className="w-3 h-3 mr-1" />
+                                  {developer.hourly_rate} SEK/tim
+                                </Badge>
+                              )}
+                              {developer.location && (
+                                <Badge variant="outline">
+                                  <MapPin className="w-3 h-3 mr-1" />
+                                  {developer.location}
+                                </Badge>
+                              )}
+                            </div>
+
+                            {/* Developer Details */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                              {/* CV Summary */}
+                              {developer.cv_summary && (
+                                <div className="md:col-span-2">
+                                  <h4 className="font-semibold text-card-foreground mb-2">Professionell sammanfattning:</h4>
+                                  <p className="text-muted-foreground text-sm leading-relaxed">
+                                    {developer.cv_summary}
+                                  </p>
+                                </div>
+                              )}
+                              
+                              {/* Technical Skills */}
+                              <div>
+                                <h4 className="font-semibold text-card-foreground mb-2">Tekniska färdigheter:</h4>
+                                <div className="flex flex-wrap gap-1">
+                                  {developer.technical_skills?.map((skill, index) => (
+                                    <Badge key={index} variant="secondary" className="text-xs">
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Industry Experience */}
+                              {developer.industry_experience && developer.industry_experience.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Branschexpertis:</h4>
+                                  <div className="flex flex-wrap gap-1">
+                                    {developer.industry_experience.map((exp, index) => (
+                                      <Badge key={index} variant="outline" className="text-xs">
+                                        {exp}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Languages */}
+                              {developer.languages && developer.languages.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
+                                    <Languages className="w-4 h-4 mr-1" />
+                                    Språk:
+                                  </h4>
+                                  <div className="flex flex-wrap gap-1">
+                                    {developer.languages.map((language, index) => (
+                                      <Badge key={index} variant="outline" className="text-xs">
+                                        {language}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Certifications */}
+                              {developer.certifications && developer.certifications.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
+                                    <Award className="w-4 h-4 mr-1" />
+                                    Certifieringar:
+                                  </h4>
+                                  <div className="flex flex-wrap gap-1">
+                                    {developer.certifications.map((cert, index) => (
+                                      <Badge key={index} variant="outline" className="text-xs">
+                                        {cert}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Education */}
+                              {developer.education && (
+                                <div className="md:col-span-2">
+                                  <h4 className="font-semibold text-card-foreground mb-2">Utbildning:</h4>
+                                  <p className="text-muted-foreground text-sm">{developer.education}</p>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            {!match.customer_interested_at && !isHired && (
+                              <div className="bg-accent/20 border border-accent rounded-lg p-4 mb-4">
+                                <div className="flex items-start space-x-3">
+                                  <Eye className="w-5 h-5 text-accent-foreground mt-0.5" />
+                                  <div className="flex-1">
+                                    <h4 className="font-semibold text-accent-foreground mb-1">Intresserad av denna utvecklare?</h4>
+                                    <p className="text-accent-foreground/80 text-sm mb-3">
+                                      Genom att anmäla intresse kommer utvecklaren att få en notifikation och kan välja att godkänna projektet. 
+                                      Först när båda parter har visat intresse kommer ni kunna se varandras kontaktuppgifter.
+                                    </p>
+                                    <Button 
+                                      onClick={() => {
+                                        console.log('Button clicked for match:', match.id);
+                                        showInterest(match.id);
+                                      }}
+                                      className="w-full bg-tunitech-blue hover:bg-tunitech-blue/90 text-foreground"
+                                      size="lg"
+                                      disabled={match.customer_interested_at !== null}
+                                    >
+                                      <Star className="w-4 h-4 mr-2" />
+                                      Anmäl intresse för denna utvecklare
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {match.customer_interested_at && !match.developer_approved_at && !isHired && (
+                              <div className="bg-secondary/20 border border-secondary rounded-lg p-4">
+                                <h4 className="font-semibold text-secondary-foreground mb-2">⏳ Väntar på utvecklarens svar</h4>
+                                <p className="text-secondary-foreground/80 text-sm">
+                                  Du har anmält intresse för denna utvecklare. Vi väntar nu på att utvecklaren ska godkänna projektet.
+                                </p>
+                              </div>
+                            )}
+
+                            {canHire && (
+                              <div className="bg-tunitech-mint/20 border border-tunitech-mint rounded-lg p-4">
+                                <h4 className="font-semibold text-foreground mb-2">🎉 Matchning bekräftad!</h4>
+                                <p className="text-muted-foreground text-sm mb-3">
+                                  Både du och utvecklaren har visat intresse. Nu kan du anställa utvecklaren för ditt team.
+                                </p>
+                                <div className="flex gap-3">
+                                  <Button 
+                                    onClick={() => hireDeveloper(match.id, developer.id)}
+                                    className="flex-1 bg-tunitech-mint hover:bg-tunitech-mint/90 text-foreground"
+                                  >
+                                    <UserPlus className="w-4 h-4 mr-2" />
+                                    Anställ utvecklare
+                                  </Button>
+                                  <Button variant="outline" className="flex-1">
+                                    Schemalägg möte först
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+
+                            {isHired && (
+                              <div className="bg-green-500/20 border border-green-500 rounded-lg p-4">
+                                <h4 className="font-semibold text-foreground mb-2">✅ Utvecklaren är anställd</h4>
+                                <p className="text-muted-foreground text-sm">
+                                  Denna utvecklare är nu en del av ditt team och finns listad ovan under "Ditt Utvecklarteam".
+                                </p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
