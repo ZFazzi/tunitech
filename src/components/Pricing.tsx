@@ -10,11 +10,11 @@ export const Pricing = () => {
   const getPricingTitle = () => {
     switch (language) {
       case "sv":
-        return "Vår prismodell";
+        return "Flexibla priser anpassade efter dina behov";
       case "fr":
-        return "Notre modèle de prix";
+        return "Prix flexibles adaptés à vos besoins";
       default: // English
-        return "Our Pricing Model";
+        return "Flexible pricing tailored to your needs";
     }
   };
   
@@ -22,62 +22,32 @@ export const Pricing = () => {
   const getPricingDescription = () => {
     switch (language) {
       case "sv":
-        return "Vi erbjuder flexibla prisalternativ för att passa dina behov.";
+        return "Hos TuniTech förstår vi att varje projekt är unikt. Därför erbjuder vi flexibla prismodeller som anpassas efter dina specifika behov och projektets omfattning. Oavsett om du behöver en utvecklare för några timmar, flera månader eller ett helt projekt, så hittar vi en lösning som passar din budget och dina mål.";
       case "fr":
-        return "Nous offrons des options de tarification flexibles pour répondre à vos besoins.";
+        return "Chez TuniTech, nous comprenons que chaque projet est unique. C'est pourquoi nous proposons des modèles de tarification flexibles qui s'adaptent à vos besoins spécifiques et à la portée de votre projet. Que vous ayez besoin d'un développeur pour quelques heures, plusieurs mois ou un projet complet, nous trouverons une solution qui correspond à votre budget et à vos objectifs.";
       default: // English
-        return "We offer flexible pricing options to fit your needs.";
-    }
-  };
-  
-  // Fixed Swedish pricing options
-  const getPricingOptions = () => {
-    switch (language) {
-      case "sv":
-        return ["Pris per timme/dag", "Pris per månad", "Pris per projekt"];
-      case "fr":
-        return ["Prix par heure/jour", "Prix par mois", "Prix par projet"];
-      default: // English
-        return ["Price per hour/day", "Price per month", "Price per project"];
+        return "At TuniTech, we understand that every project is unique. That's why we offer flexible pricing models that adapt to your specific needs and project scope. Whether you need a developer for a few hours, several months, or a complete project, we'll find a solution that fits your budget and goals.";
     }
   };
   
   const pricingTitle = getPricingTitle();
   const pricingDescription = getPricingDescription();
-  const pricingOptions = getPricingOptions();
   
   return (
     <section className="py-16 bg-transparent backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4 text-center">
         <motion.div 
-          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <CircleDollarSign className="w-10 h-10 mx-auto mb-4 text-tunitech-mint" />
-          <h2 className="text-3xl font-bold mb-4 text-tunitech-mint">{pricingTitle}</h2>
-          <p className="text-lg text-gray-300 max-w-xl mx-auto">
+          <CircleDollarSign className="w-12 h-12 mx-auto mb-6 text-tunitech-mint" />
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-tunitech-mint">{pricingTitle}</h2>
+          <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
             {pricingDescription}
           </p>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {pricingOptions.map((option, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-              viewport={{ once: true }}
-              className="backdrop-blur-md bg-white/5 p-6 border border-white/5 rounded-lg"
-            >
-              <h3 className="text-xl font-medium text-center text-white mb-2">{option}</h3>
-              <div className="h-1 w-12 mx-auto mt-4 bg-gradient-to-r from-tunitech-blue to-tunitech-mint rounded-full" />
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
