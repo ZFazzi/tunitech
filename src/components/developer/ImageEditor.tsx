@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import 'react-image-crop/dist/ReactCrop.css';
 
 interface ImageEditorProps {
@@ -41,6 +42,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [zoom, setZoom] = useState(100);
   const imgRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [imgSrc, setImgSrc] = useState('')
@@ -57,6 +59,14 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     const { width, height } = e.currentTarget
     setCrop(centerAspectCrop(width, height, 1))
   }
+
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 10, 200));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 10, 50));
+  };
 
   const generateCanvas = useCallback(() => {
     if (!completedCrop || !imgRef.current || !canvasRef.current) {
@@ -123,6 +133,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     setBrightness(100);
     setContrast(100);
     setSaturation(100);
+    setZoom(100);
   };
 
   return (
@@ -135,27 +146,65 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="space-y-6">
           {imgSrc && (
             <div className="flex flex-col items-center space-y-4">
-              <ReactCrop
-                crop={crop}
-                onChange={(_, percentCrop) => setCrop(percentCrop)}
-                onComplete={(c) => setCompletedCrop(c)}
-                aspect={1}
-                minWidth={100}
-                minHeight={100}
-                circularCrop
-              >
-                <img
-                  ref={imgRef}
-                  alt="Beskär"
-                  src={imgSrc}
-                  style={{
-                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
-                    maxHeight: '400px',
-                    maxWidth: '100%'
-                  }}
-                  onLoad={onImageLoad}
-                />
-              </ReactCrop>
+              {/* Zoom Controls */}
+              <div className="flex items-center space-x-4 mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleZoomOut}
+                  disabled={zoom <= 50}
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </Button>
+                
+                <div className="flex items-center space-x-2">
+                  <Label className="text-sm">Zoom:</Label>
+                  <Slider
+                    value={[zoom]}
+                    onValueChange={(value) => setZoom(value[0])}
+                    min={50}
+                    max={200}
+                    step={5}
+                    className="w-32"
+                  />
+                  <span className="text-sm font-medium w-12">{zoom}%</span>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleZoomIn}
+                  disabled={zoom >= 200}
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="overflow-hidden border rounded-lg" style={{ maxHeight: '400px', maxWidth: '100%' }}>
+                <ReactCrop
+                  crop={crop}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={1}
+                  minWidth={100}
+                  minHeight={100}
+                  circularCrop
+                >
+                  <img
+                    ref={imgRef}
+                    alt="Beskär"
+                    src={imgSrc}
+                    style={{
+                      filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                      transform: `scale(${zoom / 100})`,
+                      transformOrigin: 'center',
+                      maxHeight: 'none',
+                      maxWidth: 'none'
+                    }}
+                    onLoad={onImageLoad}
+                  />
+                </ReactCrop>
+              </div>
             </div>
           )}
 
@@ -221,7 +270,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
           {/* Action Buttons */}
           <div className="flex justify-between pt-4">
             <Button variant="outline" onClick={resetFilters}>
-              Återställ Filter
+              Återställ Alla
             </Button>
             
             <div className="space-x-2">
