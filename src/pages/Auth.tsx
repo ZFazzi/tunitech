@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { toast } from 'sonner';
 import { Navbar } from '@/components/Navbar';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -37,16 +38,34 @@ const Auth = () => {
     
     // Check if user is already authenticated and redirect (only if not a recovery flow)
     if (!loading && user && user.email_confirmed_at) {
-      const userType = user.user_metadata?.user_type;
-      console.log('User type:', userType);
+      const checkUserProfileAndRedirect = async () => {
+        const userType = user.user_metadata?.user_type;
+        console.log('User type:', userType);
+        
+        if (userType === 'developer') {
+          // Check if developer profile exists
+          const { data: developer } = await supabase
+            .from('developers')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+          
+          navigate(developer ? '/developer-dashboard' : '/developer-onboarding');
+        } else if (userType === 'customer') {
+          // Check if customer profile exists
+          const { data: customer } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+          
+          navigate(customer ? '/customer-dashboard' : '/customer-onboarding');
+        } else {
+          navigate('/customer-onboarding'); // Default fallback
+        }
+      };
       
-      if (userType === 'customer') {
-        navigate('/customer-onboarding');
-      } else if (userType === 'developer') {
-        navigate('/developer-onboarding');
-      } else {
-        navigate('/customer-onboarding'); // Default fallback
-      }
+      checkUserProfileAndRedirect();
     }
   }, [searchParams, user, loading, navigate]);
 
