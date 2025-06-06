@@ -4,12 +4,14 @@ import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm } from '@/components/auth/RegisterForm';
+import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { toast } from 'sonner';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
@@ -23,6 +25,11 @@ const Auth = () => {
       toast.success('E-post verifierad! Du kan nu logga in.');
       // Clear the URL parameters
       window.history.replaceState({}, document.title, '/auth');
+    }
+
+    // Check for password recovery
+    if (type === 'recovery' && tokenHash) {
+      toast.success('Klicka på länken i e-postmeddelandet för att återställa ditt lösenord.');
     }
     
     // Check if user is already authenticated and redirect
@@ -48,6 +55,11 @@ const Auth = () => {
     );
   }
 
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+    setIsLogin(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black flex items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -61,26 +73,39 @@ const Auth = () => {
             TuniTech
           </h1>
           <p className="text-gray-400">
-            {isLogin ? 'Logga in på ditt konto' : 'Skapa ett nytt konto'}
+            {showForgotPassword 
+              ? 'Återställ ditt lösenord' 
+              : isLogin 
+                ? 'Logga in på ditt konto' 
+                : 'Skapa ett nytt konto'
+            }
           </p>
         </motion.div>
 
-        {isLogin ? <LoginForm /> : <RegisterForm />}
+        {showForgotPassword ? (
+          <ForgotPasswordForm onBack={handleBackToLogin} />
+        ) : isLogin ? (
+          <LoginForm onForgotPassword={() => setShowForgotPassword(true)} />
+        ) : (
+          <RegisterForm />
+        )}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-center mt-6"
-        >
-          <Button
-            variant="ghost"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-gray-400 hover:text-white"
+        {!showForgotPassword && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center mt-6"
           >
-            {isLogin ? 'Har du inget konto? Registrera dig' : 'Har du redan ett konto? Logga in'}
-          </Button>
-        </motion.div>
+            <Button
+              variant="ghost"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-gray-400 hover:text-white"
+            >
+              {isLogin ? 'Har du inget konto? Registrera dig' : 'Har du redan ett konto? Logga in'}
+            </Button>
+          </motion.div>
+        )}
       </div>
     </div>
   );

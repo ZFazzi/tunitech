@@ -10,7 +10,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  onForgotPassword: () => void;
+}
+
+export const LoginForm = ({ onForgotPassword }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -96,6 +100,16 @@ export const LoginForm = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Loggar in...' : 'Logga in'}
             </Button>
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="link"
+                onClick={onForgotPassword}
+                className="text-sm text-gray-600 hover:text-gray-800"
+              >
+                Glömt lösenord?
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
