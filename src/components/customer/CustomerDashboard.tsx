@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye } from 'lucide-react';
+import { Plus, Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, UserPlus, Briefcase } from 'lucide-react';
 
 interface Customer {
   id: string;
@@ -54,6 +54,27 @@ interface ProjectMatch {
   };
 }
 
+interface TeamMember {
+  id: string;
+  hired_at: string;
+  status: string;
+  role_in_team: string | null;
+  developer: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    experience_level: string;
+    technical_skills: string[];
+    years_of_experience: number;
+    profile_picture_url: string;
+    linkedin_url: string;
+    github_url: string;
+    portfolio_url: string;
+    hourly_rate: number;
+    location: string;
+  };
+}
+
 interface Notification {
   id: string;
   type: string;
@@ -67,6 +88,7 @@ export const CustomerDashboard = () => {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [projects, setProjects] = useState<ProjectRequirement[]>([]);
   const [matches, setMatches] = useState<ProjectMatch[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -97,6 +119,7 @@ export const CustomerDashboard = () => {
 
       await Promise.all([
         fetchProjects(customerData.id),
+        fetchTeamMembers(customerData.id),
         fetchNotifications()
       ]);
     } catch (error: any) {
@@ -123,6 +146,38 @@ export const CustomerDashboard = () => {
       }
     } catch (error: any) {
       toast.error('Kunde inte hämta projekt');
+    }
+  };
+
+  const fetchTeamMembers = async (customerId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('customer_developer_teams')
+        .select(`
+          *,
+          developer:developers (
+            id,
+            first_name,
+            last_name,
+            experience_level,
+            technical_skills,
+            years_of_experience,
+            profile_picture_url,
+            linkedin_url,
+            github_url,
+            portfolio_url,
+            hourly_rate,
+            location
+          )
+        `)
+        .eq('customer_id', customerId)
+        .eq('status', 'active')
+        .order('hired_at', { ascending: false });
+
+      if (error) throw error;
+      setTeamMembers(data || []);
+    } catch (error: any) {
+      toast.error('Kunde inte hämta teammedlemmar');
     }
   };
 
@@ -225,6 +280,38 @@ export const CustomerDashboard = () => {
     }
   };
 
+  const hireDeveloper = async (matchId: string, developerId: string) => {
+    if (!customer) return;
+
+    try {
+      const { error } = await supabase
+        .from('customer_developer_teams')
+        .insert({
+          customer_id: customer.id,
+          developer_id: developerId,
+          project_match_id: matchId,
+          status: 'active'
+        });
+
+      if (error) throw error;
+
+      // Uppdatera match status
+      await supabase
+        .from('project_matches')
+        .update({ status: 'hired' })
+        .eq('id', matchId);
+
+      await fetchTeamMembers(customer.id);
+      if (selectedProject) {
+        await fetchMatches(selectedProject);
+      }
+
+      toast.success('Utvecklaren har anställts och lagts till i ditt team!');
+    } catch (error: any) {
+      toast.error('Kunde inte anställa utvecklaren');
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-tunitech-mint';
     if (score >= 60) return 'text-yellow-500';
@@ -232,11 +319,14 @@ export const CustomerDashboard = () => {
   };
 
   const getMatchStatus = (match: ProjectMatch) => {
+    if (match.status === 'hired') {
+      return { label: 'Anställd', color: 'bg-tunitech-mint' };
+    }
     if (match.developer_approved_at && match.customer_interested_at) {
-      return { label: 'Matchad - Schemalägg möte', color: 'bg-tunitech-mint' };
+      return { label: 'Matchad - Kan anställas', color: 'bg-tunitech-blue' };
     }
     if (match.customer_interested_at) {
-      return { label: 'Intresse anmält', color: 'bg-tunitech-blue' };
+      return { label: 'Intresse anmält', color: 'bg-secondary' };
     }
     return { label: 'Väntande', color: 'bg-muted' };
   };
@@ -329,6 +419,63 @@ export const CustomerDashboard = () => {
         </Card>
       )}
 
+      {/* Utvecklarteam */}
+      {teamMembers.length > 0 && (
+        <Card className="mb-6 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center text-card-foreground">
+              <Users className="w-5 h-5 mr-2" />
+              Ditt Utvecklarteam
+            </CardTitle>
+            <CardDescription>Utvecklare som är anställda av ditt företag</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamMembers.map((member) => (
+                <div key={member.id} className="border border-border rounded-lg p-4 bg-card">
+                  <div className="flex items-start space-x-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={member.developer.profile_picture_url} />
+                      <AvatarFallback>
+                        {member.developer.first_name[0]}{member.developer.last_name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-card-foreground truncate">
+                        {member.developer.first_name} {member.developer.last_name}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {getExperienceLevelLabel(member.developer.experience_level)} Utvecklare
+                      </p>
+                      {member.role_in_team && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {member.role_in_team}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          <Briefcase className="w-3 h-3 mr-1" />
+                          {member.developer.years_of_experience} år
+                        </Badge>
+                        {member.developer.hourly_rate && (
+                          <Badge variant="outline" className="text-xs">
+                            <DollarSign className="w-3 h-3 mr-1" />
+                            {member.developer.hourly_rate} SEK/tim
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Anställd: {new Date(member.hired_at).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Projektlista */}
         <Card className="bg-card border-border">
@@ -406,57 +553,94 @@ export const CustomerDashboard = () => {
                   {matches.map((match) => {
                     const status = getMatchStatus(match);
                     const developer = match.developer;
+                    const isHired = match.status === 'hired';
+                    const canHire = match.customer_interested_at && match.developer_approved_at && !isHired;
                     
                     return (
                       <div key={match.id} className="border border-border rounded-lg p-6 bg-card">
-                        {/* Developer Header - Anonymized */}
+                        {/* Developer Header - Show real info if hired, otherwise anonymous */}
                         <div className="flex items-start gap-4 mb-6">
-                          <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
-                            <User className="w-8 h-8 text-muted-foreground" />
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
-                              <div>
-                                <h3 className="text-xl font-bold text-card-foreground">
-                                  Anonym Utvecklare #{match.id.substring(0, 8)}
-                                </h3>
-                                <p className="text-muted-foreground">
-                                  {getExperienceLevelLabel(developer.experience_level)} Utvecklare
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <div className="flex items-center mb-1">
-                                  <Star className={`w-5 h-5 mr-1 ${getScoreColor(match.match_score)}`} />
-                                  <span className={`text-xl font-bold ${getScoreColor(match.match_score)}`}>
-                                    {match.match_score}%
-                                  </span>
+                          {isHired ? (
+                            <>
+                              <Avatar className="h-16 w-16">
+                                <AvatarImage src={developer.profile_picture_url} />
+                                <AvatarFallback>
+                                  {developer.first_name[0]}{developer.last_name[0]}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div>
+                                    <h3 className="text-xl font-bold text-card-foreground">
+                                      {developer.first_name} {developer.last_name}
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                      {getExperienceLevelLabel(developer.experience_level)} Utvecklare
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="flex items-center mb-1">
+                                      <Star className={`w-5 h-5 mr-1 ${getScoreColor(match.match_score)}`} />
+                                      <span className={`text-xl font-bold ${getScoreColor(match.match_score)}`}>
+                                        {match.match_score}%
+                                      </span>
+                                    </div>
+                                    <Badge className={status.color + ' text-foreground'}>
+                                      {status.label}
+                                    </Badge>
+                                  </div>
                                 </div>
-                                <Badge className={status.color + ' text-foreground'}>
-                                  {status.label}
-                                </Badge>
                               </div>
-                            </div>
-                            
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              <Badge variant="outline">
-                                <User className="w-3 h-3 mr-1" />
-                                {developer.years_of_experience} års erfarenhet
-                              </Badge>
-                              {developer.hourly_rate && (
-                                <Badge variant="outline">
-                                  <DollarSign className="w-3 h-3 mr-1" />
-                                  {developer.hourly_rate} SEK/tim
-                                </Badge>
-                              )}
-                              {developer.location && (
-                                <Badge variant="outline">
-                                  <MapPin className="w-3 h-3 mr-1" />
-                                  {developer.location}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
+                                <User className="w-8 h-8 text-muted-foreground" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div>
+                                    <h3 className="text-xl font-bold text-card-foreground">
+                                      Anonym Utvecklare #{match.id.substring(0, 8)}
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                      {getExperienceLevelLabel(developer.experience_level)} Utvecklare
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="flex items-center mb-1">
+                                      <Star className={`w-5 h-5 mr-1 ${getScoreColor(match.match_score)}`} />
+                                      <span className={`text-xl font-bold ${getScoreColor(match.match_score)}`}>
+                                        {match.match_score}%
+                                      </span>
+                                    </div>
+                                    <Badge className={status.color + ' text-foreground'}>
+                                      {status.label}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <Badge variant="outline">
+                            <User className="w-3 h-3 mr-1" />
+                            {developer.years_of_experience} års erfarenhet
+                          </Badge>
+                          {developer.hourly_rate && (
+                            <Badge variant="outline">
+                              <DollarSign className="w-3 h-3 mr-1" />
+                              {developer.hourly_rate} SEK/tim
+                            </Badge>
+                          )}
+                          {developer.location && (
+                            <Badge variant="outline">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {developer.location}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Developer Details */}
@@ -541,7 +725,7 @@ export const CustomerDashboard = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        {!match.customer_interested_at && (
+                        {!match.customer_interested_at && !isHired && (
                           <div className="bg-accent/20 border border-accent rounded-lg p-4 mb-4">
                             <div className="flex items-start space-x-3">
                               <Eye className="w-5 h-5 text-accent-foreground mt-0.5" />
@@ -564,7 +748,7 @@ export const CustomerDashboard = () => {
                           </div>
                         )}
 
-                        {match.customer_interested_at && !match.developer_approved_at && (
+                        {match.customer_interested_at && !match.developer_approved_at && !isHired && (
                           <div className="bg-secondary/20 border border-secondary rounded-lg p-4">
                             <h4 className="font-semibold text-secondary-foreground mb-2">⏳ Väntar på utvecklarens svar</h4>
                             <p className="text-secondary-foreground/80 text-sm">
@@ -573,15 +757,33 @@ export const CustomerDashboard = () => {
                           </div>
                         )}
 
-                        {match.customer_interested_at && match.developer_approved_at && (
+                        {canHire && (
                           <div className="bg-tunitech-mint/20 border border-tunitech-mint rounded-lg p-4">
                             <h4 className="font-semibold text-foreground mb-2">🎉 Matchning bekräftad!</h4>
                             <p className="text-muted-foreground text-sm mb-3">
-                              Både du och utvecklaren har visat intresse. Nu kan ni schemalägga ett möte och utbyta kontaktuppgifter.
+                              Både du och utvecklaren har visat intresse. Nu kan du anställa utvecklaren för ditt team.
                             </p>
-                            <Button variant="outline" className="w-full">
-                              Schemalägg möte
-                            </Button>
+                            <div className="flex gap-3">
+                              <Button 
+                                onClick={() => hireDeveloper(match.id, developer.id)}
+                                className="flex-1 bg-tunitech-mint hover:bg-tunitech-mint/90 text-foreground"
+                              >
+                                <UserPlus className="w-4 h-4 mr-2" />
+                                Anställ utvecklare
+                              </Button>
+                              <Button variant="outline" className="flex-1">
+                                Schemalägg möte först
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {isHired && (
+                          <div className="bg-green-500/20 border border-green-500 rounded-lg p-4">
+                            <h4 className="font-semibold text-foreground mb-2">✅ Utvecklaren är anställd</h4>
+                            <p className="text-muted-foreground text-sm">
+                              Denna utvecklare är nu en del av ditt team och finns listad ovan under "Ditt Utvecklarteam".
+                            </p>
                           </div>
                         )}
                       </div>

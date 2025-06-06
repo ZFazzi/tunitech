@@ -36,6 +36,64 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_developer_teams: {
+        Row: {
+          created_at: string
+          customer_id: string
+          developer_id: string
+          hired_at: string
+          id: string
+          project_match_id: string | null
+          role_in_team: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          developer_id: string
+          hired_at?: string
+          id?: string
+          project_match_id?: string | null
+          role_in_team?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          developer_id?: string
+          hired_at?: string
+          id?: string
+          project_match_id?: string | null
+          role_in_team?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_developer_teams_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_developer_teams_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_developer_teams_project_match_id_fkey"
+            columns: ["project_match_id"]
+            isOneToOne: false
+            referencedRelation: "project_matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           company_name: string
