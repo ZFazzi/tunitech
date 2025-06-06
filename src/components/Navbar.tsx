@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/components/auth/AuthProvider";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,6 +15,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +24,11 @@ export const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsOpen(false);
+  };
 
   const t = translations[language];
 
@@ -77,17 +84,28 @@ export const Navbar = () => {
             </div>
           </div>
           
-          {/* Desktop Login Button */}
+          {/* Desktop Auth Button */}
           <div className="hidden md:flex items-center">
-            <Button 
-              asChild 
-              variant="outline" 
-              className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
-            >
-              <Link to="/auth">
-                {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
-              </Link>
-            </Button>
+            {user ? (
+              <Button 
+                onClick={handleSignOut}
+                variant="outline" 
+                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white flex items-center gap-2"
+              >
+                <LogOut size={16} />
+                {language === 'sv' ? 'Logga ut' : language === 'fr' ? 'Se déconnecter' : 'Logout'}
+              </Button>
+            ) : (
+              <Button 
+                asChild 
+                variant="outline" 
+                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to="/auth">
+                  {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
+                </Link>
+              </Button>
+            )}
           </div>
           
           {/* Mobile language selector and menu - placed to the right */}
@@ -136,9 +154,20 @@ export const Navbar = () => {
           <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
           <MobileNavLink to="/services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
           <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
-          <MobileNavLink to="/auth" onClick={() => setIsOpen(false)}>
-            {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
-          </MobileNavLink>
+          
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="text-gray-300 hover:text-white hover:bg-white/10 block w-full text-left px-4 py-3 text-base font-medium transition-colors duration-200 rounded-lg flex items-center gap-2"
+            >
+              <LogOut size={18} />
+              {language === 'sv' ? 'Logga ut' : language === 'fr' ? 'Se déconnecter' : 'Logout'}
+            </button>
+          ) : (
+            <MobileNavLink to="/auth" onClick={() => setIsOpen(false)}>
+              {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
+            </MobileNavLink>
+          )}
         </div>
       </div>
     </nav>
