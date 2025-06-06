@@ -32,7 +32,11 @@ export const DeveloperRegistrationForm = () => {
     languages: '',
     certifications: '',
     education: '',
-    preferred_employment_types: [] as string[]
+    preferred_employment_types: [] as string[],
+    programming_languages: '',
+    frameworks: '',
+    databases: '',
+    tools_and_methods: ''
   });
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -45,7 +49,14 @@ export const DeveloperRegistrationForm = () => {
     setLoading(true);
 
     try {
-      const skillsArray = formData.technical_skills.split(',').map(s => s.trim()).filter(s => s);
+      // Combine all technical skills into one array
+      const programmingLanguages = formData.programming_languages.split(',').map(s => s.trim()).filter(s => s);
+      const frameworks = formData.frameworks.split(',').map(s => s.trim()).filter(s => s);
+      const databases = formData.databases.split(',').map(s => s.trim()).filter(s => s);
+      const toolsAndMethods = formData.tools_and_methods.split(',').map(s => s.trim()).filter(s => s);
+      
+      const allTechnicalSkills = [...programmingLanguages, ...frameworks, ...databases, ...toolsAndMethods];
+      
       const industryArray = formData.industry_experience.split(',').map(s => s.trim()).filter(s => s);
       const languagesArray = formData.languages.split(',').map(s => s.trim()).filter(s => s);
       const certificationsArray = formData.certifications.split(',').map(s => s.trim()).filter(s => s);
@@ -60,7 +71,7 @@ export const DeveloperRegistrationForm = () => {
           phone: formData.phone,
           experience_level: formData.experience_level as any,
           years_of_experience: parseInt(formData.years_of_experience),
-          technical_skills: skillsArray,
+          technical_skills: allTechnicalSkills,
           industry_experience: industryArray,
           cv_summary: formData.cv_summary,
           portfolio_url: formData.portfolio_url,
@@ -106,151 +117,266 @@ export const DeveloperRegistrationForm = () => {
       <Card>
         <CardHeader>
           <CardTitle>Utvecklarprofil</CardTitle>
-          <CardDescription>Skapa din profil för att få matchningar med projekt</CardDescription>
+          <CardDescription>Skapa din profil baserat på ditt CV för att få matchningar med projekt</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="first_name">Förnamn *</Label>
-                <Input
-                  id="first_name"
-                  value={formData.first_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
-                  required
-                />
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Personliga uppgifter */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Personliga uppgifter</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="first_name">Förnamn *</Label>
+                  <Input
+                    id="first_name"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="last_name">Efternamn *</Label>
+                  <Input
+                    id="last_name"
+                    value={formData.last_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="last_name">Efternamn *</Label>
-                <Input
-                  id="last_name"
-                  value={formData.last_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="email">E-post *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="email">E-post *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Telefonnummer</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="phone">Telefonnummer</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Erfarenhetsnivå *</Label>
-                <Select 
-                  value={formData.experience_level} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj erfarenhetsnivå" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="junior">Junior (1-3 år)</SelectItem>
-                    <SelectItem value="medior">Medior (3-5 år)</SelectItem>
-                    <SelectItem value="senior">Senior (5+ år)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="years_of_experience">År av erfarenhet *</Label>
+                <Label htmlFor="location">Plats *</Label>
                 <Input
-                  id="years_of_experience"
-                  type="number"
-                  min="0"
-                  value={formData.years_of_experience}
-                  onChange={(e) => setFormData(prev => ({ ...prev, years_of_experience: e.target.value }))}
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="t.ex. Sousse, Tunisien"
                   required
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="technical_skills">Tekniska färdigheter *</Label>
-              <Textarea
-                id="technical_skills"
-                value={formData.technical_skills}
-                onChange={(e) => setFormData(prev => ({ ...prev, technical_skills: e.target.value }))}
-                placeholder="t.ex. React, Node.js, Python, PostgreSQL (separera med komma)"
-                rows={3}
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="industry_experience">Branschexpertis</Label>
-              <Input
-                id="industry_experience"
-                value={formData.industry_experience}
-                onChange={(e) => setFormData(prev => ({ ...prev, industry_experience: e.target.value }))}
-                placeholder="t.ex. Fintech, E-handel, Sjukvård (separera med komma)"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="cv_summary">CV-sammanfattning *</Label>
-              <Textarea
-                id="cv_summary"
-                value={formData.cv_summary}
-                onChange={(e) => setFormData(prev => ({ ...prev, cv_summary: e.target.value }))}
-                placeholder="Beskriv din bakgrund och erfarenhet kort"
-                rows={4}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Profil/Sammanfattning */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Profil</h3>
               <div>
-                <Label htmlFor="portfolio_url">Portfolio URL</Label>
-                <Input
-                  id="portfolio_url"
-                  type="url"
-                  value={formData.portfolio_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, portfolio_url: e.target.value }))}
-                  placeholder="https://..."
-                />
-              </div>
-              <div>
-                <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-                <Input
-                  id="linkedin_url"
-                  type="url"
-                  value={formData.linkedin_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, linkedin_url: e.target.value }))}
-                  placeholder="https://linkedin.com/in/..."
-                />
-              </div>
-              <div>
-                <Label htmlFor="github_url">GitHub URL</Label>
-                <Input
-                  id="github_url"
-                  type="url"
-                  value={formData.github_url}
-                  onChange={(e) => setFormData(prev => ({ ...prev, github_url: e.target.value }))}
-                  placeholder="https://github.com/..."
+                <Label htmlFor="cv_summary">Profil/CV-sammanfattning *</Label>
+                <Textarea
+                  id="cv_summary"
+                  value={formData.cv_summary}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cv_summary: e.target.value }))}
+                  placeholder="Beskriv din bakgrund, specialisering och vad som gör dig unik som utvecklare..."
+                  rows={4}
+                  required
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Erfarenhet */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Erfarenhet</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Erfarenhetsnivå *</Label>
+                  <Select 
+                    value={formData.experience_level} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj erfarenhetsnivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="junior">Junior (1-3 år)</SelectItem>
+                      <SelectItem value="medior">Medior (3-5 år)</SelectItem>
+                      <SelectItem value="senior">Senior (5+ år)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="years_of_experience">År av erfarenhet *</Label>
+                  <Input
+                    id="years_of_experience"
+                    type="number"
+                    min="0"
+                    value={formData.years_of_experience}
+                    onChange={(e) => setFormData(prev => ({ ...prev, years_of_experience: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="industry_experience">Branschexpertis</Label>
+                <Input
+                  id="industry_experience"
+                  value={formData.industry_experience}
+                  onChange={(e) => setFormData(prev => ({ ...prev, industry_experience: e.target.value }))}
+                  placeholder="t.ex. Fintech, Banktjänster, E-handel, Sjukvård"
+                />
+              </div>
+            </div>
+
+            {/* Kompetenser */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Kompetenser</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="programming_languages">Programmeringsspråk *</Label>
+                  <Input
+                    id="programming_languages"
+                    value={formData.programming_languages}
+                    onChange={(e) => setFormData(prev => ({ ...prev, programming_languages: e.target.value }))}
+                    placeholder="t.ex. Java, JavaScript, TypeScript, Python"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="frameworks">Ramverk och bibliotek *</Label>
+                  <Input
+                    id="frameworks"
+                    value={formData.frameworks}
+                    onChange={(e) => setFormData(prev => ({ ...prev, frameworks: e.target.value }))}
+                    placeholder="t.ex. Spring Boot, React, Angular, Node.js"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="databases">Databaser</Label>
+                  <Input
+                    id="databases"
+                    value={formData.databases}
+                    onChange={(e) => setFormData(prev => ({ ...prev, databases: e.target.value }))}
+                    placeholder="t.ex. PostgreSQL, MySQL, MongoDB"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="tools_and_methods">Verktyg och metoder</Label>
+                  <Input
+                    id="tools_and_methods"
+                    value={formData.tools_and_methods}
+                    onChange={(e) => setFormData(prev => ({ ...prev, tools_and_methods: e.target.value }))}
+                    placeholder="t.ex. Git, Docker, Jenkins, Scrum, UML"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Utbildning */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Utbildning</h3>
+              <div>
+                <Label htmlFor="education">Utbildningsbakgrund</Label>
+                <Textarea
+                  id="education"
+                  value={formData.education}
+                  onChange={(e) => setFormData(prev => ({ ...prev, education: e.target.value }))}
+                  placeholder="t.ex. Ingenjörsutbildning i datavetenskap, ESPRIT | 2020-2023 | Ariana, Tunisien"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Språkkunskaper */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Språkkunskaper</h3>
+              <div>
+                <Label htmlFor="languages">Språk</Label>
+                <Input
+                  id="languages"
+                  value={formData.languages}
+                  onChange={(e) => setFormData(prev => ({ ...prev, languages: e.target.value }))}
+                  placeholder="t.ex. Svenska, Engelska, Arabiska, Franska"
+                />
+              </div>
+            </div>
+
+            {/* Portfolio och länkar */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Portfolio och länkar</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="portfolio_url">Portfolio URL</Label>
+                  <Input
+                    id="portfolio_url"
+                    type="url"
+                    value={formData.portfolio_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, portfolio_url: e.target.value }))}
+                    placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="linkedin_url">LinkedIn URL</Label>
+                  <Input
+                    id="linkedin_url"
+                    type="url"
+                    value={formData.linkedin_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, linkedin_url: e.target.value }))}
+                    placeholder="https://linkedin.com/in/..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="github_url">GitHub URL</Label>
+                  <Input
+                    id="github_url"
+                    type="url"
+                    value={formData.github_url}
+                    onChange={(e) => setFormData(prev => ({ ...prev, github_url: e.target.value }))}
+                    placeholder="https://github.com/..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Anställningsform och timpris */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Anställningsform och timpris</h3>
+              <div>
+                <Label>Föredragen anställningsform</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                  {[
+                    { value: 'hourly', label: 'Timanställd' },
+                    { value: 'part_time', label: 'Deltid' },
+                    { value: 'full_time', label: 'Heltid' },
+                    { value: 'other', label: 'Övrigt' }
+                  ].map((type) => (
+                    <div key={type.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={type.value}
+                        checked={formData.preferred_employment_types.includes(type.value)}
+                        onCheckedChange={(checked) => handleEmploymentTypeChange(type.value, Boolean(checked))}
+                      />
+                      <Label htmlFor={type.value}>{type.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="hourly_rate">Timpris (SEK)</Label>
                 <Input
@@ -262,68 +388,20 @@ export const DeveloperRegistrationForm = () => {
                   placeholder="t.ex. 850"
                 />
               </div>
-              <div>
-                <Label htmlFor="location">Plats</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  placeholder="t.ex. Tunis, Tunisien"
-                />
-              </div>
             </div>
 
-            <div>
-              <Label>Föredragen anställningsform</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                {[
-                  { value: 'hourly', label: 'Timanställd' },
-                  { value: 'part_time', label: 'Deltid' },
-                  { value: 'full_time', label: 'Heltid' },
-                  { value: 'other', label: 'Övrigt' }
-                ].map((type) => (
-                  <div key={type.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={type.value}
-                      checked={formData.preferred_employment_types.includes(type.value)}
-                      onCheckedChange={(checked) => handleEmploymentTypeChange(type.value, Boolean(checked))}
-                    />
-                    <Label htmlFor={type.value}>{type.label}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="languages">Språk</Label>
-                <Input
-                  id="languages"
-                  value={formData.languages}
-                  onChange={(e) => setFormData(prev => ({ ...prev, languages: e.target.value }))}
-                  placeholder="t.ex. Svenska, Engelska, Arabiska, Franska"
-                />
-              </div>
+            {/* Certifieringar */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Certifieringar</h3>
               <div>
                 <Label htmlFor="certifications">Certifieringar</Label>
                 <Input
                   id="certifications"
                   value={formData.certifications}
                   onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value }))}
-                  placeholder="t.ex. AWS Certified, Google Cloud"
+                  placeholder="t.ex. AWS Certified, Google Cloud, Oracle Certified"
                 />
               </div>
-            </div>
-
-            <div>
-              <Label htmlFor="education">Utbildning</Label>
-              <Textarea
-                id="education"
-                value={formData.education}
-                onChange={(e) => setFormData(prev => ({ ...prev, education: e.target.value }))}
-                placeholder="Beskriv din utbildningsbakgrund"
-                rows={3}
-              />
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
