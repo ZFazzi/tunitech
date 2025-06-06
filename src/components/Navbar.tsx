@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, Globe, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -17,6 +16,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCustomer, setIsCustomer] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
   const { user, signOut } = useAuth();
 
@@ -32,18 +32,29 @@ export const Navbar = () => {
     const checkUserType = async () => {
       if (user) {
         try {
+          // Check if user is a customer
           const { data: customer } = await supabase
             .from('customers')
             .select('id')
             .eq('user_id', user.id)
             .single();
           
+          // Check if user is a developer
+          const { data: developer } = await supabase
+            .from('developers')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+          
           setIsCustomer(!!customer);
+          setIsDeveloper(!!developer);
         } catch (error) {
           setIsCustomer(false);
+          setIsDeveloper(false);
         }
       } else {
         setIsCustomer(false);
+        setIsDeveloper(false);
       }
     };
 
@@ -90,6 +101,14 @@ export const Navbar = () => {
               {/* Customer profile link when logged in as customer */}
               {user && isCustomer && (
                 <NavLink to="/customer-dashboard">
+                  <User size={16} className="mr-1" />
+                  {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
+                </NavLink>
+              )}
+              
+              {/* Developer profile link when logged in as developer */}
+              {user && isDeveloper && (
+                <NavLink to="/developer-dashboard">
                   <User size={16} className="mr-1" />
                   {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
                 </NavLink>
@@ -199,6 +218,14 @@ export const Navbar = () => {
           {/* Customer profile link in mobile menu */}
           {user && isCustomer && (
             <MobileNavLink to="/customer-dashboard" onClick={() => setIsOpen(false)}>
+              <User size={18} className="mr-2" />
+              {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
+            </MobileNavLink>
+          )}
+          
+          {/* Developer profile link in mobile menu */}
+          {user && isDeveloper && (
+            <MobileNavLink to="/developer-dashboard" onClick={() => setIsOpen(false)}>
               <User size={18} className="mr-2" />
               {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
             </MobileNavLink>
