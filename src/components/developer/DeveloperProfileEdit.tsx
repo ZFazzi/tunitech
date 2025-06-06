@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageEditor } from './ImageEditor';
 import { toast } from 'sonner';
 import { Upload, X } from 'lucide-react';
 
@@ -54,6 +55,8 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [profilePictureUrl, setProfilePictureUrl] = useState(developer.profile_picture_url);
+  const [showImageEditor, setShowImageEditor] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const { user } = useAuth();
 
   const form = useForm<ProfileFormData>({
@@ -92,14 +95,22 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
+    // Show image editor instead of uploading directly
+    setSelectedImageFile(file);
+    setShowImageEditor(true);
+  };
+
+  const handleImageSave = async (editedFile: File) => {
+    if (!user) return;
+
     setUploadingImage(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = editedFile.name.split('.').pop();
       const fileName = `${user.id}/profile.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('profile-pictures')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, editedFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 
@@ -171,7 +182,7 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
                 <Label htmlFor="profile-picture" className="cursor-pointer">
                   <div className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     <Upload className="w-4 h-4" />
-                    <span>{uploadingImage ? 'Laddar upp...' : 'Ladda upp bild'}</span>
+                    <span>{uploadingImage ? 'Laddar upp...' : 'Ladda upp & redigera bild'}</span>
                   </div>
                 </Label>
                 <input
@@ -183,7 +194,7 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
                   disabled={uploadingImage}
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  JPG, PNG eller GIF. Max 5MB.
+                  JPG, PNG eller GIF. Max 5MB. Du kan beskära och redigera bilden.
                 </p>
               </div>
             </div>
@@ -464,6 +475,14 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
           </form>
         </CardContent>
       </Card>
+
+      {/* Image Editor Dialog */}
+      <ImageEditor
+        isOpen={showImageEditor}
+        onClose={() => setShowImageEditor(false)}
+        imageFile={selectedImageFile}
+        onSave={handleImageSave}
+      />
     </div>
   );
 };
