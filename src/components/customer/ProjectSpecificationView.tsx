@@ -13,35 +13,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { ArrowLeft, Edit, Save, X } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
 
-interface ProjectRequirement {
-  id: string;
-  project_description: string;
-  technical_skills: string;
-  experience_level: string;
-  industry_experience_required: boolean;
-  industry_type: string;
-  employment_type: string;
-  employment_type_other: string;
-  start_date: string;
-  project_duration: string;
-  has_budget: boolean;
-  budget_amount: string;
-  project_type: string;
-  required_resources: string;
-  security_requirements: string;
-  project_risks: string;
-  additional_comments: string;
-  created_at: string;
-  updated_at: string;
-}
+type ProjectRequirement = Database['public']['Tables']['project_requirements']['Row'];
+type ProjectRequirementUpdate = Database['public']['Tables']['project_requirements']['Update'];
 
 export const ProjectSpecificationView = () => {
   const [project, setProject] = useState<ProjectRequirement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<Partial<ProjectRequirement>>({});
+  const [formData, setFormData] = useState<ProjectRequirementUpdate>({});
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -92,12 +74,14 @@ export const ProjectSpecificationView = () => {
 
     setSaving(true);
     try {
+      const updateData: ProjectRequirementUpdate = {
+        ...formData,
+        updated_at: new Date().toISOString()
+      };
+
       const { error } = await supabase
         .from('project_requirements')
-        .update({
-          ...formData,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', project.id);
 
       if (error) throw error;
@@ -172,9 +156,9 @@ export const ProjectSpecificationView = () => {
         <CardHeader>
           <CardTitle>Projektspecifikation</CardTitle>
           <CardDescription>
-            Skapad: {new Date(project.created_at).toLocaleDateString('sv-SE')}
+            Skapad: {new Date(project.created_at || '').toLocaleDateString('sv-SE')}
             {project.updated_at !== project.created_at && (
-              <> • Uppdaterad: {new Date(project.updated_at).toLocaleDateString('sv-SE')}</>
+              <> • Uppdaterad: {new Date(project.updated_at || '').toLocaleDateString('sv-SE')}</>
             )}
           </CardDescription>
         </CardHeader>
@@ -215,7 +199,9 @@ export const ProjectSpecificationView = () => {
               {isEditing ? (
                 <Select 
                   value={formData.experience_level} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
+                  onValueChange={(value: Database['public']['Enums']['experience_level']) => 
+                    setFormData(prev => ({ ...prev, experience_level: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -240,7 +226,9 @@ export const ProjectSpecificationView = () => {
               {isEditing ? (
                 <Select 
                   value={formData.employment_type} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, employment_type: value }))}
+                  onValueChange={(value: Database['public']['Enums']['employment_type']) => 
+                    setFormData(prev => ({ ...prev, employment_type: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -373,7 +361,9 @@ export const ProjectSpecificationView = () => {
             {isEditing ? (
               <Select 
                 value={formData.project_type} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, project_type: value }))}
+                onValueChange={(value: Database['public']['Enums']['project_type']) => 
+                  setFormData(prev => ({ ...prev, project_type: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
