@@ -119,7 +119,7 @@ export const DeveloperRegistrationForm = () => {
       const languagesArray = formData.languages.split(',').map(s => s.trim()).filter(s => s);
       const certificationsArray = formData.certifications.split(',').map(s => s.trim()).filter(s => s);
 
-      const { error } = await supabase
+      const { data: insertedDeveloper, error } = await supabase
         .from('developers')
         .insert([{
           user_id: user.id,
@@ -143,11 +143,35 @@ export const DeveloperRegistrationForm = () => {
           preferred_employment_types: formData.preferred_employment_types as any,
           available_for_work: true,
           is_approved: false
-        }]);
+        }])
+        .select()
+        .single();
 
       if (error) throw error;
       
-      toast.success('Utvecklarprofil skapad! Din profil väntar på godkännande.');
+      // Generate AI title after successful profile creation
+      try {
+        const { data, error: titleError } = await supabase.functions.invoke('generate-developer-title', {
+          body: {
+            developerId: insertedDeveloper.id,
+            cvSummary: formData.cv_summary,
+            technicalSkills: allTechnicalSkills,
+            experienceLevel: formData.experience_level
+          }
+        });
+
+        if (titleError) {
+          console.error('Error generating AI title:', titleError);
+          // Don't fail the whole process if AI title generation fails
+        } else {
+          console.log('AI title generated:', data?.title);
+        }
+      } catch (titleError) {
+        console.error('Failed to generate AI title:', titleError);
+        // Continue with success even if AI title generation fails
+      }
+      
+      toast.success('Utvecklarprofil skapad! Din profil väntar på godkännande och AI har genererat en passande rubrik för dig.');
       navigate('/developer-dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Något gick fel');

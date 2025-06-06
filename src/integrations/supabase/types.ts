@@ -135,6 +135,7 @@ export type Database = {
       }
       developers: {
         Row: {
+          ai_generated_title: string | null
           available_for_work: boolean | null
           certifications: string[] | null
           created_at: string | null
@@ -164,6 +165,7 @@ export type Database = {
           years_of_experience: number
         }
         Insert: {
+          ai_generated_title?: string | null
           available_for_work?: boolean | null
           certifications?: string[] | null
           created_at?: string | null
@@ -193,6 +195,7 @@ export type Database = {
           years_of_experience: number
         }
         Update: {
+          ai_generated_title?: string | null
           available_for_work?: boolean | null
           certifications?: string[] | null
           created_at?: string | null
