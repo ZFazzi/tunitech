@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,7 @@ export const ProjectRequirementForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +51,7 @@ export const ProjectRequirementForm = () => {
 
       if (!customer) {
         toast.error('Du måste skapa en kundprofil först');
+        navigate('/customer-onboarding');
         return;
       }
 
@@ -72,8 +74,15 @@ export const ProjectRequirementForm = () => {
         await supabase.rpc('generate_project_matches', { req_id: data.id });
       }
       
-      toast.success('Kravspecifikation skapad! Vi söker nu matchningar.');
+      toast.success('Kravspecifikation skapad! Du dirigeras nu till din kundpanel.');
+      
+      // Redirect to customer dashboard after successful creation
+      setTimeout(() => {
+        navigate('/customer-dashboard');
+      }, 1500);
+      
     } catch (error: any) {
+      console.error('Error creating project requirement:', error);
       toast.error(error.message || 'Något gick fel');
     } finally {
       setLoading(false);
