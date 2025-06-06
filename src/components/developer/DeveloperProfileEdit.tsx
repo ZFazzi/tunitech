@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageEditor } from './ImageEditor';
+import { SkillSelector } from './SkillSelector';
+import { IndustrySelector } from './IndustrySelector';
 import { toast } from 'sonner';
 import { Upload, X } from 'lucide-react';
 
@@ -26,8 +27,6 @@ const profileSchema = z.object({
   experience_level: z.enum(['junior', 'medior', 'senior']),
   years_of_experience: z.number().min(0, 'Års erfarenhet måste vara 0 eller mer'),
   hourly_rate: z.number().optional(),
-  technical_skills: z.string().min(1, 'Tekniska färdigheter krävs'),
-  industry_experience: z.string().optional(),
   languages: z.string().optional(),
   education: z.string().optional(),
   cv_summary: z.string().optional(),
@@ -47,6 +46,19 @@ interface DeveloperProfileEditProps {
   onCancel: () => void;
 }
 
+interface SelectedSkill {
+  skillCategoryId: string;
+  name: string;
+  proficiencyLevel: number;
+  yearsExperience: number;
+}
+
+interface SelectedIndustry {
+  industryCategoryId: string;
+  name: string;
+  yearsExperience: number;
+}
+
 export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
   developer,
   onSave,
@@ -57,6 +69,8 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
   const [profilePictureUrl, setProfilePictureUrl] = useState(developer.profile_picture_url);
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
+  const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([]);
   const { user } = useAuth();
 
   const form = useForm<ProfileFormData>({
@@ -70,8 +84,6 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
       experience_level: developer.experience_level,
       years_of_experience: developer.years_of_experience || 0,
       hourly_rate: developer.hourly_rate || undefined,
-      technical_skills: developer.technical_skills?.join(', ') || '',
-      industry_experience: developer.industry_experience?.join(', ') || '',
       languages: developer.languages?.join(', ') || '',
       education: developer.education || '',
       cv_summary: developer.cv_summary || '',
@@ -83,6 +95,55 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
       preferred_employment_types: developer.preferred_employment_types || [],
     },
   });
+
+  // Load existing skills and industries
+  React.useEffect(() => {
+    const loadExistingData = async () => {
+      if (!developer.id) return;
+
+      // Load skills
+      const { data: skills } = await supabase
+        .from('developer_skills')
+        .select(`
+          skill_category_id,
+          proficiency_level,
+          years_experience,
+          skill_categories (name)
+        `)
+        .eq('developer_id', developer.id);
+
+      if (skills) {
+        const mappedSkills = skills.map(skill => ({
+          skillCategoryId: skill.skill_category_id,
+          name: skill.skill_categories?.name || '',
+          proficiencyLevel: skill.proficiency_level,
+          yearsExperience: skill.years_experience
+        }));
+        setSelectedSkills(mappedSkills);
+      }
+
+      // Load industries
+      const { data: industries } = await supabase
+        .from('developer_industries')
+        .select(`
+          industry_category_id,
+          years_experience,
+          industry_categories (name)
+        `)
+        .eq('developer_id', developer.id);
+
+      if (industries) {
+        const mappedIndustries = industries.map(industry => ({
+          industryCategoryId: industry.industry_category_id,
+          name: industry.industry_categories?.name || '',
+          yearsExperience: industry.years_experience
+        }));
+        setSelectedIndustries(mappedIndustries);
+      }
+    };
+
+    loadExistingData();
+  }, [developer.id]);
 
   const employmentTypes = [
     { value: 'hourly' as const, label: 'Timanställd' },
@@ -134,9 +195,6 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
     try {
       const updateData = {
         ...data,
-        technical_skills: data.technical_skills.split(',').map(s => s.trim()).filter(s => s),
-        industry_experience: data.industry_experience ? 
-          data.industry_experience.split(',').map(s => s.trim()).filter(s => s) : null,
         languages: data.languages ? 
           data.languages.split(',').map(s => s.trim()).filter(s => s) : null,
         certifications: data.certifications ? 
@@ -152,6 +210,43 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
         .eq('id', developer.id);
 
       if (error) throw error;
+
+      // Update skills
+      await supabase
+        .from('developer_skills')
+        .delete()
+        .eq('developer_id', developer.id);
+
+      if (selectedSkills.length > 0) {
+        const skillsToInsert = selectedSkills.map(skill => ({
+          developer_id: developer.id,
+          skill_category_id: skill.skillCategoryId,
+          proficiency_level: skill.proficiencyLevel,
+          years_experience: skill.yearsExperience
+        }));
+
+        await supabase
+          .from('developer_skills')
+          .insert(skillsToInsert);
+      }
+
+      // Update industries
+      await supabase
+        .from('developer_industries')
+        .delete()
+        .eq('developer_id', developer.id);
+
+      if (selectedIndustries.length > 0) {
+        const industriesToInsert = selectedIndustries.map(industry => ({
+          developer_id: developer.id,
+          industry_category_id: industry.industryCategoryId,
+          years_experience: industry.yearsExperience
+        }));
+
+        await supabase
+          .from('developer_industries')
+          .insert(industriesToInsert);
+      }
 
       toast.success('Profil uppdaterad!');
       onSave();
@@ -309,45 +404,21 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
               </div>
             </div>
 
-            {/* Skills and Experience */}
+            {/* Skills Section */}
             <div>
-              <Label htmlFor="technical_skills">Tekniska färdigheter *</Label>
-              <Textarea
-                id="technical_skills"
-                {...form.register('technical_skills')}
-                placeholder="t.ex. React, TypeScript, Node.js, Python (separera med komma)"
-                className="mt-1"
+              <Label className="text-lg font-semibold">Tekniska färdigheter</Label>
+              <SkillSelector
+                selectedSkills={selectedSkills}
+                onSkillsChange={setSelectedSkills}
               />
-              <p className="text-sm text-gray-500 mt-1">
-                Separera färdigheter med komma
-              </p>
-              {form.formState.errors.technical_skills && (
-                <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.technical_skills.message}
-                </p>
-              )}
             </div>
 
+            {/* Industry Experience Section */}
             <div>
-              <Label htmlFor="industry_experience">Branschexperientet</Label>
-              <Textarea
-                id="industry_experience"
-                {...form.register('industry_experience')}
-                placeholder="t.ex. Fintech, E-handel, Sjukvård (separera med komma)"
-                className="mt-1"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Separera branscher med komma
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="languages">Språk</Label>
-              <Input
-                id="languages"
-                {...form.register('languages')}
-                placeholder="t.ex. Svenska, Engelska, Tyska (separera med komma)"
-                className="mt-1"
+              <Label className="text-lg font-semibold">Branschexperientet</Label>
+              <IndustrySelector
+                selectedIndustries={selectedIndustries}
+                onIndustriesChange={setSelectedIndustries}
               />
             </div>
 

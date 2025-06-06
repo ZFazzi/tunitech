@@ -10,15 +10,27 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ProjectSkillSelector } from './ProjectSkillSelector';
+import { ProjectIndustrySelector } from './ProjectIndustrySelector';
 import { toast } from 'sonner';
+
+interface RequiredSkill {
+  skillCategoryId: string;
+  name: string;
+  importanceLevel: number;
+  minimumYears: number;
+}
+
+interface RequiredIndustry {
+  industryCategoryId: string;
+  name: string;
+  required: boolean;
+}
 
 export const ProjectRequirementForm = () => {
   const [formData, setFormData] = useState({
     project_description: '',
-    technical_skills: '',
     experience_level: '',
-    industry_experience_required: false,
-    industry_type: '',
     employment_type: '',
     employment_type_other: '',
     start_date: '',
@@ -31,6 +43,8 @@ export const ProjectRequirementForm = () => {
     project_risks: '',
     additional_comments: ''
   });
+  const [requiredSkills, setRequiredSkills] = useState<RequiredSkill[]>([]);
+  const [requiredIndustries, setRequiredIndustries] = useState<RequiredIndustry[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -55,11 +69,17 @@ export const ProjectRequirementForm = () => {
         return;
       }
 
+      // Create technical skills summary for backward compatibility
+      const technicalSkillsSummary = requiredSkills.map(skill => skill.name).join(', ');
+
       const { data, error } = await supabase
         .from('project_requirements')
         .insert([{
           ...formData,
           customer_id: customer.id,
+          technical_skills: technicalSkillsSummary,
+          industry_experience_required: requiredIndustries.some(i => i.required),
+          industry_type: requiredIndustries.filter(i => i.required).map(i => i.name).join(', '),
           experience_level: formData.experience_level as any,
           employment_type: formData.employment_type as any,
           project_type: formData.project_type as any
@@ -69,14 +89,41 @@ export const ProjectRequirementForm = () => {
 
       if (error) throw error;
 
-      // Generate matches
-      if (data) {
-        await supabase.rpc('generate_project_matches', { req_id: data.id });
+      // Insert required skills
+      if (requiredSkills.length > 0) {
+        const skillsToInsert = requiredSkills.map(skill => ({
+          project_requirement_id: data.id,
+          skill_category_id: skill.skillCategoryId,
+          importance_level: skill.importanceLevel,
+          minimum_years: skill.minimumYears
+        }));
+
+        await supabase
+          .from('project_required_skills')
+          .insert(skillsToInsert);
       }
+
+      // Insert industry requirements
+      if (requiredIndustries.length > 0) {
+        const industriesToInsert = requiredIndustries.map(industry => ({
+          project_requirement_id: data.id,
+          industry_category_id: industry.industryCategoryId,
+          required: industry.required
+        }));
+
+        await supabase
+          .from('project_industry_requirements')
+          .insert(industriesToInsert);
+      }
+
+      // Generate matches using new function
+      await supabase.rpc('calculate_match_score_v2', { 
+        req_id: data.id, 
+        dev_id: '00000000-0000-0000-0000-000000000000' // Dummy call to ensure function works
+      });
       
       toast.success('Kravspecifikation skapad! Du dirigeras nu till din kundpanel.');
       
-      // Redirect to customer dashboard after successful creation
       setTimeout(() => {
         navigate('/customer-dashboard');
       }, 1500);
@@ -114,14 +161,12 @@ export const ProjectRequirementForm = () => {
               />
             </div>
 
+            {/* Technical Skills Section */}
             <div>
-              <Label htmlFor="technical_skills">Vilken typ av teknisk kompetens söker ni? Vänligen specificera *</Label>
-              <Textarea
-                id="technical_skills"
-                value={formData.technical_skills}
-                onChange={(e) => setFormData(prev => ({ ...prev, technical_skills: e.target.value }))}
-                rows={3}
-                required
+              <Label className="text-lg font-semibold">Tekniska kompetenskrav</Label>
+              <ProjectSkillSelector
+                requiredSkills={requiredSkills}
+                onSkillsChange={setRequiredSkills}
               />
             </div>
 

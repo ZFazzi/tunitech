@@ -62,10 +62,10 @@ export const ProjectIndustrySelector: React.FC<ProjectIndustrySelectorProps> = (
     }
   };
 
-  const toggleRequired = (industryCategoryId: string) => {
+  const updateIndustryRequired = (industryCategoryId: string, required: boolean) => {
     onIndustriesChange(requiredIndustries.map(industry => 
       industry.industryCategoryId === industryCategoryId 
-        ? { ...industry, required: !industry.required }
+        ? { ...industry, required }
         : industry
     ));
   };
@@ -78,9 +78,9 @@ export const ProjectIndustrySelector: React.FC<ProjectIndustrySelectorProps> = (
   return (
     <div className="space-y-4">
       <div className="bg-blue-50 p-4 rounded-lg">
-        <h4 className="font-semibold mb-2">Branschexperientet för projektet</h4>
+        <h4 className="font-semibold mb-2">Välj branscher där utvecklaren bör ha expertis</h4>
         <p className="text-sm text-gray-600">
-          Välj branscher där erfarenhet är önskvärd eller nödvändig för ditt projekt.
+          Markera de branscher där utvecklaren behöver ha erfarenhet för projektet.
         </p>
       </div>
 
@@ -108,12 +108,12 @@ export const ProjectIndustrySelector: React.FC<ProjectIndustrySelectorProps> = (
                 <div className="ml-6 p-3 bg-gray-50 rounded">
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id={`required-${industry.id}`}
+                      id={`${industry.id}-required`}
                       checked={selectedIndustry.required}
-                      onCheckedChange={() => toggleRequired(industry.id)}
+                      onCheckedChange={(checked) => updateIndustryRequired(industry.id, !!checked)}
                     />
-                    <Label htmlFor={`required-${industry.id}`} className="text-sm">
-                      Branschexperientet är <strong>nödvändig</strong> (inte bara önskvärd)
+                    <Label htmlFor={`${industry.id}-required`} className="text-sm">
+                      Obligatorisk branschexpertis
                     </Label>
                   </div>
                 </div>
@@ -128,8 +128,8 @@ export const ProjectIndustrySelector: React.FC<ProjectIndustrySelectorProps> = (
           <h4 className="font-semibold mb-2">Valda branschkrav:</h4>
           <div className="flex flex-wrap gap-2">
             {requiredIndustries.map((industry) => (
-              <Badge key={industry.industryCategoryId} variant={industry.required ? "default" : "secondary"}>
-                {industry.name} {industry.required ? "(Nödvändig)" : "(Önskvärd)"}
+              <Badge key={industry.industryCategoryId} variant="secondary">
+                {industry.name} {industry.required ? '(Obligatorisk)' : '(Önskvärd)'}
               </Badge>
             ))}
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -10,8 +9,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { SkillSelector } from './SkillSelector';
+import { IndustrySelector } from './IndustrySelector';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+
+interface SelectedSkill {
+  skillCategoryId: string;
+  name: string;
+  proficiencyLevel: number;
+  yearsExperience: number;
+}
+
+interface SelectedIndustry {
+  industryCategoryId: string;
+  name: string;
+  yearsExperience: number;
+}
 
 export const DeveloperRegistrationForm = () => {
   const [step, setStep] = useState(1); // 1 for account creation, 2 for profile
@@ -27,8 +41,6 @@ export const DeveloperRegistrationForm = () => {
     phone: '',
     experience_level: '',
     years_of_experience: '',
-    technical_skills: '',
-    industry_experience: '',
     cv_summary: '',
     portfolio_url: '',
     linkedin_url: '',
@@ -44,6 +56,8 @@ export const DeveloperRegistrationForm = () => {
     databases: '',
     tools_and_methods: ''
   });
+  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
+  const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([]);
   const [loading, setLoading] = useState(false);
   const { user, signUp } = useAuth();
   const navigate = useNavigate();
@@ -107,15 +121,9 @@ export const DeveloperRegistrationForm = () => {
     setLoading(true);
 
     try {
-      // Combine all technical skills into one array
-      const programmingLanguages = formData.programming_languages.split(',').map(s => s.trim()).filter(s => s);
-      const frameworks = formData.frameworks.split(',').map(s => s.trim()).filter(s => s);
-      const databases = formData.databases.split(',').map(s => s.trim()).filter(s => s);
-      const toolsAndMethods = formData.tools_and_methods.split(',').map(s => s.trim()).filter(s => s);
+      // Create technical skills array from selected skills
+      const allTechnicalSkills = selectedSkills.map(skill => skill.name);
       
-      const allTechnicalSkills = [...programmingLanguages, ...frameworks, ...databases, ...toolsAndMethods];
-      
-      const industryArray = formData.industry_experience.split(',').map(s => s.trim()).filter(s => s);
       const languagesArray = formData.languages.split(',').map(s => s.trim()).filter(s => s);
       const certificationsArray = formData.certifications.split(',').map(s => s.trim()).filter(s => s);
 
@@ -130,7 +138,7 @@ export const DeveloperRegistrationForm = () => {
           experience_level: formData.experience_level as any,
           years_of_experience: parseInt(formData.years_of_experience),
           technical_skills: allTechnicalSkills,
-          industry_experience: industryArray,
+          industry_experience: [], // Will be populated via relationship
           cv_summary: formData.cv_summary,
           portfolio_url: formData.portfolio_url,
           linkedin_url: formData.linkedin_url,
@@ -148,6 +156,33 @@ export const DeveloperRegistrationForm = () => {
         .single();
 
       if (error) throw error;
+
+      // Insert selected skills
+      if (selectedSkills.length > 0) {
+        const skillsToInsert = selectedSkills.map(skill => ({
+          developer_id: insertedDeveloper.id,
+          skill_category_id: skill.skillCategoryId,
+          proficiency_level: skill.proficiencyLevel,
+          years_experience: skill.yearsExperience
+        }));
+
+        await supabase
+          .from('developer_skills')
+          .insert(skillsToInsert);
+      }
+
+      // Insert selected industries
+      if (selectedIndustries.length > 0) {
+        const industriesToInsert = selectedIndustries.map(industry => ({
+          developer_id: insertedDeveloper.id,
+          industry_category_id: industry.industryCategoryId,
+          years_experience: industry.yearsExperience
+        }));
+
+        await supabase
+          .from('developer_industries')
+          .insert(industriesToInsert);
+      }
       
       // Generate AI title after successful profile creation
       try {
@@ -392,49 +427,19 @@ export const DeveloperRegistrationForm = () => {
             {/* Kompetenser */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Kompetenser</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="programming_languages">Programmeringsspråk *</Label>
-                  <Input
-                    id="programming_languages"
-                    value={formData.programming_languages}
-                    onChange={(e) => setFormData(prev => ({ ...prev, programming_languages: e.target.value }))}
-                    placeholder="t.ex. Java, JavaScript, TypeScript, Python"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="frameworks">Ramverk och bibliotek *</Label>
-                  <Input
-                    id="frameworks"
-                    value={formData.frameworks}
-                    onChange={(e) => setFormData(prev => ({ ...prev, frameworks: e.target.value }))}
-                    placeholder="t.ex. Spring Boot, React, Angular, Node.js"
-                    required
-                  />
-                </div>
-              </div>
+              <SkillSelector
+                selectedSkills={selectedSkills}
+                onSkillsChange={setSelectedSkills}
+              />
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="databases">Databaser</Label>
-                  <Input
-                    id="databases"
-                    value={formData.databases}
-                    onChange={(e) => setFormData(prev => ({ ...prev, databases: e.target.value }))}
-                    placeholder="t.ex. PostgreSQL, MySQL, MongoDB"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tools_and_methods">Verktyg och metoder</Label>
-                  <Input
-                    id="tools_and_methods"
-                    value={formData.tools_and_methods}
-                    onChange={(e) => setFormData(prev => ({ ...prev, tools_and_methods: e.target.value }))}
-                    placeholder="t.ex. Git, Docker, Jenkins, Scrum, UML"
-                  />
-                </div>
-              </div>
+            {/* Branschexpertis */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-primary">Branschexpertis</h3>
+              <IndustrySelector
+                selectedIndustries={selectedIndustries}
+                onIndustriesChange={setSelectedIndustries}
+              />
             </div>
 
             <div className="space-y-4">
