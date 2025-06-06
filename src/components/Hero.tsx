@@ -19,7 +19,6 @@ export const Hero = () => {
   
   // These phrases will always be in English regardless of language selection
   const tagline = "Talented Minds, Tailored Solutions";
-  const subTagline = "Digital Experts Delivered on Demand";
   
   // Paragraph text changes based on language
   const getParagraphText = () => {
@@ -71,10 +70,6 @@ export const Hero = () => {
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
             <GradientText>{tagline}</GradientText>
           </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-            {subTagline}
-          </p>
           
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
             {getParagraphText()}
