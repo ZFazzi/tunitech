@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -26,10 +27,21 @@ export const Navbar = () => {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? "bg-tunitech-dark/90 backdrop-blur-lg shadow-lg" : ""}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
-        <div className="w-full flex justify-center h-16 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo - positioned to the left */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
+              <img
+                src="/lovable-uploads/36dd338f-a61a-41d1-ad24-3126f66bd23b.png"
+                alt="Tunitech Logo"
+                className="h-8 md:h-10 hover:opacity-80 transition-opacity duration-200"
+              />
+            </Link>
+          </div>
+
           {/* Desktop menu - centered */}
-          <div className="hidden md:flex items-center justify-center">
+          <div className="hidden md:flex items-center justify-center flex-1">
             <div className="flex items-center space-x-4 px-8 py-2 rounded-full bg-tunitech-dark/70 backdrop-blur-md border border-white/10 shadow-md">
               <NavLink to="/about">{t.aboutUs}</NavLink>
               <NavLink to="/services">{t.ourTalents}</NavLink>
@@ -66,7 +78,7 @@ export const Navbar = () => {
           </div>
           
           {/* Mobile language selector - placed to the right */}
-          <div className="md:hidden absolute right-16 top-4">
+          <div className="md:hidden flex items-center space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger className="text-gray-300 hover:text-white p-2 bg-tunitech-dark/80 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                 <Globe size={18} />
@@ -92,10 +104,8 @@ export const Navbar = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-          
-          {/* Mobile menu button - positioned absolutely */}
-          <div className="md:hidden absolute right-4 top-4">
+            
+            {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-300 hover:text-white p-2 bg-tunitech-dark/80 backdrop-blur-md rounded-full border border-white/10"
