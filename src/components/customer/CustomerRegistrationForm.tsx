@@ -1,403 +1,336 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle, Copy } from 'lucide-react';
 
 export const CustomerRegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    // Company information
-    company_name: '',
-    org_number: '',
-    contact_name: '',
-    role_title: '',
-    email: '',
-    phone: '',
-    
-    // Project requirements
-    project_description: '',
-    technical_skills: '',
-    experience_level: '',
-    industry_experience_required: false,
-    industry_type: '',
-    employment_type: '',
-    employment_type_other: '',
-    start_date: '',
-    project_duration: '',
-    has_budget: false,
-    budget_amount: '',
-    project_type: '',
-    required_resources: '',
-    security_requirements: '',
-    project_risks: '',
-    additional_comments: ''
-  });
+  // Auth fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Customer profile fields
+  const [companyName, setCompanyName] = useState('');
+  const [orgNumber, setOrgNumber] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [roleTitle, setRoleTitle] = useState('');
+  const [phone, setPhone] = useState('');
+  
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registeredCredentials, setRegisteredCredentials] = useState<{email: string, password: string} | null>(null);
+  
+  const { signUp, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // If user is already logged in, just show customer profile form
+  const [showProfileForm, setShowProfileForm] = useState(!!user);
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${type} kopierat till urklipp`);
+  };
+
+  const handleAccountCreation = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     
+    if (password !== confirmPassword) {
+      toast.error('Lösenorden matchar inte');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Lösenordet måste vara minst 6 tecken');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // First, create the customer profile
-      const { data: customer, error: customerError } = await supabase
-        .from('customers')
-        .insert([{
-          user_id: user.id,
-          company_name: formData.company_name,
-          org_number: formData.org_number,
-          contact_name: formData.contact_name,
-          role_title: formData.role_title,
-          email: formData.email,
-          phone: formData.phone
-        }])
-        .select()
-        .single();
-
-      if (customerError) throw customerError;
-
-      // Then, create the project requirement using the customer data
-      const { data: projectReq, error: projectError } = await supabase
-        .from('project_requirements')
-        .insert([{
-          customer_id: customer.id,
-          project_description: formData.project_description,
-          technical_skills: formData.technical_skills,
-          experience_level: formData.experience_level as any,
-          industry_experience_required: formData.industry_experience_required,
-          industry_type: formData.industry_type,
-          employment_type: formData.employment_type as any,
-          employment_type_other: formData.employment_type_other,
-          start_date: formData.start_date,
-          project_duration: formData.project_duration,
-          has_budget: formData.has_budget,
-          budget_amount: formData.budget_amount,
-          project_type: formData.project_type as any,
-          required_resources: formData.required_resources,
-          security_requirements: formData.security_requirements,
-          project_risks: formData.project_risks,
-          additional_comments: formData.additional_comments
-        }])
-        .select()
-        .single();
-
-      if (projectError) throw projectError;
-
-      // Generate matches for the project
-      if (projectReq) {
-        await supabase.rpc('generate_project_matches', { req_id: projectReq.id });
-      }
+      const redirectUrl = `${window.location.origin}/auth`;
       
-      toast.success('Kundprofil och projekt skapat! Omdirigerar till kundpanel...');
+      const { error } = await signUp(email, password, { 
+        user_type: 'customer',
+        emailRedirectTo: redirectUrl
+      });
       
-      // Redirect to customer dashboard
-      setTimeout(() => {
-        navigate('/customer-dashboard');
-      }, 1500);
+      if (error) throw error;
       
+      setRegisteredCredentials({ email, password });
+      setRegistrationSuccess(true);
+      
+      toast.success('Konto skapat! Kontrollera din e-post för verifiering.');
     } catch (error: any) {
       console.error('Registration error:', error);
-      toast.error(error.message || 'Något gick fel vid registrering');
+      if (error.message?.includes('User already registered')) {
+        toast.error('En användare med denna e-postadress finns redan. Försök logga in istället.');
+      } else {
+        toast.error(error.message || 'Något gick fel vid registrering');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const handleCustomerProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('customers')
+        .insert({
+          user_id: user?.id,
+          company_name: companyName,
+          org_number: orgNumber || null,
+          contact_name: contactName,
+          role_title: roleTitle,
+          email: email || user?.email,
+          phone,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Kundprofil skapad framgångsrikt!');
+      navigate('/customer-dashboard');
+    } catch (error: any) {
+      console.error('Error creating customer profile:', error);
+      toast.error('Kunde inte skapa kundprofil: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Success screen after account creation
+  if (registrationSuccess && registeredCredentials) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-2xl mx-auto p-6"
+      >
+        <Card>
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            <CardTitle className="text-green-600">Konto skapat!</CardTitle>
+            <CardDescription>
+              Ditt konto har skapats. Här är dina inloggningsuppgifter:
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+              <div>
+                <Label className="text-sm font-medium text-gray-600">E-postadress</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input 
+                    value={registeredCredentials.email} 
+                    readOnly 
+                    className="bg-white"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => copyToClipboard(registeredCredentials.email, 'E-postadress')}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div>
+                <Label className="text-sm font-medium text-gray-600">Lösenord</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input 
+                    value={registeredCredentials.password} 
+                    readOnly 
+                    className="bg-white"
+                    type="text"
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => copyToClipboard(registeredCredentials.password, 'Lösenord')}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-600">
+                📧 Kontrollera din e-post och klicka på verifieringslänken
+              </p>
+              <p className="text-xs text-gray-500">
+                Efter verifiering kan du logga in och slutföra din kundprofil
+              </p>
+            </div>
+            
+            <Button 
+              onClick={() => navigate('/auth')}
+              className="w-full"
+            >
+              Gå till inloggning
+            </Button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto p-6"
+      className="max-w-2xl mx-auto p-6"
     >
       <Card>
         <CardHeader>
-          <CardTitle>Kundregistrering</CardTitle>
-          <CardDescription>Fyll i era företagsuppgifter och beskriv ert projekt</CardDescription>
+          <CardTitle>
+            {user ? 'Slutför din kundprofil' : 'Registrera dig som kund'}
+          </CardTitle>
+          <CardDescription>
+            {user 
+              ? 'Fyll i dina företagsuppgifter för att slutföra registreringen'
+              : 'Skapa ett konto och registrera ditt företag'
+            }
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Company Information Section */}
-            <div className="border-b pb-6">
-              <h3 className="text-lg font-semibold mb-4">Företagsinformation</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="space-y-6">
+          {!user && (
+            <>
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Skapa konto</h3>
+                <form onSubmit={handleAccountCreation} className="space-y-4">
+                  <div>
+                    <Label htmlFor="email">E-postadress</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="din@epost.se"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="password">Lösenord</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder="Minst 6 tecken"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder="Upprepa lösenordet"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Skapar konto...' : 'Skapa konto'}
+                  </Button>
+                </form>
+              </div>
+              
+              <Separator />
+              
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Har du redan ett konto?{' '}
+                  <Button variant="link" onClick={() => navigate('/auth')} className="p-0">
+                    Logga in här
+                  </Button>
+                </p>
+              </div>
+            </>
+          )}
+
+          {user && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Företagsinformation</h3>
+              <form onSubmit={handleCustomerProfileSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="company_name">Företagsnamn *</Label>
+                  <Label htmlFor="companyName">Företagsnamn *</Label>
                   <Input
-                    id="company_name"
-                    value={formData.company_name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
+                    id="companyName"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
                     required
+                    placeholder="Ditt företagsnamn"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="org_number">Organisationsnummer</Label>
+                  <Label htmlFor="orgNumber">Organisationsnummer</Label>
                   <Input
-                    id="org_number"
-                    value={formData.org_number}
-                    onChange={(e) => setFormData(prev => ({ ...prev, org_number: e.target.value }))}
+                    id="orgNumber"
+                    value={orgNumber}
+                    onChange={(e) => setOrgNumber(e.target.value)}
+                    placeholder="123456-7890"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="contact_name">Kontaktperson *</Label>
+                  <Label htmlFor="contactName">Kontaktperson *</Label>
                   <Input
-                    id="contact_name"
-                    value={formData.contact_name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, contact_name: e.target.value }))}
+                    id="contactName"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                     required
+                    placeholder="För- och efternamn"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="role_title">Roll/Titel *</Label>
+                  <Label htmlFor="roleTitle">Titel/Roll *</Label>
                   <Input
-                    id="role_title"
-                    value={formData.role_title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, role_title: e.target.value }))}
+                    id="roleTitle"
+                    value={roleTitle}
+                    onChange={(e) => setRoleTitle(e.target.value)}
                     required
+                    placeholder="VD, Projektledare, etc."
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">E-post *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Telefon *</Label>
+                  <Label htmlFor="phone">Telefonnummer *</Label>
                   <Input
                     id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     required
+                    placeholder="070-123 45 67"
                   />
                 </div>
-              </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Sparar...' : 'Slutför registrering'}
+                </Button>
+              </form>
             </div>
-
-            {/* Project Requirements Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Projektönskemål</h3>
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="project_description">Vänligen beskriv projektet eller uppdragets mål och syfte? *</Label>
-                  <Textarea
-                    id="project_description"
-                    value={formData.project_description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, project_description: e.target.value }))}
-                    rows={4}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="technical_skills">Vilken typ av teknisk kompetens söker ni? Vänligen specificera *</Label>
-                  <Textarea
-                    id="technical_skills"
-                    value={formData.technical_skills}
-                    onChange={(e) => setFormData(prev => ({ ...prev, technical_skills: e.target.value }))}
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label>Vilken erfarenhetsnivå söker ni? *</Label>
-                  <Select 
-                    value={formData.experience_level} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Välj erfarenhetsnivå" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="junior">Junior (1-3 års erfarenhet)</SelectItem>
-                      <SelectItem value="medior">Medior (3-5 års erfarenhet)</SelectItem>
-                      <SelectItem value="senior">Senior (5+ års erfarenhet)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="industry_experience"
-                      checked={formData.industry_experience_required}
-                      onCheckedChange={(checked) => 
-                        setFormData(prev => ({ ...prev, industry_experience_required: Boolean(checked) }))
-                      }
-                    />
-                    <Label htmlFor="industry_experience">Behöver konsulterna ha erfarenhet av er bransch?</Label>
-                  </div>
-                  
-                  {formData.industry_experience_required && (
-                    <div>
-                      <Label htmlFor="industry_type">Vilken bransch?</Label>
-                      <Input
-                        id="industry_type"
-                        value={formData.industry_type}
-                        onChange={(e) => setFormData(prev => ({ ...prev, industry_type: e.target.value }))}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <Label>Vilken anställningsform önskar ni? *</Label>
-                  <Select 
-                    value={formData.employment_type} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, employment_type: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Välj anställningsform" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hourly">Timanställd</SelectItem>
-                      <SelectItem value="part_time">Deltidsanställd</SelectItem>
-                      <SelectItem value="full_time">Heltidsanställd</SelectItem>
-                      <SelectItem value="other">Övrigt</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  {formData.employment_type === 'other' && (
-                    <Input
-                      className="mt-2"
-                      placeholder="Specificera anställningsform"
-                      value={formData.employment_type_other}
-                      onChange={(e) => setFormData(prev => ({ ...prev, employment_type_other: e.target.value }))}
-                    />
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="start_date">När är ni i behov av en konsult senast? *</Label>
-                    <Input
-                      id="start_date"
-                      type="date"
-                      value={formData.start_date}
-                      onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="project_duration">Hur länge önskar ni att göra avtal med personen? *</Label>
-                    <Input
-                      id="project_duration"
-                      value={formData.project_duration}
-                      onChange={(e) => setFormData(prev => ({ ...prev, project_duration: e.target.value }))}
-                      placeholder="t.ex. 6 månader, 1 år"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="has_budget"
-                      checked={formData.has_budget}
-                      onCheckedChange={(checked) => 
-                        setFormData(prev => ({ ...prev, has_budget: Boolean(checked) }))
-                      }
-                    />
-                    <Label htmlFor="has_budget">Har ni en fast budget för projektet?</Label>
-                  </div>
-                  
-                  {formData.has_budget && (
-                    <div>
-                      <Label htmlFor="budget_amount">Vänligen ange den ungefärliga budgeten</Label>
-                      <Input
-                        id="budget_amount"
-                        value={formData.budget_amount}
-                        onChange={(e) => setFormData(prev => ({ ...prev, budget_amount: e.target.value }))}
-                        placeholder="t.ex. 500 000 SEK"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <Label>Är uppdraget en fastprisupphandling eller timbaserad? *</Label>
-                  <Select 
-                    value={formData.project_type} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, project_type: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Välj projekttyp" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="fixed_price">Fastprisupphandling</SelectItem>
-                      <SelectItem value="hourly_based">Timbaserad</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="required_resources">Finns det några resurser eller tillgångar som ni förväntar er att vi ska bidra med? *</Label>
-                  <Textarea
-                    id="required_resources"
-                    value={formData.required_resources}
-                    onChange={(e) => setFormData(prev => ({ ...prev, required_resources: e.target.value }))}
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="security_requirements">Finns det några säkerhets- eller integritetskrav som vi behöver vara medvetna om? *</Label>
-                  <Textarea
-                    id="security_requirements"
-                    value={formData.security_requirements}
-                    onChange={(e) => setFormData(prev => ({ ...prev, security_requirements: e.target.value }))}
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="project_risks">Finns det risker eller osäkerheter i projektet som ni redan nu vill uppmärksamma? *</Label>
-                  <Textarea
-                    id="project_risks"
-                    value={formData.project_risks}
-                    onChange={(e) => setFormData(prev => ({ ...prev, project_risks: e.target.value }))}
-                    rows={3}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="additional_comments">Övriga önskemål eller kommentarer</Label>
-                  <Textarea
-                    id="additional_comments"
-                    value={formData.additional_comments}
-                    onChange={(e) => setFormData(prev => ({ ...prev, additional_comments: e.target.value }))}
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Registrerar...' : 'Registrera och skapa projekt'}
-            </Button>
-          </form>
+          )}
         </CardContent>
       </Card>
     </motion.div>
