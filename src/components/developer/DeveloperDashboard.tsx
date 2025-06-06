@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -168,16 +167,24 @@ export const DeveloperDashboard = () => {
       className="max-w-6xl mx-auto p-6"
     >
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Välkommen, {developer.first_name}!
-        </h1>
-        <div className="flex items-center space-x-4">
-          <Badge variant={developer.is_approved ? 'default' : 'secondary'}>
-            {developer.is_approved ? 'Godkänd' : 'Väntar på godkännande'}
-          </Badge>
-          <Badge variant={developer.available_for_work ? 'default' : 'secondary'}>
-            {developer.available_for_work ? 'Tillgänglig' : 'Ej tillgänglig'}
-          </Badge>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Välkommen, {developer.first_name}!
+            </h1>
+            <div className="flex items-center space-x-4">
+              <Badge variant={developer.is_approved ? 'default' : 'secondary'}>
+                {developer.is_approved ? 'Godkänd' : 'Väntar på godkännande'}
+              </Badge>
+              <Badge variant={developer.available_for_work ? 'default' : 'secondary'}>
+                {developer.available_for_work ? 'Tillgänglig' : 'Ej tillgänglig'}
+              </Badge>
+            </div>
+          </div>
+          <Button onClick={() => navigate('/developer-profile')} variant="outline">
+            <Star className="w-4 h-4 mr-2" />
+            Min Profil
+          </Button>
         </div>
       </div>
 

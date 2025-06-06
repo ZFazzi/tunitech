@@ -18,6 +18,7 @@ import DeveloperOnboarding from "./pages/DeveloperOnboarding";
 import ProjectRequirement from "./pages/ProjectRequirement";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DeveloperDashboard from "./pages/DeveloperDashboard";
+import DeveloperProfile from "./pages/DeveloperProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

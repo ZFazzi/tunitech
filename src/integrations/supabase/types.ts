@@ -99,6 +99,7 @@ export type Database = {
           preferred_employment_types:
             | Database["public"]["Enums"]["employment_type"][]
             | null
+          profile_picture_url: string | null
           technical_skills: string[]
           updated_at: string | null
           user_id: string | null
@@ -127,6 +128,7 @@ export type Database = {
           preferred_employment_types?:
             | Database["public"]["Enums"]["employment_type"][]
             | null
+          profile_picture_url?: string | null
           technical_skills: string[]
           updated_at?: string | null
           user_id?: string | null
@@ -155,6 +157,7 @@ export type Database = {
           preferred_employment_types?:
             | Database["public"]["Enums"]["employment_type"][]
             | null
+          profile_picture_url?: string | null
           technical_skills?: string[]
           updated_at?: string | null
           user_id?: string | null
