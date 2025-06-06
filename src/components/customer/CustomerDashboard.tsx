@@ -56,40 +56,67 @@ export const CustomerDashboard = () => {
   }, [selectedProject]);
 
   const fetchProjects = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found');
+      return;
+    }
+
+    console.log('Fetching projects for user:', user.id);
 
     try {
-      const { data: customer } = await supabase
+      // First get customer profile
+      const { data: customer, error: customerError } = await supabase
         .from('customers')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
+      console.log('Customer lookup result:', { customer, customerError });
+
+      if (customerError) {
+        if (customerError.code === 'PGRST116') {
+          console.log('No customer profile found, redirecting to onboarding');
+          navigate('/customer-onboarding');
+          return;
+        }
+        throw customerError;
+      }
+
       if (!customer) {
+        console.log('Customer is null, redirecting to onboarding');
         navigate('/customer-onboarding');
         return;
       }
 
+      console.log('Found customer:', customer.id);
+
+      // Then get project requirements
       const { data, error } = await supabase
         .from('project_requirements')
         .select('*')
         .eq('customer_id', customer.id)
         .order('created_at', { ascending: false });
 
+      console.log('Project requirements query result:', { data, error });
+
       if (error) throw error;
+      
+      console.log('Found projects:', data?.length || 0);
       setProjects(data || []);
       
       if (data && data.length > 0 && !selectedProject) {
         setSelectedProject(data[0].id);
       }
     } catch (error: any) {
-      toast.error('Kunde inte hämta projekt');
+      console.error('Error fetching projects:', error);
+      toast.error('Kunde inte hämta projekt: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchMatches = async (projectId: string) => {
+    console.log('Fetching matches for project:', projectId);
     try {
       const { data, error } = await supabase
         .from('project_matches')
@@ -111,9 +138,12 @@ export const CustomerDashboard = () => {
         .eq('project_requirement_id', projectId)
         .order('match_score', { ascending: false });
 
+      console.log('Matches query result:', { data, error });
+
       if (error) throw error;
       setMatches(data || []);
     } catch (error: any) {
+      console.error('Error fetching matches:', error);
       toast.error('Kunde inte hämta matchningar');
     }
   };
