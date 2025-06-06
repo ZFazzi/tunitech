@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Menu, X, Globe, LogOut } from "lucide-react";
+import { Menu, X, Globe, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -10,10 +11,12 @@ import {
   DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isCustomer, setIsCustomer] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
   const { user, signOut } = useAuth();
 
@@ -24,6 +27,28 @@ export const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const checkUserType = async () => {
+      if (user) {
+        try {
+          const { data: customer } = await supabase
+            .from('customers')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+          
+          setIsCustomer(!!customer);
+        } catch (error) {
+          setIsCustomer(false);
+        }
+      } else {
+        setIsCustomer(false);
+      }
+    };
+
+    checkUserType();
+  }, [user]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -53,6 +78,14 @@ export const Navbar = () => {
               <NavLink to="/about">{t.aboutUs}</NavLink>
               <NavLink to="/services">{t.ourTalents}</NavLink>
               <NavLink to="/contact">{t.contact}</NavLink>
+              
+              {/* Customer profile link when logged in as customer */}
+              {user && isCustomer && (
+                <NavLink to="/customer-dashboard">
+                  <User size={16} className="mr-1" />
+                  {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
+                </NavLink>
+              )}
               
               {/* Language dropdown integrated within the menu bar */}
               <DropdownMenu>
@@ -154,6 +187,14 @@ export const Navbar = () => {
           <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
           <MobileNavLink to="/services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
           <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
+          
+          {/* Customer profile link in mobile menu */}
+          {user && isCustomer && (
+            <MobileNavLink to="/customer-dashboard" onClick={() => setIsOpen(false)}>
+              <User size={18} className="mr-2" />
+              {language === 'sv' ? 'Min Profil' : language === 'fr' ? 'Mon Profil' : 'My Profile'}
+            </MobileNavLink>
+          )}
           
           {user ? (
             <button
