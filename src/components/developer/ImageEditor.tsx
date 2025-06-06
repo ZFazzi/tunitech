@@ -42,7 +42,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
   const imgRef = useRef<HTMLImageElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [imgSrc, setImgSrc] = useState('')
 
   React.useEffect(() => {
@@ -58,13 +58,13 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     setCrop(centerAspectCrop(width, height, 1))
   }
 
-  const generateCanvas = useCallback(() => {
-    if (!completedCrop || !imgRef.current || !canvasRef.current) {
+  const generatePreviewCanvas = useCallback(() => {
+    if (!completedCrop || !imgRef.current || !previewCanvasRef.current) {
       return
     }
 
     const image = imgRef.current
-    const canvas = canvasRef.current
+    const canvas = previewCanvasRef.current
     const ctx = canvas.getContext('2d')
 
     if (!ctx) {
@@ -74,6 +74,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
 
+    // Set canvas size to match the crop
     canvas.width = completedCrop.width * scaleX
     canvas.height = completedCrop.height * scaleY
 
@@ -82,6 +83,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     // Apply filters
     ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`
 
+    // Draw the cropped image with filters applied
     ctx.drawImage(
       image,
       completedCrop.x * scaleX,
@@ -90,32 +92,53 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
       completedCrop.height * scaleY,
       0,
       0,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
+      canvas.width,
+      canvas.height,
     )
   }, [completedCrop, brightness, contrast, saturation])
 
   React.useEffect(() => {
-    generateCanvas()
-  }, [generateCanvas])
+    generatePreviewCanvas()
+  }, [generatePreviewCanvas])
 
   const handleSave = useCallback(() => {
-    if (!canvasRef.current || !completedCrop) {
+    if (!previewCanvasRef.current || !completedCrop || !imageFile) {
+      console.error('Missing required elements for saving:', {
+        canvas: !!previewCanvasRef.current,
+        crop: !!completedCrop,
+        file: !!imageFile
+      });
       return
     }
 
-    canvasRef.current.toBlob(
+    // Generate the final edited image
+    previewCanvasRef.current.toBlob(
       (blob) => {
-        if (blob && imageFile) {
+        if (blob) {
+          console.log('Generated blob:', {
+            size: blob.size,
+            type: blob.type
+          });
+          
           const editedFile = new File([blob], imageFile.name, {
             type: 'image/png',
+            lastModified: Date.now(),
           })
+          
+          console.log('Created edited file:', {
+            name: editedFile.name,
+            size: editedFile.size,
+            type: editedFile.type
+          });
+          
           onSave(editedFile)
           onClose()
+        } else {
+          console.error('Failed to create blob from canvas');
         }
       },
       'image/png',
-      0.9
+      1.0 // Use maximum quality
     )
   }, [completedCrop, imageFile, onSave, onClose])
 
@@ -205,12 +228,15 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
                 <Label>Förhandsvisning:</Label>
                 <div className="mt-2">
                   <canvas
-                    ref={canvasRef}
+                    ref={previewCanvasRef}
                     style={{
                       border: '1px solid #ccc',
                       borderRadius: '50%',
                       maxWidth: '200px',
-                      maxHeight: '200px'
+                      maxHeight: '200px',
+                      width: '200px',
+                      height: '200px',
+                      objectFit: 'cover'
                     }}
                   />
                 </div>
