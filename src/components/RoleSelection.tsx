@@ -3,20 +3,23 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RoleSelectionProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export const RoleSelection: React.FC<RoleSelectionProps> = ({ onClose }) => {
+export const RoleSelection: React.FC<RoleSelectionProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { language } = useLanguage();
 
   const handleRoleSelect = (role: 'customer' | 'developer') => {
     // Store the selected role in sessionStorage so the auth page can use it
     sessionStorage.setItem('selectedRole', role);
+    onClose();
     navigate('/auth');
   };
 
@@ -73,19 +76,14 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onClose }) => {
   const texts = getTexts();
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-2xl"
-      >
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2">{texts.title}</h2>
-          <p className="text-gray-400">{texts.subtitle}</p>
-        </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl">{texts.title}</DialogTitle>
+          <p className="text-center text-muted-foreground">{texts.subtitle}</p>
+        </DialogHeader>
         
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
               <CardTitle className="text-xl">{texts.customer.title}</CardTitle>
@@ -116,13 +114,7 @@ export const RoleSelection: React.FC<RoleSelectionProps> = ({ onClose }) => {
             </CardContent>
           </Card>
         </div>
-
-        <div className="text-center mt-6">
-          <Button variant="ghost" onClick={onClose} className="text-gray-400 hover:text-white">
-            Stäng
-          </Button>
-        </div>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

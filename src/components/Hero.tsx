@@ -1,7 +1,6 @@
 
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { RoleSelection } from "./RoleSelection";
 
@@ -18,7 +17,6 @@ const GradientText = ({ children }: { children: React.ReactNode }) => (
 
 export const Hero = () => {
   const { language, translations } = useLanguage();
-  const navigate = useNavigate();
   const [showRoleSelection, setShowRoleSelection] = useState(false);
   const t = translations[language];
   
@@ -93,9 +91,10 @@ export const Hero = () => {
         </div>
       </section>
 
-      {showRoleSelection && (
-        <RoleSelection onClose={() => setShowRoleSelection(false)} />
-      )}
+      <RoleSelection 
+        isOpen={showRoleSelection} 
+        onClose={() => setShowRoleSelection(false)} 
+      />
     </>
   );
 };
