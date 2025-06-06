@@ -562,7 +562,7 @@ export const CustomerDashboard = () => {
                 Utvecklarmatchningar
               </CardTitle>
               <CardDescription>
-                {selectedProject ? 'Anonyma utvecklarprofiler som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
+                {selectedProject ? 'Utvecklarprofiler som matchar ditt valda projekt' : 'Välj ett projekt för att se matchningar'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -628,10 +628,10 @@ export const CustomerDashboard = () => {
                                 <div className="flex items-center justify-between mb-2">
                                   <div>
                                     <h3 className="text-xl font-bold text-card-foreground">
-                                      Anonym Utvecklare #{match.id.substring(0, 8)}
+                                      {getExperienceLevelLabel(developer.experience_level)} {developer.technical_skills?.[0] || 'Utvecklare'}
                                     </h3>
                                     <p className="text-muted-foreground">
-                                      {getExperienceLevelLabel(developer.experience_level)} Utvecklare
+                                      {developer.years_of_experience} års erfarenhet
                                     </p>
                                   </div>
                                   <div className="text-right">
