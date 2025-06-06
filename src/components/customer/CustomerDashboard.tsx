@@ -253,30 +253,48 @@ export const CustomerDashboard = () => {
   };
 
   const showInterest = async (matchId: string) => {
+    console.log('showInterest called with matchId:', matchId);
+    
     try {
-      const { error } = await supabase
+      // Log the current user and customer
+      console.log('Current user:', user?.id);
+      console.log('Current customer:', customer?.id);
+      
+      const { data, error } = await supabase
         .from('project_matches')
         .update({ 
           customer_interested_at: new Date().toISOString(),
           status: 'customer_interested'
         })
-        .eq('id', matchId);
+        .eq('id', matchId)
+        .select(); // Add select to get the updated data back
 
-      if (error) throw error;
+      console.log('Supabase update result:', { data, error });
 
-      setMatches(prev => prev.map(match => 
-        match.id === matchId 
-          ? { 
-              ...match, 
-              customer_interested_at: new Date().toISOString(),
-              status: 'customer_interested'
-            }
-          : match
-      ));
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      // Update the local state
+      setMatches(prev => {
+        const updated = prev.map(match => 
+          match.id === matchId 
+            ? { 
+                ...match, 
+                customer_interested_at: new Date().toISOString(),
+                status: 'customer_interested'
+              }
+            : match
+        );
+        console.log('Updated matches:', updated);
+        return updated;
+      });
 
       toast.success('Intresse anmält! Utvecklaren kommer att få en notifikation.');
     } catch (error: any) {
-      toast.error('Kunde inte anmäla intresse');
+      console.error('Error in showInterest:', error);
+      toast.error(`Kunde inte anmäla intresse: ${error.message}`);
     }
   };
 
@@ -556,6 +574,15 @@ export const CustomerDashboard = () => {
                     const isHired = match.status === 'hired';
                     const canHire = match.customer_interested_at && match.developer_approved_at && !isHired;
                     
+                    console.log('Rendering match:', {
+                      id: match.id,
+                      status: match.status,
+                      customer_interested_at: match.customer_interested_at,
+                      developer_approved_at: match.developer_approved_at,
+                      isHired,
+                      canHire
+                    });
+                    
                     return (
                       <div key={match.id} className="border border-border rounded-lg p-6 bg-card">
                         {/* Developer Header - Show real info if hired, otherwise anonymous */}
@@ -736,9 +763,13 @@ export const CustomerDashboard = () => {
                                   Först när båda parter har visat intresse kommer ni kunna se varandras kontaktuppgifter.
                                 </p>
                                 <Button 
-                                  onClick={() => showInterest(match.id)}
+                                  onClick={() => {
+                                    console.log('Button clicked for match:', match.id);
+                                    showInterest(match.id);
+                                  }}
                                   className="w-full bg-tunitech-blue hover:bg-tunitech-blue/90 text-foreground"
                                   size="lg"
+                                  disabled={match.customer_interested_at !== null}
                                 >
                                   <Star className="w-4 h-4 mr-2" />
                                   Anmäl intresse för denna utvecklare
