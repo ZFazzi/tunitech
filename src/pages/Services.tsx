@@ -10,13 +10,24 @@ const ServicesPage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-transparent backdrop-blur-sm text-white"
+      className="min-h-screen bg-transparent backdrop-blur-sm text-white relative"
     >
-      <Navbar />
-      <div className="pt-16">
-        <Services />
+      {/* Background image for Services page */}
+      <div className="absolute inset-0 opacity-5">
+        <img 
+          src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6" 
+          alt="Programming code background" 
+          className="w-full h-full object-cover"
+        />
       </div>
-      <Footer />
+      
+      <div className="relative z-10">
+        <Navbar />
+        <div className="pt-16">
+          <Services />
+        </div>
+        <Footer />
+      </div>
     </motion.div>
   );
 };

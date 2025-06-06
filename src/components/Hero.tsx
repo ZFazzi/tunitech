@@ -121,6 +121,15 @@ export const Hero = () => {
     <section id="home" className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-tunitech-dark/50 to-tunitech-dark" />
       
+      {/* Background tech image */}
+      <div className="absolute inset-0 opacity-10">
+        <img 
+          src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5" 
+          alt="Technology background" 
+          className="w-full h-full object-cover"
+        />
+      </div>
+      
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
