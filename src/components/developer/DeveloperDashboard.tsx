@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -138,13 +137,50 @@ export const DeveloperDashboard = () => {
         throw error;
       }
 
-      console.log('DeveloperDashboard: Matches fetched:', data);
-      // Filter out matches with null project_requirement to prevent errors
-      const validMatches = data?.filter(match => match.project_requirement !== null) || [];
+      console.log('DeveloperDashboard: Raw matches data:', data);
+      
+      // Filter out matches with null project_requirement and log them
+      const validMatches = data?.filter(match => {
+        if (match.project_requirement === null) {
+          console.warn('DeveloperDashboard: Found match without project_requirement:', match.id);
+          return false;
+        }
+        return true;
+      }) || [];
+      
+      console.log('DeveloperDashboard: Valid matches after filtering:', validMatches);
       setMatches(validMatches);
+
+      if (validMatches.length === 0) {
+        console.log('DeveloperDashboard: No valid matches found');
+        // Try to create matches for this developer
+        await createMatchesForDeveloper(developerId);
+      }
     } catch (error: any) {
       console.error('DeveloperDashboard: Error in fetchMatches:', error);
       toast.error('Kunde inte hämta matchningar');
+    }
+  };
+
+  const createMatchesForDeveloper = async (developerId: string) => {
+    try {
+      console.log('DeveloperDashboard: Creating matches for developer:', developerId);
+      
+      // Call the database function to create matches
+      const { data, error } = await supabase.rpc('create_project_matches_for_developer', {
+        dev_id: developerId
+      });
+
+      if (error) {
+        console.error('DeveloperDashboard: Error creating matches:', error);
+        return;
+      }
+
+      console.log('DeveloperDashboard: Matches created, refreshing...');
+      // Refresh matches after creating them
+      await fetchMatches(developerId);
+    } catch (error: any) {
+      console.error('DeveloperDashboard: Error in createMatchesForDeveloper:', error);
     }
   };
 
