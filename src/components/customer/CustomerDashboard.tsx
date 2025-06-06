@@ -226,19 +226,19 @@ export const CustomerDashboard = () => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-500';
+    if (score >= 80) return 'text-tunitech-mint';
     if (score >= 60) return 'text-yellow-500';
-    return 'text-red-500';
+    return 'text-destructive';
   };
 
   const getMatchStatus = (match: ProjectMatch) => {
     if (match.developer_approved_at && match.customer_interested_at) {
-      return { label: 'Matchad - Schemalägg möte', color: 'bg-green-500' };
+      return { label: 'Matchad - Schemalägg möte', color: 'bg-tunitech-mint' };
     }
     if (match.customer_interested_at) {
-      return { label: 'Intresse anmält', color: 'bg-blue-500' };
+      return { label: 'Intresse anmält', color: 'bg-tunitech-blue' };
     }
-    return { label: 'Väntande', color: 'bg-gray-500' };
+    return { label: 'Väntande', color: 'bg-muted' };
   };
 
   const getExperienceLevelLabel = (level: string) => {
@@ -251,14 +251,14 @@ export const CustomerDashboard = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Laddar...</div>;
+    return <div className="flex justify-center items-center h-64 text-foreground">Laddar...</div>;
   }
 
   if (!customer) {
     return (
       <div className="max-w-2xl mx-auto p-6 text-center">
-        <h1 className="text-2xl font-bold text-white mb-4">Kundprofil saknas</h1>
-        <p className="text-gray-400 mb-6">Du måste skapa en kundprofil först.</p>
+        <h1 className="text-2xl font-bold text-foreground mb-4">Kundprofil saknas</h1>
+        <p className="text-muted-foreground mb-6">Du måste skapa en kundprofil först.</p>
         <Button onClick={() => navigate('/customer-onboarding')}>
           Skapa Kundprofil
         </Button>
@@ -275,10 +275,10 @@ export const CustomerDashboard = () => {
     >
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Välkommen, {customer.contact_name}!
           </h1>
-          <p className="text-gray-400">{customer.company_name}</p>
+          <p className="text-muted-foreground">{customer.company_name}</p>
         </div>
         <Button onClick={() => navigate('/project-requirement')}>
           <Plus className="w-4 h-4 mr-2" />
@@ -288,9 +288,9 @@ export const CustomerDashboard = () => {
 
       {/* Notifikationer */}
       {notifications.length > 0 && (
-        <Card className="mb-6">
+        <Card className="mb-6 bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center">
+            <CardTitle className="flex items-center text-card-foreground">
               <Bell className="w-5 h-5 mr-2" />
               Notifikationer
             </CardTitle>
@@ -301,14 +301,14 @@ export const CustomerDashboard = () => {
                 <div 
                   key={notification.id}
                   className={`p-3 rounded-lg border ${
-                    notification.read_at ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
+                    notification.read_at ? 'bg-muted/50 border-border' : 'bg-accent/50 border-accent'
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{notification.title}</h4>
-                      <p className="text-gray-600 text-sm">{notification.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <h4 className="font-semibold text-card-foreground">{notification.title}</h4>
+                      <p className="text-muted-foreground text-sm">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
                         {new Date(notification.created_at).toLocaleDateString('sv-SE')}
                       </p>
                     </div>
@@ -331,9 +331,9 @@ export const CustomerDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Projektlista */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle>Mina Projekt</CardTitle>
+            <CardTitle className="text-card-foreground">Mina Projekt</CardTitle>
             <CardDescription>Klicka på ett projekt för att se eller redigera kravspecifikationen</CardDescription>
           </CardHeader>
           <CardContent>
@@ -343,18 +343,18 @@ export const CustomerDashboard = () => {
                   <div
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                       selectedProject === project.id 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-primary bg-accent' 
+                        : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
                       setSelectedProject(project.id);
                       fetchMatches(project.id);
                     }}
                   >
-                    <h4 className="font-semibold text-gray-900 mb-1">
+                    <h4 className="font-semibold text-card-foreground mb-1">
                       {project.project_description.substring(0, 60)}...
                     </h4>
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="w-4 h-4 mr-1" />
                       {new Date(project.created_at).toLocaleDateString('sv-SE')}
                     </div>
@@ -377,8 +377,8 @@ export const CustomerDashboard = () => {
               
               {projects.length === 0 && (
                 <div className="text-center py-6">
-                  <Building className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">Inga projekt än</p>
+                  <Building className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground mb-4">Inga projekt än</p>
                   <Button onClick={() => navigate('/project-requirement')}>
                     Skapa första projektet
                   </Button>
@@ -390,9 +390,9 @@ export const CustomerDashboard = () => {
 
         {/* Matchningar */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-card-foreground">
                 <Users className="w-5 h-5 mr-2" />
                 Utvecklarmatchningar
               </CardTitle>
@@ -408,20 +408,20 @@ export const CustomerDashboard = () => {
                     const developer = match.developer;
                     
                     return (
-                      <div key={match.id} className="border rounded-lg p-6 bg-white">
+                      <div key={match.id} className="border border-border rounded-lg p-6 bg-card">
                         {/* Developer Header - Anonymized */}
                         <div className="flex items-start gap-4 mb-6">
-                          <div className="h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center">
-                            <User className="w-8 h-8 text-gray-500" />
+                          <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center">
+                            <User className="w-8 h-8 text-muted-foreground" />
                           </div>
                           
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <div>
-                                <h3 className="text-xl font-bold text-gray-900">
+                                <h3 className="text-xl font-bold text-card-foreground">
                                   Anonym Utvecklare #{match.id.substring(0, 8)}
                                 </h3>
-                                <p className="text-gray-600">
+                                <p className="text-muted-foreground">
                                   {getExperienceLevelLabel(developer.experience_level)} Utvecklare
                                 </p>
                               </div>
@@ -432,7 +432,7 @@ export const CustomerDashboard = () => {
                                     {match.match_score}%
                                   </span>
                                 </div>
-                                <Badge className={status.color + ' text-white'}>
+                                <Badge className={status.color + ' text-foreground'}>
                                   {status.label}
                                 </Badge>
                               </div>
@@ -464,8 +464,8 @@ export const CustomerDashboard = () => {
                           {/* CV Summary */}
                           {developer.cv_summary && (
                             <div className="md:col-span-2">
-                              <h4 className="font-semibold text-gray-900 mb-2">Professionell sammanfattning:</h4>
-                              <p className="text-gray-600 text-sm leading-relaxed">
+                              <h4 className="font-semibold text-card-foreground mb-2">Professionell sammanfattning:</h4>
+                              <p className="text-muted-foreground text-sm leading-relaxed">
                                 {developer.cv_summary}
                               </p>
                             </div>
@@ -473,7 +473,7 @@ export const CustomerDashboard = () => {
                           
                           {/* Technical Skills */}
                           <div>
-                            <h4 className="font-semibold text-gray-900 mb-2">Tekniska färdigheter:</h4>
+                            <h4 className="font-semibold text-card-foreground mb-2">Tekniska färdigheter:</h4>
                             <div className="flex flex-wrap gap-1">
                               {developer.technical_skills?.map((skill, index) => (
                                 <Badge key={index} variant="secondary" className="text-xs">
@@ -486,7 +486,7 @@ export const CustomerDashboard = () => {
                           {/* Industry Experience */}
                           {developer.industry_experience && developer.industry_experience.length > 0 && (
                             <div>
-                              <h4 className="font-semibold text-gray-900 mb-2">Branschexpertis:</h4>
+                              <h4 className="font-semibold text-card-foreground mb-2">Branschexpertis:</h4>
                               <div className="flex flex-wrap gap-1">
                                 {developer.industry_experience.map((exp, index) => (
                                   <Badge key={index} variant="outline" className="text-xs">
@@ -500,7 +500,7 @@ export const CustomerDashboard = () => {
                           {/* Languages */}
                           {developer.languages && developer.languages.length > 0 && (
                             <div>
-                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                              <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
                                 <Languages className="w-4 h-4 mr-1" />
                                 Språk:
                               </h4>
@@ -517,7 +517,7 @@ export const CustomerDashboard = () => {
                           {/* Certifications */}
                           {developer.certifications && developer.certifications.length > 0 && (
                             <div>
-                              <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                              <h4 className="font-semibold text-card-foreground mb-2 flex items-center">
                                 <Award className="w-4 h-4 mr-1" />
                                 Certifieringar:
                               </h4>
@@ -534,26 +534,26 @@ export const CustomerDashboard = () => {
                           {/* Education */}
                           {developer.education && (
                             <div className="md:col-span-2">
-                              <h4 className="font-semibold text-gray-900 mb-2">Utbildning:</h4>
-                              <p className="text-gray-600 text-sm">{developer.education}</p>
+                              <h4 className="font-semibold text-card-foreground mb-2">Utbildning:</h4>
+                              <p className="text-muted-foreground text-sm">{developer.education}</p>
                             </div>
                           )}
                         </div>
 
                         {/* Action Buttons */}
                         {!match.customer_interested_at && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                          <div className="bg-accent/20 border border-accent rounded-lg p-4 mb-4">
                             <div className="flex items-start space-x-3">
-                              <Eye className="w-5 h-5 text-blue-600 mt-0.5" />
+                              <Eye className="w-5 h-5 text-accent-foreground mt-0.5" />
                               <div className="flex-1">
-                                <h4 className="font-semibold text-blue-900 mb-1">Intresserad av denna utvecklare?</h4>
-                                <p className="text-blue-800 text-sm mb-3">
+                                <h4 className="font-semibold text-accent-foreground mb-1">Intresserad av denna utvecklare?</h4>
+                                <p className="text-accent-foreground/80 text-sm mb-3">
                                   Genom att anmäla intresse kommer utvecklaren att få en notifikation och kan välja att godkänna projektet. 
                                   Först när båda parter har visat intresse kommer ni kunna se varandras kontaktuppgifter.
                                 </p>
                                 <Button 
                                   onClick={() => showInterest(match.id)}
-                                  className="w-full bg-blue-600 hover:bg-blue-700"
+                                  className="w-full bg-tunitech-blue hover:bg-tunitech-blue/90 text-foreground"
                                   size="lg"
                                 >
                                   <Star className="w-4 h-4 mr-2" />
@@ -565,18 +565,18 @@ export const CustomerDashboard = () => {
                         )}
 
                         {match.customer_interested_at && !match.developer_approved_at && (
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-yellow-800 mb-2">⏳ Väntar på utvecklarens svar</h4>
-                            <p className="text-yellow-700 text-sm">
+                          <div className="bg-secondary/20 border border-secondary rounded-lg p-4">
+                            <h4 className="font-semibold text-secondary-foreground mb-2">⏳ Väntar på utvecklarens svar</h4>
+                            <p className="text-secondary-foreground/80 text-sm">
                               Du har anmält intresse för denna utvecklare. Vi väntar nu på att utvecklaren ska godkänna projektet.
                             </p>
                           </div>
                         )}
 
                         {match.customer_interested_at && match.developer_approved_at && (
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-green-800 mb-2">🎉 Matchning bekräftad!</h4>
-                            <p className="text-green-700 text-sm mb-3">
+                          <div className="bg-tunitech-mint/20 border border-tunitech-mint rounded-lg p-4">
+                            <h4 className="font-semibold text-foreground mb-2">🎉 Matchning bekräftad!</h4>
+                            <p className="text-muted-foreground text-sm mb-3">
                               Både du och utvecklaren har visat intresse. Nu kan ni schemalägga ett möte och utbyta kontaktuppgifter.
                             </p>
                             <Button variant="outline" className="w-full">
@@ -590,11 +590,11 @@ export const CustomerDashboard = () => {
 
                   {matches.length === 0 && (
                     <div className="text-center py-12">
-                      <Star className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <Star className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-card-foreground mb-2">
                         Inga matchningar än
                       </h3>
-                      <p className="text-gray-500">
+                      <p className="text-muted-foreground">
                         Vi söker kontinuerligt efter utvecklare som matchar ditt projekt.
                       </p>
                     </div>
@@ -602,8 +602,8 @@ export const CustomerDashboard = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">
+                  <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     Välj ett projekt från listan till vänster för att se matchningar.
                   </p>
                 </div>
