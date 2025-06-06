@@ -556,7 +556,7 @@ export const CustomerDashboard = () => {
         {/* Utvecklarmatchningar */}
         <Card className="lg:col-span-2 bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-card-foreground">
+            <CardTitle className="bg-gradient-to-r from-tunitech-mint to-tunitech-blue bg-clip-text text-transparent">
               Utvecklarmatchningar
             </CardTitle>
             <CardDescription>
