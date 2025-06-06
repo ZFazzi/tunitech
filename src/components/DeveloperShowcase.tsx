@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MapPin, Calendar, Github, Linkedin } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -10,40 +9,37 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const mockDevelopers = [
   {
     id: 1,
-    name: "Erik Andersson",
-    title: "Senior Full-Stack Utvecklare",
+    name: "Senior Full-Stack Utvecklare",
+    title: "8+ års erfarenhet",
     location: "Stockholm, Sverige",
     experience: 8,
     skills: ["React", "Node.js", "TypeScript", "AWS", "MongoDB"],
     rating: 4.9,
     projects: 12,
-    image: "/lovable-uploads/3172edd2-90b1-4282-81e4-e6efcb996bd0.png",
     specialty: "E-handelsplattformar",
     languages: ["Svenska", "Engelska"]
   },
   {
     id: 2,
-    name: "Sarah Chen",
-    title: "AI/ML Specialist",
+    name: "AI/ML Specialist",
+    title: "6+ års erfarenhet",
     location: "Göteborg, Sverige",
     experience: 6,
     skills: ["Python", "TensorFlow", "PyTorch", "Docker", "Kubernetes"],
     rating: 4.8,
     projects: 8,
-    image: "/lovable-uploads/45c83552-0727-4db6-b02c-5e5fec1f7a86.png",
     specialty: "Maskininlärning och AI-lösningar",
     languages: ["Svenska", "Engelska", "Mandarin"]
   },
   {
     id: 3,
-    name: "Marcus Johansson",
-    title: "Mobile App Developer",
+    name: "Mobile App Developer",
+    title: "5+ års erfarenhet",
     location: "Malmö, Sverige",
     experience: 5,
     skills: ["React Native", "Swift", "Kotlin", "Firebase", "GraphQL"],
     rating: 4.7,
     projects: 15,
-    image: "/lovable-uploads/6fc4dc50-55da-428f-9e2b-d966bd20a8f4.png",
     specialty: "iOS och Android appar",
     languages: ["Svenska", "Engelska", "Danska"]
   }
@@ -85,15 +81,15 @@ export const DeveloperShowcase = () => {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-              {language === "sv" ? "Möt våra utvecklare" : 
-               language === "en" ? "Meet our developers" :
-               "Rencontrez nos développeurs"}
+              {language === "sv" ? "Exempel på våra utvecklare" : 
+               language === "en" ? "Examples of our developers" :
+               "Exemples de nos développeurs"}
             </span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            {language === "sv" ? "Här är några exempel på de talangfulla utvecklare vi arbetar med" : 
-             language === "en" ? "Here are some examples of the talented developers we work with" :
-             "Voici quelques exemples des développeurs talentueux avec qui nous travaillons"}
+            {language === "sv" ? "Här är några exempel på de typer av talangfulla utvecklare vi arbetar med" : 
+             language === "en" ? "Here are some examples of the types of talented developers we work with" :
+             "Voici quelques exemples des types de développeurs talentueux avec qui nous travaillons"}
           </p>
         </motion.div>
 
@@ -112,10 +108,6 @@ export const DeveloperShowcase = () => {
             >
               <Card className="glass-card hover:bg-white/10 transition-all duration-300 h-full">
                 <CardHeader className="text-center">
-                  <Avatar className="w-20 h-20 mx-auto mb-4">
-                    <AvatarImage src={developer.image} alt={developer.name} />
-                    <AvatarFallback>{developer.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
                   <CardTitle className="text-xl text-white">{developer.name}</CardTitle>
                   <p className="text-tunitech-mint font-medium">{developer.title}</p>
                   <div className="flex items-center justify-center text-gray-400 text-sm">
