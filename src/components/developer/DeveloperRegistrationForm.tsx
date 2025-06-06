@@ -14,6 +14,12 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 export const DeveloperRegistrationForm = () => {
+  const [step, setStep] = useState(1); // 1 for account creation, 2 for profile
+  const [authData, setAuthData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -39,12 +45,64 @@ export const DeveloperRegistrationForm = () => {
     tools_and_methods: ''
   });
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, signUp } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // If user is already logged in, skip to step 2
+  React.useEffect(() => {
+    if (user) {
+      setStep(2);
+      setFormData(prev => ({ ...prev, email: user.email || '' }));
+    }
+  }, [user]);
+
+  const handleAccountCreation = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    if (authData.password !== authData.confirmPassword) {
+      toast.error('Lösenorden matchar inte');
+      return;
+    }
+
+    if (authData.password.length < 6) {
+      toast.error('Lösenordet måste vara minst 6 tecken');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const redirectUrl = `${window.location.origin}/developer-onboarding`;
+      const { error } = await signUp(authData.email, authData.password, { 
+        user_type: 'developer',
+        emailRedirectTo: redirectUrl
+      });
+      
+      if (error) throw error;
+      
+      // Set email in profile form and move to next step
+      setFormData(prev => ({ ...prev, email: authData.email }));
+      setStep(2);
+      
+      toast.success('Konto skapat! Fyll nu i din utvecklarprofil.');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      if (error.message?.includes('User already registered')) {
+        toast.error('En användare med denna e-postadress finns redan. Försök logga in istället.');
+      } else {
+        toast.error(error.message || 'Något gick fel vid registrering');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('Du måste vara inloggad för att skapa en profil');
+      return;
+    }
     
     setLoading(true);
 
@@ -107,6 +165,73 @@ export const DeveloperRegistrationForm = () => {
     }));
   };
 
+  if (step === 1) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md mx-auto p-6"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Skapa utvecklarkonto</CardTitle>
+            <CardDescription>Först behöver du skapa ett konto för att sedan fylla i din utvecklarprofil</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAccountCreation} className="space-y-4">
+              <div>
+                <Label htmlFor="email">E-postadress *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={authData.email}
+                  onChange={(e) => setAuthData(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Lösenord *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={authData.password}
+                  onChange={(e) => setAuthData(prev => ({ ...prev, password: e.target.value }))}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Bekräfta lösenord *</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={authData.confirmPassword}
+                  onChange={(e) => setAuthData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  required
+                  minLength={6}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Skapar konto...' : 'Skapa konto och fortsätt'}
+              </Button>
+              <div className="text-center text-sm text-gray-600">
+                Har du redan ett konto?{' '}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-normal"
+                  onClick={() => navigate('/auth')}
+                >
+                  Logga in här
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -120,7 +245,7 @@ export const DeveloperRegistrationForm = () => {
           <CardDescription>Skapa din profil baserat på ditt CV för att få matchningar med projekt</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleProfileSubmit} className="space-y-8">
             {/* Personliga uppgifter */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Personliga uppgifter</h3>
@@ -154,6 +279,7 @@ export const DeveloperRegistrationForm = () => {
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     required
+                    disabled
                   />
                 </div>
                 <div>
@@ -287,7 +413,6 @@ export const DeveloperRegistrationForm = () => {
               </div>
             </div>
 
-            {/* Utbildning */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Utbildning</h3>
               <div>
@@ -302,7 +427,6 @@ export const DeveloperRegistrationForm = () => {
               </div>
             </div>
 
-            {/* Språkkunskaper */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Språkkunskaper</h3>
               <div>
@@ -316,7 +440,6 @@ export const DeveloperRegistrationForm = () => {
               </div>
             </div>
 
-            {/* Portfolio och länkar */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Portfolio och länkar</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -353,7 +476,6 @@ export const DeveloperRegistrationForm = () => {
               </div>
             </div>
 
-            {/* Anställningsform och timpris */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Anställningsform och timpris</h3>
               <div>
@@ -390,7 +512,6 @@ export const DeveloperRegistrationForm = () => {
               </div>
             </div>
 
-            {/* Certifieringar */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-primary">Certifieringar</h3>
               <div>
