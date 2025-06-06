@@ -18,6 +18,7 @@ const Index = () => {
     >
       <Navbar />
       <Hero />
+      <Values />
       <Advantages />
       <section className="py-20 section-padding">
         <div className="max-w-7xl mx-auto px-6">
@@ -25,7 +26,6 @@ const Index = () => {
         </div>
       </section>
       <QuoteBlock />
-      <Values />
       <Footer />
     </motion.div>
   );

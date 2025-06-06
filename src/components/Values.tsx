@@ -25,32 +25,8 @@ export const Values = () => {
   const { language, translations } = useLanguage();
   
   return (
-    <section id="values" className="section-padding bg-transparent">
+    <section className="section-padding bg-transparent">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <motion.h2 
-            className="text-3xl md:text-4xl font-bold mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.6, 
-              delay: 0.2,
-              type: "spring",
-              stiffness: 100 
-            }}
-            viewport={{ once: true }}
-          >
-            <span className="bg-gradient-to-r from-tunitech-mint via-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
-              {translations[language].ourValues}
-            </span>
-          </motion.h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            {language === "sv" ? "Vägledda av excellens och innovation i allt vi gör" : 
-             language === "en" ? "Guided by excellence and innovation in everything we do" :
-             "Guidés par l'excellence et l'innovation dans tout ce que nous faisons"}
-          </p>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {values.map((value, index) => {
             // Get the correct title based on language
