@@ -11,8 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Edit, Save, X } from 'lucide-react';
+import { ArrowLeft, Edit, Save, X, Trash2 } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 
 type ProjectRequirement = Database['public']['Tables']['project_requirements']['Row'];
@@ -23,6 +24,7 @@ export const ProjectSpecificationView = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState<ProjectRequirementUpdate>({});
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -96,6 +98,27 @@ export const ProjectSpecificationView = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!project) return;
+
+    setDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('project_requirements')
+        .delete()
+        .eq('id', project.id);
+
+      if (error) throw error;
+
+      toast.success('Kravspecifikation raderad');
+      navigate('/customer-dashboard');
+    } catch (error: any) {
+      toast.error('Kunde inte radera kravspecifikation');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleCancel = () => {
     setFormData(project || {});
     setIsEditing(false);
@@ -133,23 +156,53 @@ export const ProjectSpecificationView = () => {
           Tillbaka till översikt
         </Button>
         
-        {!isEditing ? (
-          <Button onClick={() => setIsEditing(true)}>
-            <Edit className="w-4 h-4 mr-2" />
-            Redigera
-          </Button>
-        ) : (
-          <div className="flex gap-2">
-            <Button onClick={handleSave} disabled={saving}>
-              <Save className="w-4 h-4 mr-2" />
-              {saving ? 'Sparar...' : 'Spara'}
-            </Button>
-            <Button variant="outline" onClick={handleCancel}>
-              <X className="w-4 h-4 mr-2" />
-              Avbryt
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          {!isEditing ? (
+            <>
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="w-4 h-4 mr-2" />
+                Redigera
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Radera
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Radera kravspecifikation</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Är du säker på att du vill radera denna kravspecifikation? Denna åtgärd kan inte ångras.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDelete} 
+                      disabled={deleting}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {deleting ? 'Raderar...' : 'Radera'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleSave} disabled={saving}>
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Sparar...' : 'Spara'}
+              </Button>
+              <Button variant="outline" onClick={handleCancel}>
+                <X className="w-4 h-4 mr-2" />
+                Avbryt
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <Card>
