@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import { RoleSelection } from "./RoleSelection";
-import { BirdIcon } from "./BirdIcon";
 
 const GradientText = ({ children }: { children: React.ReactNode }) => (
   <motion.span
@@ -62,17 +61,6 @@ export const Hero = () => {
             className="w-full h-full object-cover"
           />
         </div>
-
-        {/* Floating bird decorations */}
-        <div className="absolute top-20 left-10 opacity-20">
-          <BirdIcon size="lg" variant="float" />
-        </div>
-        <div className="absolute top-32 right-16 opacity-15">
-          <BirdIcon size="md" variant="pulse" />
-        </div>
-        <div className="absolute bottom-40 left-20 opacity-25">
-          <BirdIcon size="xl" variant="float" />
-        </div>
         
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div
@@ -94,10 +82,9 @@ export const Hero = () => {
                 onClick={handleGetStarted}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
+                className="inline-block bg-gradient-to-r from-tunitech-mint to-tunitech-blue text-white font-semibold px-10 py-5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-lg md:text-xl"
               >
                 {getButtonText()}
-                <BirdIcon size="sm" variant="hover" />
               </motion.button>
             </div>
           </motion.div>
