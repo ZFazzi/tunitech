@@ -133,6 +133,87 @@ export type Database = {
         }
         Relationships: []
       }
+      developer_industries: {
+        Row: {
+          created_at: string | null
+          developer_id: string
+          id: string
+          industry_category_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          developer_id: string
+          id?: string
+          industry_category_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          developer_id?: string
+          id?: string
+          industry_category_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "developer_industries_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "developer_industries_industry_category_id_fkey"
+            columns: ["industry_category_id"]
+            isOneToOne: false
+            referencedRelation: "industry_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      developer_skills: {
+        Row: {
+          created_at: string | null
+          developer_id: string
+          id: string
+          proficiency_level: number | null
+          skill_category_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          developer_id: string
+          id?: string
+          proficiency_level?: number | null
+          skill_category_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          developer_id?: string
+          id?: string
+          proficiency_level?: number | null
+          skill_category_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "developer_skills_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "developer_skills_skill_category_id_fkey"
+            columns: ["skill_category_id"]
+            isOneToOne: false
+            referencedRelation: "skill_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       developers: {
         Row: {
           ai_generated_title: string | null
@@ -226,6 +307,27 @@ export type Database = {
         }
         Relationships: []
       }
+      industry_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -258,6 +360,45 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      project_industry_requirements: {
+        Row: {
+          created_at: string | null
+          id: string
+          industry_category_id: string
+          project_requirement_id: string
+          required: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          industry_category_id: string
+          project_requirement_id: string
+          required?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          industry_category_id?: string
+          project_requirement_id?: string
+          required?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_industry_requirements_industry_category_id_fkey"
+            columns: ["industry_category_id"]
+            isOneToOne: false
+            referencedRelation: "industry_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_industry_requirements_project_requirement_id_fkey"
+            columns: ["project_requirement_id"]
+            isOneToOne: false
+            referencedRelation: "project_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_matches: {
         Row: {
@@ -309,6 +450,48 @@ export type Database = {
             columns: ["project_requirement_id"]
             isOneToOne: false
             referencedRelation: "project_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_required_skills: {
+        Row: {
+          created_at: string | null
+          id: string
+          importance_level: number | null
+          minimum_years: number | null
+          project_requirement_id: string
+          skill_category_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          importance_level?: number | null
+          minimum_years?: number | null
+          project_requirement_id: string
+          skill_category_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          importance_level?: number | null
+          minimum_years?: number | null
+          project_requirement_id?: string
+          skill_category_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_required_skills_project_requirement_id_fkey"
+            columns: ["project_requirement_id"]
+            isOneToOne: false
+            referencedRelation: "project_requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_required_skills_skill_category_id_fkey"
+            columns: ["skill_category_id"]
+            isOneToOne: false
+            referencedRelation: "skill_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -393,12 +576,37 @@ export type Database = {
           },
         ]
       }
+      skill_categories: {
+        Row: {
+          category_type: string
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category_type: string
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category_type?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       calculate_match_score: {
+        Args: { req_id: string; dev_id: string }
+        Returns: number
+      }
+      calculate_match_score_v2: {
         Args: { req_id: string; dev_id: string }
         Returns: number
       }
