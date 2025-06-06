@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -9,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +77,19 @@ export const Navbar = () => {
             </div>
           </div>
           
+          {/* Desktop Login Button */}
+          <div className="hidden md:flex items-center">
+            <Button 
+              asChild 
+              variant="outline" 
+              className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+            >
+              <Link to="/auth">
+                {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
+              </Link>
+            </Button>
+          </div>
+          
           {/* Mobile language selector and menu - placed to the right */}
           <div className="md:hidden flex items-center space-x-3">
             <DropdownMenu>
@@ -123,6 +136,9 @@ export const Navbar = () => {
           <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>{t.aboutUs}</MobileNavLink>
           <MobileNavLink to="/services" onClick={() => setIsOpen(false)}>{t.ourTalents}</MobileNavLink>
           <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>{t.contact}</MobileNavLink>
+          <MobileNavLink to="/auth" onClick={() => setIsOpen(false)}>
+            {language === 'sv' ? 'Logga in' : language === 'fr' ? 'Se connecter' : 'Login'}
+          </MobileNavLink>
         </div>
       </div>
     </nav>
