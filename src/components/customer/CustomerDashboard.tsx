@@ -740,7 +740,7 @@ export const CustomerDashboard = () => {
                                         console.log('Button clicked for match:', match.id);
                                         showInterest(match.id);
                                       }}
-                                      className="w-full bg-tunitech-blue hover:bg-tunitech-blue/90 text-foreground"
+                                      className="w-full bg-gradient-to-r from-tunitech-mint to-tunitech-blue hover:from-tunitech-mint/90 hover:to-tunitech-blue/90 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                                       size="lg"
                                       disabled={match.customer_interested_at !== null}
                                     >
