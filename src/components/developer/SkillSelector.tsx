@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 interface SkillCategory {
   id: string;
   name: string;
-  category_type: 'programming_language' | 'framework' | 'database' | 'tool' | 'methodology';
+  category_type: string;
 }
 
 interface SelectedSkill {
@@ -77,14 +77,14 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
   const getSelectedSkill = (skillId: string) => selectedSkills.find(s => s.skillCategoryId === skillId);
 
   const getCategoryLabel = (type: string) => {
-    const labels = {
+    const labels: { [key: string]: string } = {
       'programming_language': 'Programmeringsspråk',
       'framework': 'Ramverk',
       'database': 'Databaser',
       'tool': 'Verktyg',
       'methodology': 'Metoder'
     };
-    return labels[type as keyof typeof labels] || type;
+    return labels[type] || type;
   };
 
   if (loading) return <div>Laddar färdigheter...</div>;

@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 interface SkillCategory {
   id: string;
   name: string;
-  category_type: 'programming_language' | 'framework' | 'database' | 'tool' | 'methodology';
+  category_type: string;
 }
 
 interface RequiredSkill {
@@ -78,25 +78,25 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
   const getSelectedSkill = (skillId: string) => requiredSkills.find(s => s.skillCategoryId === skillId);
 
   const getCategoryLabel = (type: string) => {
-    const labels = {
+    const labels: { [key: string]: string } = {
       'programming_language': 'Programmeringsspråk',
       'framework': 'Ramverk',
       'database': 'Databaser',
       'tool': 'Verktyg',
       'methodology': 'Metoder'
     };
-    return labels[type as keyof typeof labels] || type;
+    return labels[type] || type;
   };
 
   const getImportanceLabel = (level: number) => {
-    const labels = {
+    const labels: { [key: number]: string } = {
       1: 'Låg',
       2: 'Medel-låg',
       3: 'Medel',
       4: 'Hög',
       5: 'Kritisk'
     };
-    return labels[level as keyof typeof labels] || 'Medel';
+    return labels[level] || 'Medel';
   };
 
   if (loading) return <div>Laddar färdigheter...</div>;
