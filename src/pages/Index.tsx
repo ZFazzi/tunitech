@@ -5,6 +5,7 @@ import { Advantages } from "@/components/Advantages";
 import { Footer } from "@/components/Footer";
 import { QuoteBlock } from "@/components/QuoteBlock";
 import { Values } from "@/components/Values";
+import WorldMap from "@/components/WorldMap";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -18,6 +19,11 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Advantages />
+      <section className="py-20 section-padding">
+        <div className="max-w-7xl mx-auto px-6">
+          <WorldMap />
+        </div>
+      </section>
       <QuoteBlock />
       <Values />
       <Footer />
