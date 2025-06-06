@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -170,6 +171,15 @@ export const ProjectRequirementForm = () => {
               />
             </div>
 
+            {/* Industry Requirements Section */}
+            <div>
+              <Label className="text-lg font-semibold">Branschexpertis</Label>
+              <ProjectIndustrySelector
+                requiredIndustries={requiredIndustries}
+                onIndustriesChange={setRequiredIndustries}
+              />
+            </div>
+
             <div>
               <Label>Vilken erfarenhetsnivå söker ni? *</Label>
               <Select 
@@ -185,30 +195,6 @@ export const ProjectRequirementForm = () => {
                   <SelectItem value="senior">Senior (5+ års erfarenhet)</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="industry_experience"
-                  checked={formData.industry_experience_required}
-                  onCheckedChange={(checked) => 
-                    setFormData(prev => ({ ...prev, industry_experience_required: Boolean(checked) }))
-                  }
-                />
-                <Label htmlFor="industry_experience">Behöver konsulterna ha erfarenhet av er bransch?</Label>
-              </div>
-              
-              {formData.industry_experience_required && (
-                <div>
-                  <Label htmlFor="industry_type">Vilken bransch?</Label>
-                  <Input
-                    id="industry_type"
-                    value={formData.industry_type}
-                    onChange={(e) => setFormData(prev => ({ ...prev, industry_type: e.target.value }))}
-                  />
-                </div>
-              )}
             </div>
 
             <div>
