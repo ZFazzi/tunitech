@@ -35,7 +35,7 @@ const profileSchema = z.object({
   portfolio_url: z.string().optional(),
   certifications: z.string().optional(),
   available_for_work: z.boolean(),
-  preferred_employment_types: z.array(z.string()).optional(),
+  preferred_employment_types: z.array(z.enum(['hourly', 'part_time', 'full_time', 'other'])).optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -82,10 +82,10 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
   });
 
   const employmentTypes = [
-    { value: 'hourly', label: 'Timanställd' },
-    { value: 'part_time', label: 'Deltid' },
-    { value: 'full_time', label: 'Heltid' },
-    { value: 'other', label: 'Övrigt' }
+    { value: 'hourly' as const, label: 'Timanställd' },
+    { value: 'part_time' as const, label: 'Deltid' },
+    { value: 'full_time' as const, label: 'Heltid' },
+    { value: 'other' as const, label: 'Övrigt' }
   ];
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,6 +131,7 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
         certifications: data.certifications ? 
           data.certifications.split(',').map(s => s.trim()).filter(s => s) : null,
         profile_picture_url: profilePictureUrl,
+        preferred_employment_types: data.preferred_employment_types as ('hourly' | 'part_time' | 'full_time' | 'other')[],
         updated_at: new Date().toISOString(),
       };
 
@@ -317,7 +318,7 @@ export const DeveloperProfileEdit: React.FC<DeveloperProfileEditProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="industry_experience">Branschexperienhet</Label>
+              <Label htmlFor="industry_experience">Branschexperientet</Label>
               <Textarea
                 id="industry_experience"
                 {...form.register('industry_experience')}
