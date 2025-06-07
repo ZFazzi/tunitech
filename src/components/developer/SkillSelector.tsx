@@ -57,8 +57,8 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
       const newSkill: SelectedSkill = {
         skillCategoryId: skill.id,
         name: skill.name,
-        proficiencyLevel: 3,
-        yearsExperience: 1
+        proficiencyLevel: 0,
+        yearsExperience: 0
       };
       onSkillsChange([...selectedSkills, newSkill]);
     } else {
@@ -86,8 +86,8 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
   const getSelectedSkill = (skillId: string) => selectedSkills.find(s => s.skillCategoryId === skillId);
 
   const getProficiencyLabel = (level: number) => {
-    const labels = ['', 'Nybörjare', 'Grundläggande', 'Mellanliggande', 'Avancerad', 'Expert'];
-    return labels[level] || 'Okänd';
+    const labels = ['Nybörjare', 'Grundläggande', 'Mellanliggande', 'Avancerad', 'Expert'];
+    return labels[level] || 'Nybörjare';
   };
 
   // Group skills by category type
@@ -106,8 +106,8 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
       <div className="bg-blue-50 p-4 rounded-lg">
         <h4 className="font-semibold mb-2">Hur fungerar kompetensbedömningen?</h4>
         <ul className="text-sm text-gray-600 space-y-1">
-          <li><strong>Kompetensnivå:</strong> Dina kunskaper på en skala 1-5 (1=Nybörjare, 5=Expert)</li>
-          <li><strong>År av erfarenhet:</strong> Hur många år du har arbetat med denna teknologi</li>
+          <li><strong>Kompetensnivå:</strong> Din kunskap från 0 (Nybörjare) till 4 (Expert)</li>
+          <li><strong>År av erfarenhet:</strong> Antal år du har arbetat med denna teknologi</li>
         </ul>
       </div>
 
@@ -131,7 +131,7 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                   </div>
                   
                   {selected && selectedSkill && (
-                    <div className="ml-6 p-4 bg-gray-50 rounded-lg space-y-4">
+                    <div className="ml-6 p-3 bg-gray-50 rounded-lg space-y-3">
                       <div>
                         <Label className="text-sm font-medium">
                           Kompetensnivå: {getProficiencyLabel(selectedSkill.proficiencyLevel)}
@@ -139,8 +139,8 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                         <Slider
                           value={[selectedSkill.proficiencyLevel]}
                           onValueChange={(value) => updateSkillProficiency(skill.id, value[0])}
-                          max={5}
-                          min={1}
+                          max={4}
+                          min={0}
                           step={1}
                           className="mt-2"
                         />
@@ -151,14 +151,14 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                       </div>
                       
                       <div>
-                        <Label className="text-sm font-medium">År av erfarenhet</Label>
+                        <Label className="text-sm font-medium">År av erfarenhet med denna teknologi</Label>
                         <Input
                           type="number"
                           min="0"
                           max="50"
                           value={selectedSkill.yearsExperience}
                           onChange={(e) => updateSkillExperience(skill.id, parseInt(e.target.value) || 0)}
-                          className="w-24 mt-1"
+                          className="w-20 mt-1 text-sm"
                           placeholder="0"
                         />
                       </div>

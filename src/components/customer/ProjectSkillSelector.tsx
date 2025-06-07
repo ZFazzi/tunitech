@@ -57,8 +57,8 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
       const newSkill: RequiredSkill = {
         skillCategoryId: skill.id,
         name: skill.name,
-        importanceLevel: 3,
-        minimumYears: 1
+        importanceLevel: 0,
+        minimumYears: 0
       };
       onSkillsChange([...requiredSkills, newSkill]);
     } else {
@@ -86,8 +86,8 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
   const getSelectedSkill = (skillId: string) => requiredSkills.find(s => s.skillCategoryId === skillId);
 
   const getImportanceLabel = (level: number) => {
-    const labels = ['', 'Låg', 'Medel-låg', 'Medel', 'Hög', 'Kritisk'];
-    return labels[level] || 'Okänd';
+    const labels = ['Låg', 'Medel-låg', 'Medel', 'Hög', 'Kritisk'];
+    return labels[level] || 'Låg';
   };
 
   // Group skills by category type
@@ -106,8 +106,8 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
       <div className="bg-blue-50 p-4 rounded-lg">
         <h4 className="font-semibold mb-2">Hur fungerar kompetensbedömningen?</h4>
         <ul className="text-sm text-gray-600 space-y-1">
-          <li><strong>Viktighet:</strong> Hur viktigt denna kompetens är för projektet (1-5, där 5=Kritisk)</li>
-          <li><strong>Minimum år:</strong> Minsta antal års erfarenhet som krävs inom denna teknologi</li>
+          <li><strong>Viktighet:</strong> Hur viktigt från 0 (Låg) till 4 (Kritisk) för projektet</li>
+          <li><strong>Minimum år:</strong> Minsta antal års erfarenhet som krävs</li>
         </ul>
       </div>
 
@@ -131,7 +131,7 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
                   </div>
                   
                   {selected && selectedSkill && (
-                    <div className="ml-6 p-4 bg-gray-50 rounded-lg space-y-4">
+                    <div className="ml-6 p-3 bg-gray-50 rounded-lg space-y-3">
                       <div>
                         <Label className="text-sm font-medium">
                           Viktighet för projektet: {getImportanceLabel(selectedSkill.importanceLevel)}
@@ -139,8 +139,8 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
                         <Slider
                           value={[selectedSkill.importanceLevel]}
                           onValueChange={(value) => updateSkillImportance(skill.id, value[0])}
-                          max={5}
-                          min={1}
+                          max={4}
+                          min={0}
                           step={1}
                           className="mt-2"
                         />
@@ -151,14 +151,14 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
                       </div>
                       
                       <div>
-                        <Label className="text-sm font-medium">Minimum år av erfarenhet</Label>
+                        <Label className="text-sm font-medium">Minimum antal års erfarenhet som krävs</Label>
                         <Input
                           type="number"
                           min="0"
                           max="20"
                           value={selectedSkill.minimumYears}
                           onChange={(e) => updateSkillMinimumYears(skill.id, parseInt(e.target.value) || 0)}
-                          className="w-24 mt-1"
+                          className="w-20 mt-1 text-sm"
                           placeholder="0"
                         />
                       </div>
