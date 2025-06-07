@@ -102,7 +102,7 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${i < level ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+        className={`h-4 w-4 ${i < level ? 'fill-tunitech-mint text-tunitech-mint' : 'text-muted-foreground'}`}
       />
     ));
   };
@@ -116,14 +116,14 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
     return acc;
   }, {} as Record<string, SkillCategory[]>);
 
-  if (loading) return <div>Laddar färdigheter...</div>;
+  if (loading) return <div className="text-foreground">Laddar färdigheter...</div>;
 
   return (
     <div className="space-y-6">
-      <Card className="bg-blue-50/50 border-blue-200">
+      <Card className="bg-tunitech-mint/10 border-tunitech-mint/20">
         <CardContent className="p-4">
-          <h4 className="font-semibold mb-2 text-blue-900">Hur fungerar kompetensbedömningen?</h4>
-          <ul className="text-sm text-blue-700 space-y-1">
+          <h4 className="font-semibold mb-2 text-foreground">Hur fungerar kompetensbedömningen?</h4>
+          <ul className="text-sm text-muted-foreground space-y-1">
             <li><strong>Kompetensnivå:</strong> Din kunskap från 1 (Nybörjare) till 5 (Expert)</li>
             <li><strong>År av erfarenhet:</strong> Antal år du har arbetat med denna teknologi</li>
           </ul>
@@ -132,14 +132,14 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
 
       {Object.entries(groupedSkills).map(([categoryType, skills]) => (
         <div key={categoryType} className="space-y-4">
-          <h3 className="text-lg font-semibold capitalize text-gray-900">{categoryType}</h3>
+          <h3 className="text-lg font-semibold capitalize text-foreground">{categoryType}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {skills.map((skill) => {
               const selected = isSelected(skill.id);
               const selectedSkill = getSelectedSkill(skill.id);
               
               return (
-                <Card key={skill.id} className={`transition-all ${selected ? 'ring-2 ring-blue-200 bg-blue-50/30' : 'hover:shadow-md'}`}>
+                <Card key={skill.id} className={`transition-all ${selected ? 'ring-2 ring-tunitech-mint/50 bg-tunitech-mint/5' : 'hover:shadow-md'}`}>
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center space-x-3">
                       <Checkbox
@@ -147,21 +147,21 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                         checked={selected}
                         onCheckedChange={(checked) => handleSkillToggle(skill, !!checked)}
                       />
-                      <Label htmlFor={skill.id} className="font-medium cursor-pointer flex-1">
+                      <Label htmlFor={skill.id} className="font-medium cursor-pointer flex-1 text-foreground">
                         {skill.name}
                       </Label>
                     </div>
                     
                     {selected && selectedSkill && (
-                      <div className="space-y-4 pt-2 border-t border-gray-200">
+                      <div className="space-y-4 pt-2 border-t border-border">
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <Label className="text-sm font-medium text-gray-700">
+                            <Label className="text-sm font-medium text-foreground">
                               Kompetensnivå
                             </Label>
                             <div className="flex items-center space-x-2">
                               {renderStars(selectedSkill.proficiencyLevel)}
-                              <span className="text-sm font-medium text-blue-600">
+                              <span className="text-sm font-medium text-tunitech-mint">
                                 {getProficiencyLabel(selectedSkill.proficiencyLevel)}
                               </span>
                             </div>
@@ -174,7 +174,7 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                             step={1}
                             className="mt-2"
                           />
-                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
                             <span>Nybörjare</span>
                             <span>Expert</span>
                           </div>
@@ -182,10 +182,10 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                         
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <Label className="text-sm font-medium text-gray-700">
+                            <Label className="text-sm font-medium text-foreground">
                               År av erfarenhet
                             </Label>
-                            <span className="text-sm font-medium text-green-600">
+                            <span className="text-sm font-medium text-tunitech-blue">
                               {getExperienceLabel(selectedSkill.yearsExperience)}
                             </span>
                           </div>
@@ -197,7 +197,7 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                             step={1}
                             className="mt-2"
                           />
-                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
                             <span>Mindre än 1 år</span>
                             <span>15+ år</span>
                           </div>
@@ -213,12 +213,12 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
       ))}
       
       {selectedSkills.length > 0 && (
-        <Card className="bg-green-50/50 border-green-200">
+        <Card className="bg-tunitech-blue/10 border-tunitech-blue/20">
           <CardContent className="p-4">
-            <h4 className="font-semibold mb-3 text-green-900">Dina valda färdigheter ({selectedSkills.length})</h4>
+            <h4 className="font-semibold mb-3 text-foreground">Dina valda färdigheter ({selectedSkills.length})</h4>
             <div className="flex flex-wrap gap-2">
               {selectedSkills.map((skill) => (
-                <Badge key={skill.skillCategoryId} variant="secondary" className="bg-green-100 text-green-800 border-green-300">
+                <Badge key={skill.skillCategoryId} variant="secondary" className="bg-card text-card-foreground border-border">
                   {skill.name} • {renderStars(skill.proficiencyLevel)} • {getExperienceLabel(skill.yearsExperience)}
                 </Badge>
               ))}
