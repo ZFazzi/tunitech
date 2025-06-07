@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -59,8 +58,8 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
       const newSkill: SelectedSkill = {
         skillCategoryId: skill.id,
         name: skill.name,
-        proficiencyLevel: 1,
-        yearsExperience: 0
+        proficiencyLevel: 3,
+        yearsExperience: 1
       };
       onSkillsChange([...selectedSkills, newSkill]);
     } else {
@@ -90,6 +89,13 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
   const getProficiencyLabel = (level: number) => {
     const labels = ['', 'Nybörjare', 'Grundläggande', 'Mellanliggande', 'Avancerad', 'Expert'];
     return labels[level] || 'Nybörjare';
+  };
+
+  const getExperienceLabel = (years: number) => {
+    if (years === 0) return 'Mindre än 1 år';
+    if (years === 1) return '1 år';
+    if (years >= 15) return '15+ år';
+    return `${years} år`;
   };
 
   const renderStars = (level: number) => {
@@ -175,18 +181,26 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
                         </div>
                         
                         <div>
-                          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            År av erfarenhet
-                          </Label>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="50"
-                            value={selectedSkill.yearsExperience}
-                            onChange={(e) => updateSkillExperience(skill.id, parseInt(e.target.value) || 0)}
-                            className="w-24 text-sm"
-                            placeholder="0"
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-sm font-medium text-gray-700">
+                              År av erfarenhet
+                            </Label>
+                            <span className="text-sm font-medium text-green-600">
+                              {getExperienceLabel(selectedSkill.yearsExperience)}
+                            </span>
+                          </div>
+                          <Slider
+                            value={[selectedSkill.yearsExperience]}
+                            onValueChange={(value) => updateSkillExperience(skill.id, value[0])}
+                            max={15}
+                            min={0}
+                            step={1}
+                            className="mt-2"
                           />
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Mindre än 1 år</span>
+                            <span>15+ år</span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -205,7 +219,7 @@ export const SkillSelector: React.FC<SkillSelectorProps> = ({
             <div className="flex flex-wrap gap-2">
               {selectedSkills.map((skill) => (
                 <Badge key={skill.skillCategoryId} variant="secondary" className="bg-green-100 text-green-800 border-green-300">
-                  {skill.name} • {renderStars(skill.proficiencyLevel)} • {skill.yearsExperience} år
+                  {skill.name} • {renderStars(skill.proficiencyLevel)} • {getExperienceLabel(skill.yearsExperience)}
                 </Badge>
               ))}
             </div>

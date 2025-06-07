@@ -3,10 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 
 interface SkillCategory {
@@ -15,7 +14,7 @@ interface SkillCategory {
   category_type: string;
 }
 
-interface RequiredSkill {
+interface SelectedSkill {
   skillCategoryId: string;
   name: string;
   importanceLevel: number;
@@ -23,12 +22,12 @@ interface RequiredSkill {
 }
 
 interface ProjectSkillSelectorProps {
-  requiredSkills: RequiredSkill[];
-  onSkillsChange: (skills: RequiredSkill[]) => void;
+  selectedSkills: SelectedSkill[];
+  onSkillsChange: (skills: SelectedSkill[]) => void;
 }
 
 export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
-  requiredSkills,
+  selectedSkills,
   onSkillsChange
 }) => {
   const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
@@ -56,20 +55,20 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
 
   const handleSkillToggle = (skill: SkillCategory, checked: boolean) => {
     if (checked) {
-      const newSkill: RequiredSkill = {
+      const newSkill: SelectedSkill = {
         skillCategoryId: skill.id,
         name: skill.name,
-        importanceLevel: 2,
+        importanceLevel: 3,
         minimumYears: 0
       };
-      onSkillsChange([...requiredSkills, newSkill]);
+      onSkillsChange([...selectedSkills, newSkill]);
     } else {
-      onSkillsChange(requiredSkills.filter(s => s.skillCategoryId !== skill.id));
+      onSkillsChange(selectedSkills.filter(s => s.skillCategoryId !== skill.id));
     }
   };
 
   const updateSkillImportance = (skillCategoryId: string, importanceLevel: number) => {
-    onSkillsChange(requiredSkills.map(skill => 
+    onSkillsChange(selectedSkills.map(skill => 
       skill.skillCategoryId === skillCategoryId 
         ? { ...skill, importanceLevel }
         : skill
@@ -77,31 +76,32 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
   };
 
   const updateSkillMinimumYears = (skillCategoryId: string, minimumYears: number) => {
-    onSkillsChange(requiredSkills.map(skill => 
+    onSkillsChange(selectedSkills.map(skill => 
       skill.skillCategoryId === skillCategoryId 
         ? { ...skill, minimumYears }
         : skill
     ));
   };
 
-  const isSelected = (skillId: string) => requiredSkills.some(s => s.skillCategoryId === skillId);
-  const getSelectedSkill = (skillId: string) => requiredSkills.find(s => s.skillCategoryId === skillId);
+  const isSelected = (skillId: string) => selectedSkills.some(s => s.skillCategoryId === skillId);
+  const getSelectedSkill = (skillId: string) => selectedSkills.find(s => s.skillCategoryId === skillId);
 
   const getImportanceLabel = (level: number) => {
-    const labels = ['', 'Låg', 'Medel-låg', 'Medel', 'Hög', 'Kritisk'];
-    return labels[level] || 'Låg';
+    const labels = ['', 'Låg', 'Måttlig', 'Normal', 'Viktig', 'Kritisk'];
+    return labels[level] || 'Normal';
   };
 
   const getImportanceColor = (level: number) => {
-    const colors = ['', 'text-green-600', 'text-yellow-600', 'text-orange-600', 'text-red-600', 'text-red-800'];
-    return colors[level] || 'text-green-600';
+    const colors = ['', 'text-green-600', 'text-blue-600', 'text-yellow-600', 'text-orange-600', 'text-red-600'];
+    return colors[level] || 'text-yellow-600';
   };
 
-  const renderImportanceIcon = (level: number) => {
+  const renderImportanceIcons = (level: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <AlertTriangle
         key={i}
-        className={`h-4 w-4 ${i < level ? getImportanceColor(level) + ' fill-current' : 'text-gray-300'}`}
+        className={`h-4 w-4 ${i < level ? getImportanceColor(level) : 'text-gray-300'}`}
+        fill={i < level ? 'currentColor' : 'none'}
       />
     ));
   };
@@ -121,10 +121,10 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
     <div className="space-y-6">
       <Card className="bg-blue-50/50 border-blue-200">
         <CardContent className="p-4">
-          <h4 className="font-semibold mb-2 text-blue-900">Hur fungerar kompetensbedömningen?</h4>
+          <h4 className="font-semibold mb-2 text-blue-900">Hur fungerar färdighetskraven?</h4>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li><strong>Viktighet:</strong> Hur viktigt från 1 (Låg) till 5 (Kritisk) för projektet</li>
-            <li><strong>Minimum år:</strong> Minsta antal års erfarenhet som krävs</li>
+            <li><strong>Viktighet:</strong> Hur kritisk färdigheten är för projektet (1-5)</li>
+            <li><strong>Minimum års erfarenhet:</strong> Minsta antal år utvecklaren ska ha arbetat med teknologin</li>
           </ul>
         </CardContent>
       </Card>
@@ -156,10 +156,10 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
                         <div>
                           <div className="flex items-center justify-between mb-2">
                             <Label className="text-sm font-medium text-gray-700">
-                              Viktighet för projektet
+                              Viktighet
                             </Label>
                             <div className="flex items-center space-x-2">
-                              {renderImportanceIcon(selectedSkill.importanceLevel)}
+                              {renderImportanceIcons(selectedSkill.importanceLevel)}
                               <span className={`text-sm font-medium ${getImportanceColor(selectedSkill.importanceLevel)}`}>
                                 {getImportanceLabel(selectedSkill.importanceLevel)}
                               </span>
@@ -181,17 +181,20 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
                         
                         <div>
                           <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                            Minimum antal års erfarenhet som krävs
+                            Minimum års erfarenhet: {selectedSkill.minimumYears} år
                           </Label>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="20"
-                            value={selectedSkill.minimumYears}
-                            onChange={(e) => updateSkillMinimumYears(skill.id, parseInt(e.target.value) || 0)}
-                            className="w-24 text-sm"
-                            placeholder="0"
+                          <Slider
+                            value={[selectedSkill.minimumYears]}
+                            onValueChange={(value) => updateSkillMinimumYears(skill.id, value[0])}
+                            max={20}
+                            min={0}
+                            step={1}
+                            className="mt-2"
                           />
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0 år</span>
+                            <span>20+ år</span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -203,19 +206,19 @@ export const ProjectSkillSelector: React.FC<ProjectSkillSelectorProps> = ({
         </div>
       ))}
       
-      {requiredSkills.length > 0 && (
+      {selectedSkills.length > 0 && (
         <Card className="bg-green-50/50 border-green-200">
           <CardContent className="p-4">
-            <h4 className="font-semibold mb-3 text-green-900">Valda kompetensbehov ({requiredSkills.length})</h4>
+            <h4 className="font-semibold mb-3 text-green-900">Valda färdighetskrav ({selectedSkills.length})</h4>
             <div className="flex flex-wrap gap-2">
-              {requiredSkills.map((skill) => (
+              {selectedSkills.map((skill) => (
                 <Badge key={skill.skillCategoryId} variant="secondary" className="bg-green-100 text-green-800 border-green-300">
-                  {skill.name} • {getImportanceLabel(skill.importanceLevel)} • min {skill.minimumYears} år
+                  {skill.name} • {renderImportanceIcons(skill.importanceLevel)} • Min {skill.minimumYears} år
                 </Badge>
               ))}
             </div>
           </CardContent>
-        </div>
+        </Card>
       )}
     </div>
   );
