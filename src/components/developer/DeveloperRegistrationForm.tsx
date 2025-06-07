@@ -19,9 +19,10 @@ import { IndustrySelector } from './IndustrySelector';
 import { toast } from 'sonner';
 
 const registrationSchema = z.object({
+  email: z.string().email('Ogiltig e-postadress'),
+  password: z.string().min(6, 'Lösenord måste vara minst 6 tecken'),
   first_name: z.string().min(1, 'Förnamn krävs'),
   last_name: z.string().min(1, 'Efternamn krävs'),
-  email: z.string().email('Ogiltig e-postadress'),
   phone: z.string().optional(),
   experience_level: z.enum(['junior', 'medior', 'senior']),
   years_of_experience: z.number().min(0, 'Års erfarenhet måste vara 0 eller mer'),
@@ -63,9 +64,10 @@ export const DeveloperRegistrationForm = () => {
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
+      email: user?.email || '',
+      password: '',
       first_name: '',
       last_name: '',
-      email: user?.email || '',
       phone: '',
       experience_level: 'junior',
       years_of_experience: 0,
@@ -91,15 +93,46 @@ export const DeveloperRegistrationForm = () => {
   ];
 
   const onSubmit = async (data: RegistrationFormData) => {
-    if (!user) return;
-
     setIsSubmitting(true);
     try {
+      let currentUser = user;
+
+      // If user is not logged in, create account first
+      if (!currentUser) {
+        const redirectUrl = `${window.location.origin}/auth`;
+        
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: { user_type: 'developer' },
+            emailRedirectTo: redirectUrl
+          }
+        });
+
+        if (authError) {
+          if (authError.message?.includes('User already registered')) {
+            toast.error('En användare med denna e-postadress finns redan. Försök logga in istället.');
+            navigate('/auth');
+            return;
+          }
+          throw authError;
+        }
+
+        currentUser = authData.user;
+        
+        if (!currentUser) {
+          throw new Error('Kunde inte skapa användarkonto');
+        }
+
+        toast.success('Konto skapat! Kontrollera din e-post för verifiering.');
+      }
+
       // Create technical skills summary for backward compatibility
       const technicalSkillsSummary = selectedSkills.map(skill => skill.name);
 
       const developerData = {
-        user_id: user.id,
+        user_id: currentUser.id,
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
@@ -157,6 +190,12 @@ export const DeveloperRegistrationForm = () => {
       }
 
       toast.success('Profil skapad! Din ansökan kommer att granskas.');
+      
+      // If user was just created, show message about email verification
+      if (!user) {
+        toast.info('Verifiera din e-post för att få full åtkomst till ditt konto.');
+      }
+      
       navigate('/developer-dashboard');
     } catch (error: any) {
       toast.error('Kunde inte skapa profil: ' + error.message);
@@ -174,119 +213,165 @@ export const DeveloperRegistrationForm = () => {
     >
       <Card>
         <CardHeader>
-          <CardTitle>Skapa Utvecklarprofil</CardTitle>
-          <CardDescription>Fyll i dina uppgifter för att komma igång som utvecklare</CardDescription>
+          <CardTitle>
+            {user ? 'Skapa Utvecklarprofil' : 'Registrera dig som Utvecklare'}
+          </CardTitle>
+          <CardDescription>
+            {user 
+              ? 'Fyll i dina uppgifter för att komma igång som utvecklare'
+              : 'Skapa ditt konto och utvecklarprofil i ett steg'
+            }
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Account Information - only show if not logged in */}
+            {!user && (
+              <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
+                <h3 className="text-lg font-semibold">Kontoinformation</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="email">E-post *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...form.register('email')}
+                      className="mt-1"
+                    />
+                    {form.formState.errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password">Lösenord *</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      {...form.register('password')}
+                      className="mt-1"
+                    />
+                    {form.formState.errors.password && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {form.formState.errors.password.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="first_name">Förnamn *</Label>
-                <Input
-                  id="first_name"
-                  {...form.register('first_name')}
-                  className="mt-1"
-                />
-                {form.formState.errors.first_name && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.first_name.message}
-                  </p>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Grundläggande information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="first_name">Förnamn *</Label>
+                  <Input
+                    id="first_name"
+                    {...form.register('first_name')}
+                    className="mt-1"
+                  />
+                  {form.formState.errors.first_name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {form.formState.errors.first_name.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="last_name">Efternamn *</Label>
+                  <Input
+                    id="last_name"
+                    {...form.register('last_name')}
+                    className="mt-1"
+                  />
+                  {form.formState.errors.last_name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {form.formState.errors.last_name.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Show email field if user is logged in (read-only) */}
+                {user && (
+                  <div>
+                    <Label htmlFor="email_readonly">E-post</Label>
+                    <Input
+                      id="email_readonly"
+                      value={user.email || ''}
+                      readOnly
+                      className="mt-1 bg-gray-100"
+                    />
+                  </div>
                 )}
-              </div>
 
-              <div>
-                <Label htmlFor="last_name">Efternamn *</Label>
-                <Input
-                  id="last_name"
-                  {...form.register('last_name')}
-                  className="mt-1"
-                />
-                {form.formState.errors.last_name && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.last_name.message}
-                  </p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input
+                    id="phone"
+                    {...form.register('phone')}
+                    className="mt-1"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="email">E-post *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...form.register('email')}
-                  className="mt-1"
-                />
-                {form.formState.errors.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.email.message}
-                  </p>
-                )}
-              </div>
+                <div>
+                  <Label htmlFor="location">Plats</Label>
+                  <Input
+                    id="location"
+                    {...form.register('location')}
+                    placeholder="t.ex. Stockholm, Sverige"
+                    className="mt-1"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="phone">Telefon</Label>
-                <Input
-                  id="phone"
-                  {...form.register('phone')}
-                  className="mt-1"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="experience_level">Erfarenhetsnivå *</Label>
+                  <Select
+                    value={form.watch('experience_level')}
+                    onValueChange={(value) => form.setValue('experience_level', value as any)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Välj erfarenhetsnivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="junior">Junior</SelectItem>
+                      <SelectItem value="medior">Medior</SelectItem>
+                      <SelectItem value="senior">Senior</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div>
-                <Label htmlFor="location">Plats</Label>
-                <Input
-                  id="location"
-                  {...form.register('location')}
-                  placeholder="t.ex. Stockholm, Sverige"
-                  className="mt-1"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="years_of_experience">År av erfarenhet *</Label>
+                  <Input
+                    id="years_of_experience"
+                    type="number"
+                    min="0"
+                    value={form.watch('years_of_experience')}
+                    onChange={(e) => form.setValue('years_of_experience', parseInt(e.target.value) || 0)}
+                    className="mt-1"
+                  />
+                  {form.formState.errors.years_of_experience && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {form.formState.errors.years_of_experience.message}
+                    </p>
+                  )}
+                </div>
 
-              <div>
-                <Label htmlFor="experience_level">Erfarenhetsnivå *</Label>
-                <Select
-                  value={form.watch('experience_level')}
-                  onValueChange={(value) => form.setValue('experience_level', value as any)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Välj erfarenhetsnivå" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="junior">Junior</SelectItem>
-                    <SelectItem value="medior">Medior</SelectItem>
-                    <SelectItem value="senior">Senior</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="years_of_experience">År av erfarenhet *</Label>
-                <Input
-                  id="years_of_experience"
-                  type="number"
-                  min="0"
-                  value={form.watch('years_of_experience')}
-                  onChange={(e) => form.setValue('years_of_experience', parseInt(e.target.value) || 0)}
-                  className="mt-1"
-                />
-                {form.formState.errors.years_of_experience && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {form.formState.errors.years_of_experience.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="hourly_rate">Timarvode (kr)</Label>
-                <Input
-                  id="hourly_rate"
-                  type="number"
-                  min="0"
-                  {...form.register('hourly_rate')}
-                  placeholder="t.ex. 800"
-                  className="mt-1"
-                />
+                <div>
+                  <Label htmlFor="hourly_rate">Timarvode (kr)</Label>
+                  <Input
+                    id="hourly_rate"
+                    type="number"
+                    min="0"
+                    {...form.register('hourly_rate')}
+                    placeholder="t.ex. 800"
+                    className="mt-1"
+                  />
+                </div>
               </div>
             </div>
 
@@ -433,7 +518,10 @@ export const DeveloperRegistrationForm = () => {
               className="w-full"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Skapar profil...' : 'Skapa Profil'}
+              {isSubmitting 
+                ? (user ? 'Skapar profil...' : 'Registrerar och skapar profil...') 
+                : (user ? 'Skapa Profil' : 'Registrera dig och Skapa Profil')
+              }
             </Button>
           </form>
         </CardContent>
