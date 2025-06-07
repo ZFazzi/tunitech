@@ -24,7 +24,7 @@ const registrationSchema = z.object({
   email: z.string().email('Ogiltig e-postadress'),
   phone: z.string().optional(),
   experience_level: z.enum(['junior', 'medior', 'senior']),
-  years_of_experience: z.string().transform((val) => parseInt(val)).refine((val) => val >= 0, 'Års erfarenhet måste vara 0 eller mer'),
+  years_of_experience: z.number().min(0, 'Års erfarenhet måste vara 0 eller mer'),
   cv_summary: z.string().min(10, 'CV-sammanfattning måste vara minst 10 tecken'),
   portfolio_url: z.string().optional(),
   linkedin_url: z.string().optional(),
@@ -68,7 +68,7 @@ export const DeveloperRegistrationForm = () => {
       email: user?.email || '',
       phone: '',
       experience_level: 'junior',
-      years_of_experience: '0',
+      years_of_experience: 0,
       cv_summary: '',
       portfolio_url: '',
       linkedin_url: '',
@@ -266,7 +266,8 @@ export const DeveloperRegistrationForm = () => {
                   id="years_of_experience"
                   type="number"
                   min="0"
-                  {...form.register('years_of_experience')}
+                  value={form.watch('years_of_experience')}
+                  onChange={(e) => form.setValue('years_of_experience', parseInt(e.target.value) || 0)}
                   className="mt-1"
                 />
                 {form.formState.errors.years_of_experience && (
