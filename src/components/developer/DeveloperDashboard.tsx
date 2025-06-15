@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -7,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Star, Calendar, Building, MapPin, AlertCircle, Bell, CheckCircle, X } from 'lucide-react';
+import { Star, Calendar, Building, MapPin, AlertCircle, Bell, CheckCircle, X, Heart, Clock } from 'lucide-react';
 
 interface Developer {
   id: string;
@@ -130,6 +131,7 @@ export const DeveloperDashboard = () => {
           )
         `)
         .eq('developer_id', developerId)
+        .order('customer_interested_at', { ascending: false, nullsLast: true })
         .order('match_score', { ascending: false });
 
       if (error) {
@@ -296,19 +298,57 @@ export const DeveloperDashboard = () => {
 
   const getMatchStatus = (match: ProjectMatch) => {
     if (match.developer_approved_at && match.customer_interested_at) {
-      return { label: 'Matchad - Möte kan bokas', color: 'bg-green-500', icon: CheckCircle };
+      return { 
+        label: 'Matchad - Möte kan bokas', 
+        color: 'bg-green-500', 
+        icon: CheckCircle,
+        priority: 1
+      };
+    }
+    if (match.customer_interested_at && !match.developer_approved_at) {
+      return { 
+        label: '💖 Kunden har visat intresse!', 
+        color: 'bg-pink-500', 
+        icon: Heart,
+        priority: 2
+      };
     }
     if (match.developer_approved_at) {
-      return { label: 'Du har godkänt', color: 'bg-blue-500', icon: CheckCircle };
-    }
-    if (match.customer_interested_at) {
-      return { label: 'Kunden har visat intresse', color: 'bg-yellow-500', icon: Star };
+      return { 
+        label: 'Du har godkänt - Väntar på kund', 
+        color: 'bg-blue-500', 
+        icon: Clock,
+        priority: 3
+      };
     }
     if (match.status === 'developer_declined') {
-      return { label: 'Avböjt', color: 'bg-red-500', icon: X };
+      return { 
+        label: 'Avböjt', 
+        color: 'bg-red-500', 
+        icon: X,
+        priority: 5
+      };
     }
-    return { label: 'Väntande svar', color: 'bg-gray-500', icon: AlertCircle };
+    return { 
+      label: 'Väntande svar', 
+      color: 'bg-gray-500', 
+      icon: AlertCircle,
+      priority: 4
+    };
   };
+
+  // Sort matches by priority (customer interest first)
+  const sortedMatches = [...matches].sort((a, b) => {
+    const statusA = getMatchStatus(a);
+    const statusB = getMatchStatus(b);
+    
+    if (statusA.priority !== statusB.priority) {
+      return statusA.priority - statusB.priority;
+    }
+    
+    // Secondary sort by match score
+    return b.match_score - a.match_score;
+  });
 
   console.log('DeveloperDashboard: Rendering, loading:', loading, 'developer:', developer, 'error:', error);
 
@@ -465,7 +505,7 @@ export const DeveloperDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {matches.map((match) => {
+                  {sortedMatches.map((match) => {
                     // Safety check to ensure project_requirement exists
                     if (!match.project_requirement) {
                       console.warn('DeveloperDashboard: Match without project_requirement found:', match.id);
@@ -476,7 +516,11 @@ export const DeveloperDashboard = () => {
                     const StatusIcon = status.icon;
                     
                     return (
-                      <div key={match.id} className="border rounded-lg p-6 bg-white">
+                      <div key={match.id} className={`border rounded-lg p-6 bg-white ${
+                        match.customer_interested_at && !match.developer_approved_at 
+                          ? 'ring-2 ring-pink-500 bg-pink-50' 
+                          : ''
+                      }`}>
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <div className="flex items-center mb-2">
@@ -537,11 +581,15 @@ export const DeveloperDashboard = () => {
                           </p>
                         </div>
 
-                        {match.customer_interested_at && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                            <h4 className="font-semibold text-blue-800 mb-1">🔔 Kunden har visat intresse!</h4>
-                            <p className="text-blue-700 text-sm">
-                              Kunden har anmält intresse för ditt arbete. Vill du gå vidare med detta projekt?
+                        {match.customer_interested_at && !match.developer_approved_at && (
+                          <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-4">
+                            <h4 className="font-semibold text-pink-800 mb-1 flex items-center">
+                              <Heart className="w-4 h-4 mr-2" />
+                              Kunden har visat intresse!
+                            </h4>
+                            <p className="text-pink-700 text-sm">
+                              Kunden har anmält intresse för ditt arbete den {new Date(match.customer_interested_at).toLocaleDateString('sv-SE')}. 
+                              Vill du gå vidare med detta projekt?
                             </p>
                           </div>
                         )}
@@ -581,7 +629,7 @@ export const DeveloperDashboard = () => {
                     );
                   })}
 
-                  {matches.length === 0 && (
+                  {sortedMatches.length === 0 && (
                     <div className="text-center py-12">
                       <Star className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">

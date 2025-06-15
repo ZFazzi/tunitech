@@ -1,376 +1,569 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/components/auth/AuthProvider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ProjectSkillSelector } from './ProjectSkillSelector';
 import { ProjectIndustrySelector } from './ProjectIndustrySelector';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
-const projectSchema = z.object({
+const formSchema = z.object({
   project_description: z.string().min(10, 'Projektbeskrivning måste vara minst 10 tecken'),
-  project_type: z.enum(['web_development', 'mobile_development', 'consulting', 'other']),
+  project_type: z.enum(['fixed_price', 'hourly_based']),
   experience_level: z.enum(['junior', 'medior', 'senior']),
   employment_type: z.enum(['hourly', 'part_time', 'full_time', 'other']),
   employment_type_other: z.string().optional(),
-  start_date: z.enum(['asap', '1_month', '2_3_months', 'flexible']),
-  project_duration: z.string().optional(),
-  has_budget: z.boolean(),
-  budget_amount: z.string().optional(),
+  start_date: z.string().min(1, 'Startdatum krävs'),
+  project_duration: z.string().min(1, 'Projektlängd krävs'),
   industry_experience_required: z.boolean(),
   industry_type: z.string().optional(),
-  technical_skills: z.string().min(1, 'Tekniska färdigheter krävs'),
+  has_budget: z.boolean(),
+  budget_amount: z.string().optional(),
+  technical_skills: z.string().min(5, 'Tekniska krav måste vara minst 5 tecken'),
   required_resources: z.string().optional(),
   security_requirements: z.string().optional(),
   project_risks: z.string().optional(),
   additional_comments: z.string().optional(),
 });
 
-type ProjectFormData = z.infer<typeof projectSchema>;
-
 interface SelectedSkill {
-  skillCategoryId: string;
+  id: string;
   name: string;
-  importanceLevel: number;
-  minimumYears: number;
+  importance_level: number;
+  minimum_years: number;
 }
 
 interface SelectedIndustry {
-  industryCategoryId: string;
+  id: string;
   name: string;
   required: boolean;
 }
 
 export const ProjectRequirementForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([]);
+  const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const form = useForm<ProjectFormData>({
-    resolver: zodResolver(projectSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      has_budget: false,
+      project_description: '',
+      project_type: 'fixed_price',
+      experience_level: 'medior',
+      employment_type: 'full_time',
+      employment_type_other: '',
+      start_date: '',
+      project_duration: '',
       industry_experience_required: false,
+      industry_type: '',
+      has_budget: false,
+      budget_amount: '',
+      technical_skills: '',
+      required_resources: '',
+      security_requirements: '',
+      project_risks: '',
+      additional_comments: '',
     },
   });
 
-  const onSubmit = async (data: ProjectFormData) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user) {
-      toast.error('Du måste vara inloggad');
+      toast.error('Du måste vara inloggad för att skapa ett projektkrav');
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      // Get customer ID
-      const { data: customer, error: customerError } = await supabase
+      setSubmitting(true);
+
+      // Hämta customer_id från user_id
+      const { data: customerData, error: customerError } = await supabase
         .from('customers')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
-      if (customerError || !customer) {
+      if (customerError) {
+        console.error('Error fetching customer:', customerError);
         toast.error('Kunde inte hitta kundprofil');
         return;
       }
 
-      // Create project requirement
+      // Skapa projektkrav
       const { data: projectReq, error: projectError } = await supabase
         .from('project_requirements')
-        .insert({
-          ...data,
-          customer_id: customer.id,
-        })
+        .insert([{
+          customer_id: customerData.id,
+          project_description: values.project_description,
+          project_type: values.project_type,
+          experience_level: values.experience_level,
+          employment_type: values.employment_type,
+          employment_type_other: values.employment_type_other,
+          start_date: values.start_date,
+          project_duration: values.project_duration,
+          industry_experience_required: values.industry_experience_required,
+          industry_type: values.industry_type,
+          has_budget: values.has_budget,
+          budget_amount: values.budget_amount,
+          technical_skills: values.technical_skills,
+          required_resources: values.required_resources,
+          security_requirements: values.security_requirements,
+          project_risks: values.project_risks,
+          additional_comments: values.additional_comments,
+        }])
         .select()
         .single();
 
-      if (projectError) throw projectError;
+      if (projectError) {
+        console.error('Error creating project requirement:', projectError);
+        toast.error('Kunde inte skapa projektkrav');
+        return;
+      }
 
-      // Insert selected skills
+      // Lägg till valda färdigheter
       if (selectedSkills.length > 0) {
-        const skillsToInsert = selectedSkills.map(skill => ({
+        const skillInserts = selectedSkills.map(skill => ({
           project_requirement_id: projectReq.id,
-          skill_category_id: skill.skillCategoryId,
-          importance_level: skill.importanceLevel,
-          minimum_years: skill.minimumYears
+          skill_category_id: skill.id,
+          importance_level: skill.importance_level,
+          minimum_years: skill.minimum_years,
         }));
 
-        await supabase
+        const { error: skillsError } = await supabase
           .from('project_required_skills')
-          .insert(skillsToInsert);
+          .insert(skillInserts);
+
+        if (skillsError) {
+          console.error('Error adding skills:', skillsError);
+          toast.error('Kunde inte lägga till färdigheter');
+          return;
+        }
       }
 
-      // Insert selected industries
+      // Lägg till valda branscher
       if (selectedIndustries.length > 0) {
-        const industriesToInsert = selectedIndustries.map(industry => ({
+        const industryInserts = selectedIndustries.map(industry => ({
           project_requirement_id: projectReq.id,
-          industry_category_id: industry.industryCategoryId,
-          required: industry.required
+          industry_category_id: industry.id,
+          required: industry.required,
         }));
 
-        await supabase
+        const { error: industriesError } = await supabase
           .from('project_industry_requirements')
-          .insert(industriesToInsert);
+          .insert(industryInserts);
+
+        if (industriesError) {
+          console.error('Error adding industries:', industriesError);
+          toast.error('Kunde inte lägga till branscher');
+          return;
+        }
       }
 
-      toast.success('Projektkrav skapat!');
-      form.reset();
-      setSelectedSkills([]);
-      setSelectedIndustries([]);
-    } catch (error: any) {
-      toast.error('Kunde inte skapa projektkrav: ' + error.message);
+      // Generera matchningar
+      try {
+        const { error: matchError } = await supabase.rpc('generate_project_matches', {
+          req_id: projectReq.id
+        });
+
+        if (matchError) {
+          console.error('Error generating matches:', matchError);
+        }
+      } catch (error) {
+        console.error('Error calling generate_project_matches:', error);
+      }
+
+      toast.success('Projektkrav skapat! Matchningar genereras...');
+      navigate('/customer-dashboard');
+
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast.error('Ett oväntat fel uppstod');
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
+  const watchEmploymentType = form.watch('employment_type');
+  const watchHasBudget = form.watch('has_budget');
+  const watchIndustryRequired = form.watch('industry_experience_required');
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Skapa Projektkrav</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div>
-              <Label htmlFor="project_description">Projektbeskrivning *</Label>
-              <Textarea
-                id="project_description"
-                {...form.register('project_description')}
-                placeholder="Beskriv ditt projekt i detalj..."
-                className="mt-1"
-              />
-              {form.formState.errors.project_description && (
-                <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.project_description.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="project_type">Projekttyp *</Label>
-              <Select
-                onValueChange={(value) => form.setValue('project_type', value as any)}
-              >
-                <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Välj en projekttyp" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="web_development">Webbutveckling</SelectItem>
-                  <SelectItem value="mobile_development">Mobilutveckling</SelectItem>
-                  <SelectItem value="consulting">Konsulting</SelectItem>
-                  <SelectItem value="other">Annat</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="experience_level">Erfarenhetsnivå *</Label>
-              <Select
-                onValueChange={(value) => form.setValue('experience_level', value as any)}
-              >
-                <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Välj en erfarenhetsnivå" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="junior">Junior</SelectItem>
-                  <SelectItem value="medior">Medior</SelectItem>
-                  <SelectItem value="senior">Senior</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="employment_type">Anställningstyp *</Label>
-              <Select
-                onValueChange={(value) => form.setValue('employment_type', value as any)}
-              >
-                <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Välj en anställningstyp" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hourly">Timanställning</SelectItem>
-                  <SelectItem value="part_time">Deltid</SelectItem>
-                  <SelectItem value="full_time">Heltid</SelectItem>
-                  <SelectItem value="other">Annat</SelectItem>
-                </SelectContent>
-              </Select>
-              {form.watch('employment_type') === 'other' && (
-                <Input
-                  id="employment_type_other"
-                  {...form.register('employment_type_other')}
-                  placeholder="Beskriv annan anställningstyp"
-                  className="mt-2"
+    <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
+      <div className="max-w-4xl mx-auto p-6">
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-white">Skapa Projektkrav</CardTitle>
+            <CardDescription className="text-gray-300">
+              Beskriv ditt projekt och de krav du har på utvecklare
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Projektbeskrivning */}
+                <FormField
+                  control={form.control}
+                  name="project_description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Projektbeskrivning</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Beskriv ditt projekt i detalj..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              )}
-            </div>
 
-            <div>
-              <Label htmlFor="start_date">Startdatum *</Label>
-              <Select
-                onValueChange={(value) => form.setValue('start_date', value as any)}
-              >
-                <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Välj ett startdatum" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asap">Snarast</SelectItem>
-                  <SelectItem value="1_month">Inom 1 månad</SelectItem>
-                  <SelectItem value="2_3_months">Inom 2-3 månader</SelectItem>
-                  <SelectItem value="flexible">Flexibelt</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Projekttyp och erfarenhetsnivå */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="project_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Projekttyp</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                              <SelectValue placeholder="Välj projekttyp" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="fixed_price">Fast pris</SelectItem>
+                            <SelectItem value="hourly_based">Timbaserat</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <div>
-              <Label htmlFor="project_duration">Projektets varaktighet</Label>
-              <Input
-                id="project_duration"
-                {...form.register('project_duration')}
-                placeholder="t.ex. 3 månader"
-                className="mt-1"
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="experience_level"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Erfarenhetsnivå</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                              <SelectValue placeholder="Välj erfarenhetsnivå" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="junior">Junior</SelectItem>
+                            <SelectItem value="medior">Medior</SelectItem>
+                            <SelectItem value="senior">Senior</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="has_budget"
-                {...form.register('has_budget')}
-              />
-              <Label htmlFor="has_budget">Har projektet en budget?</Label>
-            </div>
-
-            {form.watch('has_budget') && (
-              <div>
-                <Label htmlFor="budget_amount">Budgetbelopp</Label>
-                <Input
-                  id="budget_amount"
-                  {...form.register('budget_amount')}
-                  placeholder="Ange budgetbelopp"
-                  className="mt-1"
+                {/* Anställningstyp */}
+                <FormField
+                  control={form.control}
+                  name="employment_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Anställningstyp</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                            <SelectValue placeholder="Välj anställningstyp" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="hourly">Timanställd</SelectItem>
+                          <SelectItem value="part_time">Deltid</SelectItem>
+                          <SelectItem value="full_time">Heltid</SelectItem>
+                          <SelectItem value="other">Övrigt</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            )}
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="industry_experience_required"
-                {...form.register('industry_experience_required')}
-              />
-              <Label htmlFor="industry_experience_required">Krävs branscherfarenhet?</Label>
-            </div>
+                {watchEmploymentType === 'other' && (
+                  <FormField
+                    control={form.control}
+                    name="employment_type_other"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Specificera anställningstyp</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Beskriv anställningstypen..."
+                            className="bg-gray-700 border-gray-600 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-            {form.watch('industry_experience_required') && (
-              <div>
-                <Label htmlFor="industry_type">Branschtyp</Label>
-                <Input
-                  id="industry_type"
-                  {...form.register('industry_type')}
-                  placeholder="Ange branschtyp"
-                  className="mt-1"
+                {/* Startdatum och varaktighet */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Startdatum</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="project_duration"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Projektlängd</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="t.ex. 3 månader, 1 år"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Tekniska färdigheter */}
+                <FormField
+                  control={form.control}
+                  name="technical_skills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Tekniska krav</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Beskriv tekniska färdigheter och verktyg som krävs..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            )}
 
-            <div>
-              <Label htmlFor="technical_skills">Tekniska färdigheter *</Label>
-              <Input
-                id="technical_skills"
-                {...form.register('technical_skills')}
-                placeholder="Ange tekniska färdigheter"
-                className="mt-1"
-              />
-              {form.formState.errors.technical_skills && (
-                <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.technical_skills.message}
-                </p>
-              )}
-            </div>
+                {/* Tekniska färdigheter selector */}
+                <ProjectSkillSelector
+                  onSkillsChange={setSelectedSkills}
+                />
 
-            <div>
-              <Label htmlFor="required_resources">Krävda resurser</Label>
-              <Input
-                id="required_resources"
-                {...form.register('required_resources')}
-                placeholder="Ange krävda resurser"
-                className="mt-1"
-              />
-            </div>
+                {/* Branschexpertis */}
+                <FormField
+                  control={form.control}
+                  name="industry_experience_required"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-white">
+                          Branschexpertis krävs
+                        </FormLabel>
+                        <FormDescription className="text-gray-400">
+                          Kryssa i om utvecklaren behöver specifik branschexpertis
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
 
-            <div>
-              <Label htmlFor="security_requirements">Säkerhetskrav</Label>
-              <Input
-                id="security_requirements"
-                {...form.register('security_requirements')}
-                placeholder="Ange säkerhetskrav"
-                className="mt-1"
-              />
-            </div>
+                {watchIndustryRequired && (
+                  <FormField
+                    control={form.control}
+                    name="industry_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Bransch</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="t.ex. Fintech, E-handel, Sjukvård"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-            <div>
-              <Label htmlFor="project_risks">Projektrisker</Label>
-              <Input
-                id="project_risks"
-                {...form.register('project_risks')}
-                placeholder="Ange projektrisker"
-                className="mt-1"
-              />
-            </div>
+                {/* Branschselektor */}
+                <ProjectIndustrySelector
+                  onIndustriesChange={setSelectedIndustries}
+                />
 
-            <div>
-              <Label htmlFor="additional_comments">Ytterligare kommentarer</Label>
-              <Textarea
-                id="additional_comments"
-                {...form.register('additional_comments')}
-                placeholder="Ytterligare kommentarer..."
-                className="mt-1"
-              />
-            </div>
+                {/* Budget */}
+                <FormField
+                  control={form.control}
+                  name="has_budget"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-white">
+                          Jag har en fastställd budget
+                        </FormLabel>
+                        <FormDescription className="text-gray-400">
+                          Kryssa i om du vill ange budget
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
 
-            <div>
-              <Label className="text-lg font-semibold">Tekniska färdigheter</Label>
-              <ProjectSkillSelector
-                selectedSkills={selectedSkills}
-                onSkillsChange={setSelectedSkills}
-              />
-            </div>
+                {watchHasBudget && (
+                  <FormField
+                    control={form.control}
+                    name="budget_amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Budget</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="t.ex. 500 000 SEK"
+                            className="bg-gray-700 border-gray-600 text-white"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-            <div>
-              <Label className="text-lg font-semibold">Branschkrav</Label>
-              <ProjectIndustrySelector
-                selectedIndustries={selectedIndustries}
-                onIndustriesChange={setSelectedIndustries}
-              />
-            </div>
+                {/* Övriga fält */}
+                <FormField
+                  control={form.control}
+                  name="required_resources"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Resurser som tillhandahålls</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Beskriv vilka resurser, verktyg eller system som tillhandahålls..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="flex justify-end space-x-4 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-                disabled={isSubmitting}
-              >
-                Rensa
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Skapar...' : 'Skapa Projektkrav'}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+                <FormField
+                  control={form.control}
+                  name="security_requirements"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Säkerhetskrav</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Beskriv eventuella säkerhetskrav eller certifieringar..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="project_risks"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Projektrisker</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Beskriv eventuella risker eller utmaningar..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="additional_comments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Ytterligare kommentarer</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Övrig information eller speciella önskemål..."
+                          className="bg-gray-700 border-gray-600 text-white"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-tunitech-primary hover:bg-tunitech-primary/90"
+                  disabled={submitting}
+                >
+                  {submitting ? 'Skapar projektkrav...' : 'Skapa Projektkrav'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
