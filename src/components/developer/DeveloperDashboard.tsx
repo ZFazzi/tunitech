@@ -6,16 +6,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Star, Calendar, Building, MapPin, AlertCircle, Bell, CheckCircle, X, Heart, Clock } from 'lucide-react';
+import { Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, CheckCircle, Clock, Heart } from 'lucide-react';
 
 interface Developer {
   id: string;
   first_name: string;
   last_name: string;
-  is_approved: boolean;
+  email: string;
+  experience_level: string;
+  years_of_experience: number;
+  technical_skills: string[];
+  industry_experience: string[];
+  cv_summary: string;
+  hourly_rate: number;
+  location: string;
+  languages: string[];
+  certifications: string[];
+  education: string;
   available_for_work: boolean;
+  is_approved: boolean;
+  profile_picture_url: string;
+  linkedin_url: string;
+  github_url: string;
+  portfolio_url: string;
 }
 
 interface ProjectMatch {
@@ -32,8 +48,12 @@ interface ProjectMatch {
     employment_type: string;
     start_date: string;
     project_duration: string;
-    budget_amount: string;
-  } | null;
+    created_at: string;
+    customer: {
+      company_name: string;
+      contact_name: string;
+    };
+  };
 }
 
 interface Notification {
@@ -50,62 +70,37 @@ export const DeveloperDashboard = () => {
   const [matches, setMatches] = useState<ProjectMatch[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('DeveloperDashboard: Component mounted, user:', user);
-    if (user) {
-      fetchDeveloperProfile();
-    } else {
-      console.log('DeveloperDashboard: No user found');
-      setLoading(false);
-    }
+    fetchDeveloperData();
   }, [user]);
 
-  const fetchDeveloperProfile = async () => {
-    if (!user) {
-      console.log('DeveloperDashboard: No user available for fetch');
-      return;
-    }
+  const fetchDeveloperData = async () => {
+    if (!user) return;
 
     try {
-      console.log('DeveloperDashboard: Fetching developer profile for user:', user.id);
-      
-      const { data: developerData, error: devError } = await supabase
+      const { data: developerData, error: developerError } = await supabase
         .from('developers')
         .select('*')
         .eq('user_id', user.id)
         .single();
 
-      if (devError && devError.code === 'PGRST116') {
-        console.log('DeveloperDashboard: No developer profile found, redirecting to onboarding');
+      if (developerError && developerError.code === 'PGRST116') {
         navigate('/developer-onboarding');
         return;
       }
 
-      if (devError) {
-        console.error('DeveloperDashboard: Error fetching developer:', devError);
-        throw devError;
-      }
-
-      console.log('DeveloperDashboard: Developer data fetched:', developerData);
+      if (developerError) throw developerError;
       setDeveloper(developerData);
 
-      if (developerData?.is_approved) {
-        console.log('DeveloperDashboard: Developer is approved, fetching matches and notifications');
-        await Promise.all([
-          fetchMatches(developerData.id),
-          fetchNotifications()
-        ]);
-      } else {
-        console.log('DeveloperDashboard: Developer not approved yet');
-      }
+      await Promise.all([
+        fetchMatches(developerData.id),
+        fetchNotifications()
+      ]);
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error in fetchDeveloperProfile:', error);
-      setError('Kunde inte hämta utvecklarprofil: ' + error.message);
-      toast.error('Kunde inte hämta utvecklarprofil');
+      toast.error('Kunde inte hämta utvecklardata');
     } finally {
       setLoading(false);
     }
@@ -113,8 +108,6 @@ export const DeveloperDashboard = () => {
 
   const fetchMatches = async (developerId: string) => {
     try {
-      console.log('DeveloperDashboard: Fetching matches for developer:', developerId);
-      
       const { data, error } = await supabase
         .from('project_matches')
         .select(`
@@ -127,91 +120,26 @@ export const DeveloperDashboard = () => {
             employment_type,
             start_date,
             project_duration,
-            budget_amount
+            created_at,
+            customer:customers (
+              company_name,
+              contact_name
+            )
           )
         `)
         .eq('developer_id', developerId)
-        .order('customer_interested_at', { ascending: false, nullsLast: true })
+        .order('customer_interested_at', { ascending: false, nullsFirst: false })
         .order('match_score', { ascending: false });
 
-      if (error) {
-        console.error('DeveloperDashboard: Error fetching matches:', error);
-        throw error;
-      }
-
-      console.log('DeveloperDashboard: Raw matches data:', data);
-      
-      // Filter out matches with null project_requirement and log them
-      const validMatches = data?.filter(match => {
-        if (match.project_requirement === null) {
-          console.warn('DeveloperDashboard: Found match without project_requirement:', match.id);
-          return false;
-        }
-        return true;
-      }) || [];
-      
-      console.log('DeveloperDashboard: Valid matches after filtering:', validMatches);
-      setMatches(validMatches);
-
-      if (validMatches.length === 0) {
-        console.log('DeveloperDashboard: No valid matches found');
-        // Try to generate matches using existing project requirements
-        await generateMatchesForDeveloper(developerId);
-      }
+      if (error) throw error;
+      setMatches(data || []);
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error in fetchMatches:', error);
-      toast.error('Kunde inte hämta matchningar');
-    }
-  };
-
-  const generateMatchesForDeveloper = async (developerId: string) => {
-    try {
-      console.log('DeveloperDashboard: Generating matches for developer:', developerId);
-      
-      // First, get all active project requirements
-      const { data: requirements, error: reqError } = await supabase
-        .from('project_requirements')
-        .select('id')
-        .eq('is_active', true);
-
-      if (reqError) {
-        console.error('DeveloperDashboard: Error fetching requirements:', reqError);
-        return;
-      }
-
-      console.log('DeveloperDashboard: Found active requirements:', requirements?.length || 0);
-
-      // Generate matches for each requirement
-      if (requirements && requirements.length > 0) {
-        for (const req of requirements) {
-          try {
-            const { error: matchError } = await supabase.rpc('generate_project_matches', {
-              req_id: req.id
-            });
-            
-            if (matchError) {
-              console.error('DeveloperDashboard: Error generating matches for requirement:', req.id, matchError);
-            }
-          } catch (err) {
-            console.error('DeveloperDashboard: Error in generate_project_matches call:', err);
-          }
-        }
-
-        console.log('DeveloperDashboard: Finished generating matches, refreshing...');
-        // Small delay to ensure the database has processed the changes
-        setTimeout(() => {
-          fetchMatches(developerId);
-        }, 1000);
-      }
-    } catch (error: any) {
-      console.error('DeveloperDashboard: Error in generateMatchesForDeveloper:', error);
+      toast.error('Kunde inte hämta projektmatchningar');
     }
   };
 
   const fetchNotifications = async () => {
     try {
-      console.log('DeveloperDashboard: Fetching notifications for user:', user?.id);
-      
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
@@ -219,15 +147,10 @@ export const DeveloperDashboard = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      if (error) {
-        console.error('DeveloperDashboard: Error fetching notifications:', error);
-        throw error;
-      }
-
-      console.log('DeveloperDashboard: Notifications fetched:', data);
+      if (error) throw error;
       setNotifications(data || []);
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error in fetchNotifications:', error);
+      console.error('Kunde inte hämta notifikationer:', error);
     }
   };
 
@@ -246,406 +169,368 @@ export const DeveloperDashboard = () => {
           : notif
       ));
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error marking notification as read:', error);
+      console.error('Kunde inte markera notifikation som läst:', error);
     }
   };
 
-  const updateMatchStatus = async (matchId: string, approved: boolean) => {
+  const approveProject = async (matchId: string) => {
     try {
-      const updateData = approved 
-        ? { 
-            developer_approved_at: new Date().toISOString(),
-            status: 'developer_approved'
-          }
-        : { 
-            status: 'developer_declined',
-            developer_approved_at: null
-          };
-
       const { error } = await supabase
         .from('project_matches')
-        .update(updateData)
+        .update({ 
+          developer_approved_at: new Date().toISOString()
+        })
         .eq('id', matchId);
 
       if (error) throw error;
 
       setMatches(prev => prev.map(match => 
-        match.id === matchId ? { ...match, ...updateData } : match
+        match.id === matchId 
+          ? { ...match, developer_approved_at: new Date().toISOString() }
+          : match
       ));
 
-      toast.success(approved ? 'Projekt godkänt!' : 'Projekt avböjt!');
+      toast.success('Projekt godkänt! Kunden kommer att få en notifikation.');
     } catch (error: any) {
-      console.error('DeveloperDashboard: Error updating match status:', error);
-      toast.error('Kunde inte uppdatera status');
+      toast.error('Kunde inte godkänna projektet');
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-500';
+    if (score >= 80) return 'text-tunitech-mint';
     if (score >= 60) return 'text-yellow-500';
-    return 'text-red-500';
-  };
-
-  const getEmploymentTypeLabel = (type: string) => {
-    const labels: { [key: string]: string } = {
-      'hourly': 'Timanställd',
-      'part_time': 'Deltid',
-      'full_time': 'Heltid',
-      'other': 'Övrigt'
-    };
-    return labels[type] || type;
+    return 'text-destructive';
   };
 
   const getMatchStatus = (match: ProjectMatch) => {
-    if (match.developer_approved_at && match.customer_interested_at) {
-      return { 
-        label: 'Matchad - Möte kan bokas', 
-        color: 'bg-green-500', 
-        icon: CheckCircle,
-        priority: 1
-      };
+    if (match.status === 'hired') {
+      return { label: 'Anställd', color: 'bg-tunitech-mint', icon: CheckCircle };
     }
-    if (match.customer_interested_at && !match.developer_approved_at) {
-      return { 
-        label: '💖 Kunden har visat intresse!', 
-        color: 'bg-pink-500', 
-        icon: Heart,
-        priority: 2
-      };
+    if (match.developer_approved_at && match.customer_interested_at) {
+      return { label: 'Matchad - Väntar på kund', color: 'bg-tunitech-blue', icon: CheckCircle };
+    }
+    if (match.customer_interested_at) {
+      return { label: 'Kunden har anmält intresse!', color: 'bg-gradient-to-r from-pink-500 to-rose-500', icon: Heart };
     }
     if (match.developer_approved_at) {
-      return { 
-        label: 'Du har godkänt - Väntar på kund', 
-        color: 'bg-blue-500', 
-        icon: Clock,
-        priority: 3
-      };
+      return { label: 'Godkänd av dig', color: 'bg-secondary', icon: CheckCircle };
     }
-    if (match.status === 'developer_declined') {
-      return { 
-        label: 'Avböjt', 
-        color: 'bg-red-500', 
-        icon: X,
-        priority: 5
-      };
-    }
-    return { 
-      label: 'Väntande svar', 
-      color: 'bg-gray-500', 
-      icon: AlertCircle,
-      priority: 4
-    };
+    return { label: 'Väntande', color: 'bg-muted', icon: Clock };
   };
 
-  // Sort matches by priority (customer interest first)
-  const sortedMatches = [...matches].sort((a, b) => {
-    const statusA = getMatchStatus(a);
-    const statusB = getMatchStatus(b);
-    
-    if (statusA.priority !== statusB.priority) {
-      return statusA.priority - statusB.priority;
-    }
-    
-    // Secondary sort by match score
-    return b.match_score - a.match_score;
-  });
-
-  console.log('DeveloperDashboard: Rendering, loading:', loading, 'developer:', developer, 'error:', error);
+  const getExperienceLevelLabel = (level: string) => {
+    const labels: { [key: string]: string } = {
+      'junior': 'Junior',
+      'medior': 'Medior',
+      'senior': 'Senior'
+    };
+    return labels[level] || level;
+  };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-white">Laddar...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-        <div className="max-w-2xl mx-auto p-6 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Ett fel uppstod</h1>
-          <p className="text-gray-400 mb-6">{error}</p>
-          <Button onClick={() => window.location.reload()}>
-            Försök igen
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-        <div className="max-w-2xl mx-auto p-6 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Du måste logga in</h1>
-          <p className="text-gray-400 mb-6">Du måste vara inloggad för att se denna sida.</p>
-          <Button onClick={() => navigate('/auth')}>
-            Logga in
-          </Button>
-        </div>
-      </div>
-    );
+    return <div className="flex justify-center items-center h-64 text-foreground">Laddar...</div>;
   }
 
   if (!developer) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-        <div className="max-w-2xl mx-auto p-6 text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Utvecklarprofil saknas</h1>
-          <p className="text-gray-400 mb-6">Du måste skapa en utvecklarprofil först.</p>
-          <Button onClick={() => navigate('/developer-onboarding')}>
-            Skapa Utvecklarprofil
-          </Button>
-        </div>
+      <div className="max-w-2xl mx-auto p-6 text-center">
+        <h1 className="text-2xl font-bold text-foreground mb-4">Utvecklarprofil saknas</h1>
+        <p className="text-muted-foreground mb-6">Du måste skapa en utvecklarprofil först.</p>
+        <Button onClick={() => navigate('/developer-onboarding')}>
+          Skapa Utvecklarprofil
+        </Button>
       </div>
     );
   }
 
+  if (!developer.is_approved) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 text-center">
+        <h1 className="text-2xl font-bold text-foreground mb-4">Profil under granskning</h1>
+        <p className="text-muted-foreground mb-6">
+          Din profil granskas för närvarande. Du kommer att få ett e-postmeddelande när den är godkänd.
+        </p>
+        <Button onClick={() => navigate('/developer-profile')}>
+          Redigera profil
+        </Button>
+      </div>
+    );
+  }
+
+  // Separate matches into interested and others
+  const interestedMatches = matches.filter(match => match.customer_interested_at && !match.developer_approved_at);
+  const otherMatches = matches.filter(match => !match.customer_interested_at || match.developer_approved_at);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-tunitech-dark via-gray-900 to-black text-white">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-6xl mx-auto p-6"
-      >
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                Välkommen, {developer.first_name}!
-              </h1>
-              <div className="flex items-center space-x-4">
-                <Badge variant={developer.is_approved ? 'default' : 'secondary'}>
-                  {developer.is_approved ? 'Godkänd' : 'Väntar på godkännande'}
-                </Badge>
-                <Badge variant={developer.available_for_work ? 'default' : 'secondary'}>
-                  {developer.available_for_work ? 'Tillgänglig' : 'Ej tillgänglig'}
-                </Badge>
-              </div>
-            </div>
-            <Button onClick={() => navigate('/developer-profile')} variant="outline">
-              <Star className="w-4 h-4 mr-2" />
-              Min Profil
-            </Button>
-          </div>
+    <div className="container mx-auto px-4">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Välkommen, {developer.first_name}!
+          </h1>
+          <p className="text-muted-foreground">
+            {getExperienceLevelLabel(developer.experience_level)} Utvecklare • {developer.years_of_experience} års erfarenhet
+          </p>
         </div>
+        <Button onClick={() => navigate('/developer-profile')}>
+          <Edit className="w-4 h-4 mr-2" />
+          Redigera Profil
+        </Button>
+      </div>
 
-        {!developer.is_approved ? (
-          <Card className="mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-center">
-                <AlertCircle className="w-6 h-6 text-yellow-500 mr-3" />
-                <div>
-                  <h3 className="font-semibold text-gray-900">Profil väntar på godkännande</h3>
-                  <p className="text-gray-600">
-                    Din profil granskas av vårt team. Du kommer att få tillgång till projektmatchningar när din profil är godkänd.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {/* Notifikationer */}
-            {notifications.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Bell className="w-5 h-5 mr-2" />
-                    Notifikationer
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {notifications.map((notification) => (
-                      <div 
-                        key={notification.id}
-                        className={`p-3 rounded-lg border ${
-                          notification.read_at ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
-                        }`}
+      {/* Notifikationer */}
+      {notifications.length > 0 && (
+        <Card className="mb-6 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center text-card-foreground">
+              <Bell className="w-5 h-5 mr-2" />
+              Notifikationer
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {notifications.map((notification) => (
+                <div 
+                  key={notification.id}
+                  className={`p-3 rounded-lg border ${
+                    notification.read_at ? 'bg-muted/50 border-border' : 'bg-accent/50 border-accent'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-card-foreground">{notification.title}</h4>
+                      <p className="text-muted-foreground text-sm">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(notification.created_at).toLocaleDateString('sv-SE')}
+                      </p>
+                    </div>
+                    {!notification.read_at && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markNotificationAsRead(notification.id)}
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900">{notification.title}</h4>
-                            <p className="text-gray-600 text-sm">{notification.message}</p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {new Date(notification.created_at).toLocaleDateString('sv-SE')}
-                            </p>
-                          </div>
-                          {!notification.read_at && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => markNotificationAsRead(notification.id)}
-                            >
-                              Markera som läst
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                        Markera som läst
+                      </Button>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Star className="w-5 h-5 mr-2" />
-                  Projektförfrågningar
-                </CardTitle>
-                <CardDescription>
-                  Projekt som matchar din profil - kunden ser inte ditt namn eller företagsnamnet
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {sortedMatches.map((match) => {
-                    // Safety check to ensure project_requirement exists
-                    if (!match.project_requirement) {
-                      console.warn('DeveloperDashboard: Match without project_requirement found:', match.id);
-                      return null;
-                    }
+      {/* Projektmatchningar med intresse först */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="bg-gradient-to-r from-tunitech-mint to-tunitech-blue bg-clip-text text-transparent">
+            Projektmatchningar
+          </CardTitle>
+          <CardDescription>
+            Projekt som matchar din profil och kompetens
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Kunder som har anmält intresse */}
+          {interestedMatches.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Heart className="w-5 h-5 text-pink-500" />
+                <h3 className="text-lg font-semibold text-card-foreground">
+                  Kunder som har anmält intresse ({interestedMatches.length})
+                </h3>
+              </div>
+              <div className="grid gap-4">
+                {interestedMatches.map((match) => {
+                  const project = match.project_requirement;
+                  if (!project) return null;
 
-                    const status = getMatchStatus(match);
-                    const StatusIcon = status.icon;
-                    
-                    return (
-                      <div key={match.id} className={`border rounded-lg p-6 bg-white ${
-                        match.customer_interested_at && !match.developer_approved_at 
-                          ? 'ring-2 ring-pink-500 bg-pink-50' 
-                          : ''
-                      }`}>
+                  const statusInfo = getMatchStatus(match);
+                  const StatusIcon = statusInfo.icon;
+
+                  return (
+                    <Card key={match.id} className="bg-gradient-to-r from-pink-500/10 to-rose-500/10 border-pink-500/20">
+                      <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center mb-2">
-                              <Star className={`w-4 h-4 mr-1 ${getScoreColor(match.match_score)}`} />
-                              <span className={`font-semibold ${getScoreColor(match.match_score)}`}>
-                                {match.match_score}% match
-                              </span>
-                              <Badge variant="outline" className="ml-4">
-                                {match.project_requirement.experience_level}
+                            <div className="flex items-center gap-2 mb-2">
+                              <Heart className="w-4 h-4 text-pink-500" />
+                              <Badge className="bg-gradient-to-r from-pink-500 to-rose-500 text-white">
+                                KUNDEN HAR ANMÄLT INTRESSE!
                               </Badge>
                             </div>
-                            <div className="flex items-center">
-                              <StatusIcon className="w-4 h-4 mr-1" />
-                              <Badge className={status.color + ' text-white'}>
-                                {status.label}
-                              </Badge>
-                            </div>
+                            <h3 className="text-xl font-bold text-card-foreground mb-2">
+                              {project.customer?.company_name}
+                            </h3>
+                            <p className="text-muted-foreground mb-2">
+                              Kontakt: {project.customer?.contact_name}
+                            </p>
+                            <p className="text-card-foreground leading-relaxed">
+                              {project.project_description}
+                            </p>
                           </div>
-                          
-                          <div className="text-right">
-                            {match.project_requirement.budget_amount && (
-                              <p className="text-sm text-gray-600">
-                                Budget: {match.project_requirement.budget_amount}
-                              </p>
-                            )}
+                          <div className="text-right ml-4">
+                            <div className="flex items-center mb-2">
+                              <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                              <span className={`font-semibold ${getScoreColor(match.match_score)}`}>
+                                {match.match_score}% matchning
+                              </span>
+                            </div>
+                            <Badge variant="outline">
+                              <StatusIcon className="w-3 h-3 mr-1" />
+                              {statusInfo.label}
+                            </Badge>
                           </div>
                         </div>
 
-                        <p className="text-gray-600 mb-4">
-                          {match.project_requirement.project_description}
-                        </p>
-
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div className="flex items-center">
-                            <Building className="w-4 h-4 mr-2 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              {getEmploymentTypeLabel(match.project_requirement.employment_type)}
-                            </span>
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Erfarenhetsnivå:</h4>
+                            <p className="text-muted-foreground">{getExperienceLevelLabel(project.experience_level)}</p>
                           </div>
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              Start: {new Date(match.project_requirement.start_date).toLocaleDateString('sv-SE')}
-                            </span>
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Startdatum:</h4>
+                            <p className="text-muted-foreground">
+                              {new Date(project.start_date).toLocaleDateString('sv-SE')}
+                            </p>
                           </div>
-                          <div className="flex items-center">
-                            <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              Varaktighet: {match.project_requirement.project_duration}
-                            </span>
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Varaktighet:</h4>
+                            <p className="text-muted-foreground">{project.project_duration}</p>
                           </div>
                         </div>
 
                         <div className="mb-4">
-                          <h4 className="font-semibold text-gray-900 mb-2">Tekniska krav:</h4>
-                          <p className="text-gray-600 text-sm">
-                            {match.project_requirement.technical_skills}
-                          </p>
+                          <h4 className="font-semibold text-card-foreground mb-2">Tekniska krav:</h4>
+                          <p className="text-muted-foreground text-sm">{project.technical_skills}</p>
                         </div>
 
-                        {match.customer_interested_at && !match.developer_approved_at && (
-                          <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-4">
-                            <h4 className="font-semibold text-pink-800 mb-1 flex items-center">
-                              <Heart className="w-4 h-4 mr-2" />
-                              Kunden har visat intresse!
-                            </h4>
-                            <p className="text-pink-700 text-sm">
-                              Kunden har anmält intresse för ditt arbete den {new Date(match.customer_interested_at).toLocaleDateString('sv-SE')}. 
-                              Vill du gå vidare med detta projekt?
+                        {!match.developer_approved_at && (
+                          <div className="bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/30 rounded-lg p-4">
+                            <div className="flex items-start space-x-3">
+                              <Heart className="w-5 h-5 text-pink-500 mt-0.5" />
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-card-foreground mb-1">Kunden vill arbeta med dig!</h4>
+                                <p className="text-muted-foreground text-sm mb-3">
+                                  Denna kund har anmält intresse för dina tjänster. Genom att godkänna projektet kommer ni kunna se varandras kontaktuppgifter.
+                                </p>
+                                <Button 
+                                  onClick={() => approveProject(match.id)}
+                                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                                  size="lg"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Godkänn projekt och börja samarbeta
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Övriga matchningar */}
+          {otherMatches.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                Övriga projektmatchningar ({otherMatches.length})
+              </h3>
+              <div className="grid gap-4">
+                {otherMatches.map((match) => {
+                  const project = match.project_requirement;
+                  if (!project) return null;
+
+                  const statusInfo = getMatchStatus(match);
+                  const StatusIcon = statusInfo.icon;
+
+                  return (
+                    <Card key={match.id} className="bg-background/50 border-border/50">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-card-foreground mb-2">
+                              {project.customer?.company_name}
+                            </h3>
+                            <p className="text-muted-foreground mb-2">
+                              Kontakt: {project.customer?.contact_name}
+                            </p>
+                            <p className="text-card-foreground leading-relaxed">
+                              {project.project_description}
                             </p>
                           </div>
-                        )}
-
-                        {!match.developer_approved_at && match.status !== 'developer_declined' && (
-                          <div className="flex space-x-3">
-                            <Button 
-                              onClick={() => updateMatchStatus(match.id, true)}
-                              className="flex-1"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Godkänn projekt
-                            </Button>
-                            <Button 
-                              variant="outline"
-                              onClick={() => updateMatchStatus(match.id, false)}
-                              className="flex-1"
-                            >
-                              <X className="w-4 h-4 mr-2" />
-                              Avböj projekt
-                            </Button>
+                          <div className="text-right ml-4">
+                            <div className="flex items-center mb-2">
+                              <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                              <span className={`font-semibold ${getScoreColor(match.match_score)}`}>
+                                {match.match_score}% matchning
+                              </span>
+                            </div>
+                            <Badge variant="outline">
+                              <StatusIcon className="w-3 h-3 mr-1" />
+                              {statusInfo.label}
+                            </Badge>
                           </div>
-                        )}
+                        </div>
 
-                        {match.customer_interested_at && match.developer_approved_at && (
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-green-800 mb-2">🎉 Matchning bekräftad!</h4>
-                            <p className="text-green-700 text-sm mb-3">
-                              Både du och kunden har visat intresse. Nu kan ni schemalägga ett möte för att diskutera projektet vidare.
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Erfarenhetsnivå:</h4>
+                            <p className="text-muted-foreground">{getExperienceLevelLabel(project.experience_level)}</p>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Startdatum:</h4>
+                            <p className="text-muted-foreground">
+                              {new Date(project.start_date).toLocaleDateString('sv-SE')}
                             </p>
-                            <Button variant="outline" className="w-full">
-                              Schemalägg möte
-                            </Button>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Varaktighet:</h4>
+                            <p className="text-muted-foreground">{project.project_duration}</p>
+                          </div>
+                        </div>
 
-                  {sortedMatches.length === 0 && (
-                    <div className="text-center py-12">
-                      <Star className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Inga projektförfrågningar än
-                      </h3>
-                      <p className="text-gray-500">
-                        Vi söker kontinuerligt efter projekt som matchar din profil.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </motion.div>
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-card-foreground mb-2">Tekniska krav:</h4>
+                          <p className="text-muted-foreground text-sm">{project.technical_skills}</p>
+                        </div>
+
+                        {!match.developer_approved_at && match.status !== 'hired' && (
+                          <Button 
+                            onClick={() => approveProject(match.id)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Godkänn projekt
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {matches.length === 0 && (
+            <div className="text-center py-8">
+              <Building className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-4">
+                Inga projektmatchningar hittades ännu.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Nya matchningar kommer att visas här när kunder skapar projekt som matchar din profil.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

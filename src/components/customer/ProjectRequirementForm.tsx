@@ -36,22 +36,22 @@ const formSchema = z.object({
   additional_comments: z.string().optional(),
 });
 
-interface SelectedSkill {
+interface ProjectSelectedSkill {
   id: string;
   name: string;
   importance_level: number;
   minimum_years: number;
 }
 
-interface SelectedIndustry {
+interface ProjectSelectedIndustry {
   id: string;
   name: string;
   required: boolean;
 }
 
 export const ProjectRequirementForm = () => {
-  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
-  const [selectedIndustries, setSelectedIndustries] = useState<SelectedIndustry[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<ProjectSelectedSkill[]>([]);
+  const [selectedIndustries, setSelectedIndustries] = useState<ProjectSelectedIndustry[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -194,6 +194,14 @@ export const ProjectRequirementForm = () => {
     }
   };
 
+  const handleSkillsChange = (skills: ProjectSelectedSkill[]) => {
+    setSelectedSkills(skills);
+  };
+
+  const handleIndustriesChange = (industries: ProjectSelectedIndustry[]) => {
+    setSelectedIndustries(industries);
+  };
+
   const watchEmploymentType = form.watch('employment_type');
   const watchHasBudget = form.watch('has_budget');
   const watchIndustryRequired = form.watch('industry_experience_required');
@@ -230,7 +238,6 @@ export const ProjectRequirementForm = () => {
                   )}
                 />
 
-                {/* Projekttyp och erfarenhetsnivå */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -278,7 +285,6 @@ export const ProjectRequirementForm = () => {
                   />
                 </div>
 
-                {/* Anställningstyp */}
                 <FormField
                   control={form.control}
                   name="employment_type"
@@ -323,7 +329,6 @@ export const ProjectRequirementForm = () => {
                   />
                 )}
 
-                {/* Startdatum och varaktighet */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -362,7 +367,6 @@ export const ProjectRequirementForm = () => {
                   />
                 </div>
 
-                {/* Tekniska färdigheter */}
                 <FormField
                   control={form.control}
                   name="technical_skills"
@@ -381,12 +385,10 @@ export const ProjectRequirementForm = () => {
                   )}
                 />
 
-                {/* Tekniska färdigheter selector */}
                 <ProjectSkillSelector
-                  onSkillsChange={setSelectedSkills}
+                  onSkillsChange={handleSkillsChange}
                 />
 
-                {/* Branschexpertis */}
                 <FormField
                   control={form.control}
                   name="industry_experience_required"
@@ -430,12 +432,10 @@ export const ProjectRequirementForm = () => {
                   />
                 )}
 
-                {/* Branschselektor */}
                 <ProjectIndustrySelector
-                  onIndustriesChange={setSelectedIndustries}
+                  onIndustriesChange={handleIndustriesChange}
                 />
 
-                {/* Budget */}
                 <FormField
                   control={form.control}
                   name="has_budget"
