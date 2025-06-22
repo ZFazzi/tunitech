@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,6 +71,7 @@ export const DeveloperDashboard = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const interestedProjectsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchDeveloperData();
@@ -227,6 +227,15 @@ export const DeveloperDashboard = () => {
     return labels[level] || level;
   };
 
+  const scrollToInterestedProjects = () => {
+    if (interestedProjectsRef.current) {
+      interestedProjectsRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64 text-foreground">Laddar...</div>;
   }
@@ -334,12 +343,15 @@ export const DeveloperDashboard = () => {
         <CardContent>
           {/* Kunder som har anmält intresse */}
           {interestedMatches.length > 0 && (
-            <div className="mb-8">
+            <div className="mb-8" ref={interestedProjectsRef}>
               <div className="flex items-center gap-2 mb-4">
                 <Heart className="w-5 h-5 text-pink-500" />
-                <h3 className="text-lg font-semibold text-card-foreground">
+                <button 
+                  onClick={scrollToInterestedProjects}
+                  className="text-lg font-semibold text-card-foreground hover:text-pink-500 transition-colors cursor-pointer underline decoration-pink-500/30 hover:decoration-pink-500"
+                >
                   Kunder som har anmält intresse ({interestedMatches.length})
-                </h3>
+                </button>
               </div>
               <div className="grid gap-4">
                 {interestedMatches.map((match) => {
