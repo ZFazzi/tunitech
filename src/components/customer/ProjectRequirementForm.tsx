@@ -387,6 +387,7 @@ export const ProjectRequirementForm = () => {
                 />
 
                 <ProjectSkillSelector
+                  selectedSkills={selectedSkills}
                   onSkillsChange={handleSkillsChange}
                 />
 
@@ -434,6 +435,7 @@ export const ProjectRequirementForm = () => {
                 )}
 
                 <ProjectIndustrySelector
+                  requiredIndustries={selectedIndustries}
                   onIndustriesChange={handleIndustriesChange}
                 />
 
