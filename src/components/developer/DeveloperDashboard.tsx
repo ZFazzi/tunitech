@@ -76,6 +76,7 @@ export const DeveloperDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [expandedAllProjects, setExpandedAllProjects] = useState<Set<string>>(new Set());
+  const [debugInfo, setDebugInfo] = useState<string>('');
   const { user } = useAuth();
   const navigate = useNavigate();
   const interestedProjectsRef = useRef<HTMLDivElement>(null);
@@ -152,6 +153,9 @@ export const DeveloperDashboard = () => {
 
   const fetchAllAvailableProjects = async (developerId: string) => {
     try {
+      console.log('Fetching available projects for developer:', developerId);
+      setDebugInfo('Hämtar tillgängliga projekt...');
+      
       // Fetch all active projects that this developer hasn't already been matched with
       const { data, error } = await supabase
         .from('project_requirements')
@@ -170,18 +174,40 @@ export const DeveloperDashboard = () => {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Raw project data:', data);
+      console.log('Query error:', error);
+
+      if (error) {
+        console.error('Error fetching projects:', error);
+        setDebugInfo(`Fel vid hämtning: ${error.message}`);
+        throw error;
+      }
+
+      console.log('Total active projects found:', data?.length || 0);
+      
+      if (!data || data.length === 0) {
+        console.log('No active projects found in database');
+        setDebugInfo('Inga aktiva projekt hittades i databasen');
+        setAllProjects([]);
+        return;
+      }
 
       // Filter out projects where this developer already has a match
-      const availableProjects = (data || []).filter(project => {
+      const availableProjects = data.filter(project => {
         const existingMatch = project.project_matches?.find(
           (match: any) => match.developer_id === developerId
         );
-        return !existingMatch;
+        const hasMatch = !!existingMatch;
+        console.log(`Project ${project.id} - has existing match:`, hasMatch);
+        return !hasMatch;
       });
 
+      console.log('Available projects after filtering:', availableProjects.length);
+      setDebugInfo(`${availableProjects.length} tillgängliga projekt hittades`);
       setAllProjects(availableProjects);
     } catch (error: any) {
+      console.error('Error in fetchAllAvailableProjects:', error);
+      setDebugInfo(`Fel: ${error.message}`);
       toast.error('Kunde inte hämta tillgängliga projekt');
     }
   };
@@ -485,9 +511,18 @@ export const DeveloperDashboard = () => {
           <CardDescription>
             Bläddra bland alla aktiva projekt och anmäl ditt intresse
           </CardDescription>
+          {debugInfo && (
+            <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
+              Debug: {debugInfo}
+            </div>
+          )}
         </CardHeader>
         <CardContent>
-          {allProjects.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Laddar tillgängliga projekt...</p>
+            </div>
+          ) : allProjects.length > 0 ? (
             <div className="grid gap-4">
               {allProjects.map((project) => {
                 const isExpanded = expandedAllProjects.has(project.id);
@@ -623,11 +658,18 @@ export const DeveloperDashboard = () => {
             <div className="text-center py-8">
               <Building className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground mb-4">
-                Inga tillgängliga projekt att visa intresse för för tillfället.
+                {debugInfo || 'Inga tillgängliga projekt att visa intresse för för tillfället.'}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-4">
                 Nya projekt kommer att visas här när kunder publicerar dem.
               </p>
+              <Button 
+                onClick={() => developer && fetchAllAvailableProjects(developer.id)}
+                variant="outline"
+                className="mt-2"
+              >
+                Uppdatera projektlista
+              </Button>
             </div>
           )}
         </CardContent>
