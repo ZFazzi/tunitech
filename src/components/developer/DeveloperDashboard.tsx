@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, CheckCircle, Clock, Heart, X } from 'lucide-react';
+import { Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, CheckCircle, Clock, Heart, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Developer {
   id: string;
@@ -69,6 +69,7 @@ export const DeveloperDashboard = () => {
   const [matches, setMatches] = useState<ProjectMatch[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const navigate = useNavigate();
   const interestedProjectsRef = useRef<HTMLDivElement>(null);
@@ -282,6 +283,18 @@ export const DeveloperDashboard = () => {
     }
   };
 
+  const toggleProjectExpansion = (matchId: string) => {
+    setExpandedProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(matchId)) {
+        newSet.delete(matchId);
+      } else {
+        newSet.add(matchId);
+      }
+      return newSet;
+    });
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64 text-foreground">Laddar...</div>;
   }
@@ -406,6 +419,7 @@ export const DeveloperDashboard = () => {
 
                   const statusInfo = getMatchStatus(match);
                   const StatusIcon = statusInfo.icon;
+                  const isExpanded = expandedProjects.has(match.id);
 
                   return (
                     <Card key={match.id} className="bg-gradient-to-r from-pink-500/10 to-rose-500/10 border-pink-500/20">
@@ -418,15 +432,96 @@ export const DeveloperDashboard = () => {
                                 KUNDEN HAR ANMÄLT INTRESSE!
                               </Badge>
                             </div>
-                            <h3 className="text-xl font-bold text-card-foreground mb-2">
-                              Anonymt Projekt
-                            </h3>
-                            <p className="text-muted-foreground mb-2 text-sm">
-                              Kunduppgifter visas efter godkännande
-                            </p>
-                            <p className="text-card-foreground leading-relaxed">
-                              {project.project_description}
-                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-xl font-bold text-card-foreground mb-2">
+                                  Projektförfrågan #{match.id.slice(0, 8)}
+                                </h3>
+                                <p className="text-muted-foreground mb-2 text-sm">
+                                  Klicka för att läsa hela projektbeskrivningen
+                                </p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleProjectExpansion(match.id)}
+                                className="hover:bg-pink-500/20"
+                              >
+                                {isExpanded ? (
+                                  <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+
+                            {/* Förhandsvisning eller full beskrivning */}
+                            {isExpanded ? (
+                              <div className="mt-4 space-y-4">
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Projektbeskrivning:</h4>
+                                  <p className="text-card-foreground leading-relaxed bg-background/50 p-4 rounded-lg">
+                                    {project.project_description}
+                                  </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-1">Erfarenhetsnivå:</h4>
+                                    <p className="text-muted-foreground">{getExperienceLevelLabel(project.experience_level)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-1">Startdatum:</h4>
+                                    <p className="text-muted-foreground">
+                                      {new Date(project.start_date).toLocaleDateString('sv-SE')}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-1">Varaktighet:</h4>
+                                    <p className="text-muted-foreground">{project.project_duration}</p>
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Tekniska krav:</h4>
+                                  <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.technical_skills}</p>
+                                </div>
+
+                                {project.required_resources && (
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-2">Resurser och tillgångar:</h4>
+                                    <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.required_resources}</p>
+                                  </div>
+                                )}
+
+                                {project.security_requirements && (
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-2">Säkerhetskrav:</h4>
+                                    <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.security_requirements}</p>
+                                  </div>
+                                )}
+
+                                {project.project_risks && (
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-2">Projektrisker:</h4>
+                                    <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.project_risks}</p>
+                                  </div>
+                                )}
+
+                                {project.additional_comments && (
+                                  <div>
+                                    <h4 className="font-semibold text-card-foreground mb-2">Övriga kommentarer:</h4>
+                                    <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.additional_comments}</p>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-card-foreground leading-relaxed mt-2">
+                                {project.project_description.substring(0, 150)}
+                                {project.project_description.length > 150 && '...'}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right ml-4">
                             <div className="flex items-center mb-2">
@@ -442,32 +537,10 @@ export const DeveloperDashboard = () => {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                          <div>
-                            <h4 className="font-semibold text-card-foreground mb-1">Erfarenhetsnivå:</h4>
-                            <p className="text-muted-foreground">{getExperienceLevelLabel(project.experience_level)}</p>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-card-foreground mb-1">Startdatum:</h4>
-                            <p className="text-muted-foreground">
-                              {new Date(project.start_date).toLocaleDateString('sv-SE')}
-                            </p>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-card-foreground mb-1">Varaktighet:</h4>
-                            <p className="text-muted-foreground">{project.project_duration}</p>
-                          </div>
-                        </div>
-
-                        <div className="mb-4">
-                          <h4 className="font-semibold text-card-foreground mb-2">Tekniska krav:</h4>
-                          <p className="text-muted-foreground text-sm">{project.technical_skills}</p>
-                        </div>
-
                         {!match.developer_approved_at && (
-                          <div className="bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/30 rounded-lg p-4">
+                          <div className="bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/30 rounded-lg p-4 mt-4">
                             <div className="flex items-start space-x-3">
-                              <Heart className="w-5 h-5 text-pink-500 mt-0.5" />
+                              <Heart className="w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0" />
                               <div className="flex-1">
                                 <h4 className="font-semibold text-card-foreground mb-1">Kunden vill arbeta med dig!</h4>
                                 <p className="text-muted-foreground text-sm mb-3">
