@@ -228,11 +228,21 @@ export const DeveloperDashboard = () => {
   };
 
   const scrollToInterestedProjects = () => {
+    console.log('Scroll function called');
+    console.log('Ref current:', interestedProjectsRef.current);
+    
     if (interestedProjectsRef.current) {
-      interestedProjectsRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      const element = interestedProjectsRef.current;
+      const offsetTop = element.offsetTop - 100; // Add some padding from top
+      
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
       });
+      
+      console.log('Scrolling to:', offsetTop);
+    } else {
+      console.log('Ref not found');
     }
   };
 
@@ -353,7 +363,7 @@ export const DeveloperDashboard = () => {
                   Kunder som har anmält intresse ({interestedMatches.length})
                 </button>
               </div>
-              <div className="grid gap-4" ref={interestedProjectsRef}>
+              <div className="grid gap-4" ref={interestedProjectsRef} id="interested-projects">
                 {interestedMatches.map((match) => {
                   const project = match.project_requirement;
                   if (!project) return null;
