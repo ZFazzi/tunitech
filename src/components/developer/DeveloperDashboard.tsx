@@ -236,15 +236,29 @@ export const DeveloperDashboard = () => {
     if (element) {
       const elementRect = element.getBoundingClientRect();
       const absoluteElementTop = elementRect.top + window.pageYOffset;
-      const offsetTop = absoluteElementTop - 100; // Add some padding from top
+      const offsetTop = Math.max(0, absoluteElementTop - 150); // More padding and ensure it's not negative
       
       console.log('Scrolling to:', offsetTop);
       console.log('Current scroll position:', window.pageYOffset);
+      console.log('Element position:', absoluteElementTop);
+      
+      // Add a visual highlight to make it clear where we're scrolling to
+      element.style.transition = 'all 0.3s ease';
+      element.style.backgroundColor = 'rgba(236, 72, 153, 0.1)';
+      element.style.border = '2px solid rgba(236, 72, 153, 0.3)';
+      element.style.borderRadius = '8px';
       
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth'
       });
+      
+      // Remove highlight after animation
+      setTimeout(() => {
+        element.style.backgroundColor = '';
+        element.style.border = '';
+        element.style.borderRadius = '';
+      }, 2000);
     } else {
       console.log('Element with ID "interested-projects" not found');
     }
