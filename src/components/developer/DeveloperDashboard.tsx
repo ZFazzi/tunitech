@@ -76,7 +76,6 @@ export const DeveloperDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [expandedAllProjects, setExpandedAllProjects] = useState<Set<string>>(new Set());
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const { user } = useAuth();
   const navigate = useNavigate();
   const interestedProjectsRef = useRef<HTMLDivElement>(null);
@@ -89,17 +88,13 @@ export const DeveloperDashboard = () => {
     if (!user) return;
 
     try {
-      console.log('=== STARTING DEVELOPER DATA FETCH ===');
-      console.log('User ID:', user.id);
+      console.log('Fetching developer data for user:', user.id);
       
       const { data: developerData, error: developerError } = await supabase
         .from('developers')
         .select('*')
         .eq('user_id', user.id)
         .single();
-
-      console.log('Developer query result:', developerData);
-      console.log('Developer query error:', developerError);
 
       if (developerError && developerError.code === 'PGRST116') {
         navigate('/developer-onboarding');
@@ -108,8 +103,6 @@ export const DeveloperDashboard = () => {
 
       if (developerError) throw developerError;
       setDeveloper(developerData);
-
-      console.log('Developer found:', developerData.id, developerData.first_name, developerData.last_name);
 
       await Promise.all([
         fetchMatches(developerData.id),
@@ -126,8 +119,6 @@ export const DeveloperDashboard = () => {
 
   const fetchMatches = async (developerId: string) => {
     try {
-      console.log('=== FETCHING MATCHES FOR DEVELOPER ===', developerId);
-      
       const { data, error } = await supabase
         .from('project_matches')
         .select(`
@@ -155,9 +146,6 @@ export const DeveloperDashboard = () => {
         .order('customer_interested_at', { ascending: false, nullsFirst: false })
         .order('match_score', { ascending: false });
 
-      console.log('Matches query result:', data);
-      console.log('Matches query error:', error);
-
       if (error) throw error;
       setMatches(data || []);
     } catch (error: any) {
@@ -168,70 +156,7 @@ export const DeveloperDashboard = () => {
 
   const fetchAllAvailableProjects = async (developerId: string) => {
     try {
-      console.log('=== FETCHING ALL AVAILABLE PROJECTS ===');
-      console.log('Developer ID:', developerId);
-      setDebugInfo('Startar hämtning av tillgängliga projekt...');
-      
-      // Step 1: Count ALL records in project_requirements (without any filters)
-      console.log('=== COUNTING ALL PROJECT REQUIREMENTS ===');
-      const { data: allProjectsData, error: allProjectsError, count: totalCount } = await supabase
-        .from('project_requirements')
-        .select('*', { count: 'exact' });
-
-      console.log('ALL project_requirements data:', allProjectsData);
-      console.log('Total count from query:', totalCount);
-      console.log('Error:', allProjectsError);
-
-      if (allProjectsError) {
-        console.error('Error fetching ALL projects:', allProjectsError);
-        setDebugInfo(`Fel vid hämtning av alla projekt: ${allProjectsError.message}`);
-        throw allProjectsError;
-      }
-
-      const totalProjects = allProjectsData?.length || 0;
-      console.log(`Total projects in database: ${totalProjects}`);
-      setDebugInfo(`Totalt ${totalProjects} projekt finns i databasen.`);
-
-      if (!allProjectsData || allProjectsData.length === 0) {
-        console.log('NO PROJECTS FOUND AT ALL in project_requirements table');
-        setDebugInfo('KRITISKT: Inga projekt hittades alls i project_requirements-tabellen. Testdatan verkar inte ha lagts till korrekt.');
-        
-        // Let's also check customers table
-        const { data: customersData, error: customersError } = await supabase
-          .from('customers')
-          .select('*');
-        
-        console.log('Customers data:', customersData);
-        console.log('Customers error:', customersError);
-        
-        setDebugInfo(prev => prev + ` Kunder hittade: ${customersData?.length || 0}`);
-        setAllProjects([]);
-        return;
-      }
-
-      // Step 2: Check how many are active
-      const activeProjects = allProjectsData.filter(p => p.is_active === true);
-      console.log('Active projects:', activeProjects.length);
-      console.log('Active projects details:', activeProjects.map(p => ({ 
-        id: p.id, 
-        is_active: p.is_active, 
-        description: p.project_description?.substring(0, 50) 
-      })));
-
-      // Debug: Show all is_active values
-      const isActiveValues = allProjectsData.map(p => ({ id: p.id, is_active: p.is_active }));
-      console.log('All is_active values:', isActiveValues);
-      setDebugInfo(prev => prev + ` Varav ${activeProjects.length} är aktiva. is_active värden: ${JSON.stringify(isActiveValues.slice(0, 5))}`);
-
-      if (activeProjects.length === 0) {
-        console.log('NO ACTIVE PROJECTS FOUND');
-        setDebugInfo(prev => prev + ` PROBLEM: Inga aktiva projekt hittades (is_active = true).`);
-        setAllProjects([]);
-        return;
-      }
-
-      // Step 3: Get active projects with customer data
-      console.log('Fetching active projects with customer data...');
+      // Get active projects with customer data
       const { data: projectsWithCustomers, error: projectError } = await supabase
         .from('project_requirements')
         .select(`
@@ -244,63 +169,34 @@ export const DeveloperDashboard = () => {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      console.log('Projects with customers:', projectsWithCustomers?.length || 0);
-      console.log('Projects with customers details:', projectsWithCustomers?.slice(0, 3));
-      console.log('Project fetch error:', projectError);
-
-      if (projectError) {
-        console.error('Error fetching projects with customers:', projectError);
-        setDebugInfo(prev => prev + ` Fel vid hämtning av projekt med kunddata: ${projectError.message}`);
-        throw projectError;
-      }
+      if (projectError) throw projectError;
 
       if (!projectsWithCustomers || projectsWithCustomers.length === 0) {
-        console.log('No projects with customer data found');
-        setDebugInfo(prev => prev + ` ${activeProjects.length} aktiva projekt men inga med kunddata hittades.`);
         setAllProjects([]);
         return;
       }
 
-      setDebugInfo(prev => prev + ` ${projectsWithCustomers.length} aktiva projekt med kunddata hittades. Kontrollerar existerande matchningar...`);
-
-      // Step 4: Get existing matches for this developer
-      console.log('Fetching existing matches for developer...');
+      // Get existing matches for this developer
       const { data: existingMatches, error: matchError } = await supabase
         .from('project_matches')
         .select('project_requirement_id, status')
         .eq('developer_id', developerId);
 
-      console.log('Existing matches:', existingMatches?.length || 0);
-      console.log('Match details:', existingMatches);
-
       if (matchError) {
         console.error('Error fetching existing matches:', matchError);
-        setDebugInfo(prev => prev + ` Fel vid hämtning av matchningar: ${matchError.message}`);
       }
 
-      // Step 5: Filter out projects where this developer already has a match
+      // Filter out projects where this developer already has a match
       const existingProjectIds = new Set(existingMatches?.map(match => match.project_requirement_id) || []);
-      console.log('Existing project IDs:', Array.from(existingProjectIds));
       
-      const availableProjects = projectsWithCustomers.filter(project => {
-        const hasMatch = existingProjectIds.has(project.id);
-        console.log(`Project ${project.id} (${project.customer?.company_name || 'Unknown'}) - has existing match:`, hasMatch);
-        return !hasMatch;
-      });
+      const availableProjects = projectsWithCustomers.filter(project => 
+        !existingProjectIds.has(project.id)
+      );
 
-      console.log('Available projects after filtering:', availableProjects.length);
-      console.log('Available project details:', availableProjects.map(p => ({ 
-        id: p.id, 
-        company: p.customer?.company_name, 
-        description: p.project_description?.substring(0, 50) + '...' 
-      })));
-      
-      setDebugInfo(prev => prev + ` ${availableProjects.length} tillgängliga projekt hittades (av totalt ${projectsWithCustomers.length} aktiva projekt). ${existingMatches?.length || 0} befintliga matchningar.`);
       setAllProjects(availableProjects);
       
     } catch (error: any) {
       console.error('Error in fetchAllAvailableProjects:', error);
-      setDebugInfo(`Kritiskt fel: ${error.message}`);
       toast.error('Kunde inte hämta tillgängliga projekt');
       setAllProjects([]);
     }
@@ -442,21 +338,14 @@ export const DeveloperDashboard = () => {
   };
 
   const scrollToInterestedProjects = () => {
-    console.log('Scroll function called');
-    
     const element = document.getElementById('interested-projects');
-    console.log('Element found:', element);
     
     if (element) {
       const elementRect = element.getBoundingClientRect();
       const absoluteElementTop = elementRect.top + window.pageYOffset;
-      const offsetTop = Math.max(0, absoluteElementTop - 150); // More padding and ensure it's not negative
+      const offsetTop = Math.max(0, absoluteElementTop - 150);
       
-      console.log('Scrolling to:', offsetTop);
-      console.log('Current scroll position:', window.pageYOffset);
-      console.log('Element position:', absoluteElementTop);
-      
-      // Add a visual highlight to make it clear where we're scrolling to
+      // Add a visual highlight
       element.style.transition = 'all 0.3s ease';
       element.style.backgroundColor = 'rgba(236, 72, 153, 0.1)';
       element.style.border = '2px solid rgba(236, 72, 153, 0.3)';
@@ -473,8 +362,6 @@ export const DeveloperDashboard = () => {
         element.style.border = '';
         element.style.borderRadius = '';
       }, 2000);
-    } else {
-      console.log('Element with ID "interested-projects" not found');
     }
   };
 
@@ -553,26 +440,6 @@ export const DeveloperDashboard = () => {
         </Button>
       </div>
 
-      {/* Debug information card */}
-      {debugInfo && (
-        <Card className="mb-6 bg-yellow-50 border-yellow-200">
-          <CardHeader>
-            <CardTitle className="text-yellow-800">Debug Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-yellow-700 text-sm whitespace-pre-wrap">{debugInfo}</p>
-            <Button 
-              onClick={() => developer && fetchAllAvailableProjects(developer.id)}
-              variant="outline"
-              size="sm"
-              className="mt-2"
-            >
-              Försök hämta projekt igen
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Notifikationer */}
       {notifications.length > 0 && (
         <Card className="mb-6 bg-card border-border">
@@ -625,11 +492,6 @@ export const DeveloperDashboard = () => {
           <CardDescription>
             Bläddra bland alla aktiva projekt och anmäl ditt intresse
           </CardDescription>
-          {debugInfo && (
-            <div className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
-              Debug: {debugInfo}
-            </div>
-          )}
         </CardHeader>
         <CardContent>
           {allProjects.length > 0 ? (
