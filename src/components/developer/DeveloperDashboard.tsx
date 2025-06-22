@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -73,8 +72,10 @@ export const DeveloperDashboard = () => {
   const [developer, setDeveloper] = useState<Developer | null>(null);
   const [matches, setMatches] = useState<ProjectMatch[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [allProjects, setAllProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  const [expandedAllProjects, setExpandedAllProjects] = useState<Set<string>>(new Set());
   const { user } = useAuth();
   const navigate = useNavigate();
   const interestedProjectsRef = useRef<HTMLDivElement>(null);
@@ -103,7 +104,8 @@ export const DeveloperDashboard = () => {
 
       await Promise.all([
         fetchMatches(developerData.id),
-        fetchNotifications()
+        fetchNotifications(),
+        fetchAllAvailableProjects(developerData.id)
       ]);
     } catch (error: any) {
       toast.error('Kunde inte hämta utvecklardata');
@@ -145,6 +147,42 @@ export const DeveloperDashboard = () => {
       setMatches(data || []);
     } catch (error: any) {
       toast.error('Kunde inte hämta projektmatchningar');
+    }
+  };
+
+  const fetchAllAvailableProjects = async (developerId: string) => {
+    try {
+      // Fetch all active projects that this developer hasn't already been matched with
+      const { data, error } = await supabase
+        .from('project_requirements')
+        .select(`
+          *,
+          customer:customers (
+            company_name,
+            contact_name
+          ),
+          project_matches!left (
+            id,
+            developer_id,
+            status
+          )
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Filter out projects where this developer already has a match
+      const availableProjects = (data || []).filter(project => {
+        const existingMatch = project.project_matches?.find(
+          (match: any) => match.developer_id === developerId
+        );
+        return !existingMatch;
+      });
+
+      setAllProjects(availableProjects);
+    } catch (error: any) {
+      toast.error('Kunde inte hämta tillgängliga projekt');
     }
   };
 
@@ -224,6 +262,34 @@ export const DeveloperDashboard = () => {
     }
   };
 
+  const expressInterest = async (projectId: string) => {
+    if (!developer) return;
+
+    try {
+      // Create a project match with developer expressing interest
+      const { error } = await supabase
+        .from('project_matches')
+        .insert({
+          project_requirement_id: projectId,
+          developer_id: developer.id,
+          match_score: 0, // Will be calculated later if needed
+          developer_approved_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+
+      toast.success('Intresse anmält! Kunden kommer att få en notifikation.');
+      
+      // Refresh data
+      await Promise.all([
+        fetchMatches(developer.id),
+        fetchAllAvailableProjects(developer.id)
+      ]);
+    } catch (error: any) {
+      toast.error('Kunde inte anmäla intresse för projektet');
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-tunitech-mint';
     if (score >= 60) return 'text-yellow-500';
@@ -299,6 +365,18 @@ export const DeveloperDashboard = () => {
         newSet.delete(matchId);
       } else {
         newSet.add(matchId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllProjectExpansion = (projectId: string) => {
+    setExpandedAllProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId);
+      } else {
+        newSet.add(projectId);
       }
       return newSet;
     });
@@ -397,6 +475,163 @@ export const DeveloperDashboard = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Tillgängliga projekt för utvecklare att visa intresse för */}
+      <Card className="mb-6 bg-card border-border">
+        <CardHeader>
+          <CardTitle className="bg-gradient-to-r from-tunitech-blue to-tunitech-mint bg-clip-text text-transparent">
+            Tillgängliga Projekt
+          </CardTitle>
+          <CardDescription>
+            Bläddra bland alla aktiva projekt och anmäl ditt intresse
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {allProjects.length > 0 ? (
+            <div className="grid gap-4">
+              {allProjects.map((project) => {
+                const isExpanded = expandedAllProjects.has(project.id);
+                
+                return (
+                  <Card key={project.id} className="bg-background/50 border-border/50 hover:border-tunitech-blue/30 transition-colors">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-xl font-bold text-card-foreground mb-2">
+                                {project.customer?.company_name || 'Projekt'}
+                              </h3>
+                              <p className="text-muted-foreground mb-2 text-sm">
+                                Klicka för att läsa hela projektbeskrivningen
+                              </p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleAllProjectExpansion(project.id)}
+                              className="hover:bg-tunitech-blue/20"
+                            >
+                              {isExpanded ? (
+                                <ChevronUp className="w-4 h-4" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+
+                          {isExpanded ? (
+                            <div className="mt-4 space-y-4">
+                              <div>
+                                <h4 className="font-semibold text-card-foreground mb-2">Projektbeskrivning:</h4>
+                                <p className="text-card-foreground leading-relaxed bg-background/50 p-4 rounded-lg">
+                                  {project.project_description}
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-1">Erfarenhetsnivå:</h4>
+                                  <p className="text-muted-foreground">{getExperienceLevelLabel(project.experience_level)}</p>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-1">Startdatum:</h4>
+                                  <p className="text-muted-foreground">
+                                    {new Date(project.start_date).toLocaleDateString('sv-SE')}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-1">Varaktighet:</h4>
+                                  <p className="text-muted-foreground">{project.project_duration}</p>
+                                </div>
+                              </div>
+
+                              <div>
+                                <h4 className="font-semibold text-card-foreground mb-2">Tekniska krav:</h4>
+                                <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.technical_skills}</p>
+                              </div>
+
+                              {project.required_resources && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Resurser och tillgångar:</h4>
+                                  <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.required_resources}</p>
+                                </div>
+                              )}
+
+                              {project.security_requirements && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Säkerhetskrav:</h4>
+                                  <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.security_requirements}</p>
+                                </div>
+                              )}
+
+                              {project.project_risks && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Projektrisker:</h4>
+                                  <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.project_risks}</p>
+                                </div>
+                              )}
+
+                              {project.additional_comments && (
+                                <div>
+                                  <h4 className="font-semibold text-card-foreground mb-2">Övriga kommentarer:</h4>
+                                  <p className="text-muted-foreground text-sm bg-background/50 p-3 rounded-lg">{project.additional_comments}</p>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-card-foreground leading-relaxed mt-2">
+                              {project.project_description.substring(0, 150)}
+                              {project.project_description.length > 150 && '...'}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="ml-4">
+                          <div className="text-xs text-muted-foreground mb-2">
+                            Publicerat: {new Date(project.created_at).toLocaleDateString('sv-SE')}
+                          </div>
+                          <Badge variant="outline" className="mb-2">
+                            {getExperienceLevelLabel(project.experience_level)}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="bg-tunitech-blue/10 border border-tunitech-blue/20 rounded-lg p-4 mt-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-semibold text-card-foreground mb-1">Intresserad av detta projekt?</h4>
+                            <p className="text-muted-foreground text-sm">
+                              Anmäl ditt intresse så kommer kunden att få en notifikation om dig.
+                            </p>
+                          </div>
+                          <Button 
+                            onClick={() => expressInterest(project.id)}
+                            className="bg-gradient-to-r from-tunitech-blue to-tunitech-mint hover:from-tunitech-blue/80 hover:to-tunitech-mint/80 text-white border-0"
+                          >
+                            <Heart className="w-4 h-4 mr-2" />
+                            Anmäl Intresse
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Building className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-4">
+                Inga tillgängliga projekt att visa intresse för för tillfället.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Nya projekt kommer att visas här när kunder publicerar dem.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Projektmatchningar med intresse först */}
       <Card className="bg-card border-border">
