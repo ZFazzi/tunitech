@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/auth/AuthProvider';
@@ -48,6 +49,10 @@ interface ProjectMatch {
     start_date: string;
     project_duration: string;
     created_at: string;
+    required_resources: string | null;
+    security_requirements: string | null;
+    project_risks: string | null;
+    additional_comments: string | null;
     customer: {
       company_name: string;
       contact_name: string;
@@ -122,6 +127,10 @@ export const DeveloperDashboard = () => {
             start_date,
             project_duration,
             created_at,
+            required_resources,
+            security_requirements,
+            project_risks,
+            additional_comments,
             customer:customers (
               company_name,
               contact_name
