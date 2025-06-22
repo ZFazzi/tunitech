@@ -229,20 +229,24 @@ export const DeveloperDashboard = () => {
 
   const scrollToInterestedProjects = () => {
     console.log('Scroll function called');
-    console.log('Ref current:', interestedProjectsRef.current);
     
-    if (interestedProjectsRef.current) {
-      const element = interestedProjectsRef.current;
-      const offsetTop = element.offsetTop - 100; // Add some padding from top
+    const element = document.getElementById('interested-projects');
+    console.log('Element found:', element);
+    
+    if (element) {
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const offsetTop = absoluteElementTop - 100; // Add some padding from top
+      
+      console.log('Scrolling to:', offsetTop);
+      console.log('Current scroll position:', window.pageYOffset);
       
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth'
       });
-      
-      console.log('Scrolling to:', offsetTop);
     } else {
-      console.log('Ref not found');
+      console.log('Element with ID "interested-projects" not found');
     }
   };
 
