@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, CheckCircle, Clock, Heart } from 'lucide-react';
+import { Star, Calendar, Building, Users, Bell, Edit, MapPin, Languages, Award, DollarSign, User, Eye, CheckCircle, Clock, Heart, X } from 'lucide-react';
 
 interface Developer {
   id: string;
@@ -196,6 +196,24 @@ export const DeveloperDashboard = () => {
     }
   };
 
+  const rejectProject = async (matchId: string) => {
+    try {
+      const { error } = await supabase
+        .from('project_matches')
+        .update({ 
+          status: 'rejected'
+        })
+        .eq('id', matchId);
+
+      if (error) throw error;
+
+      setMatches(prev => prev.filter(match => match.id !== matchId));
+      toast.success('Projekt avböjt.');
+    } catch (error: any) {
+      toast.error('Kunde inte avböja projektet');
+    }
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-tunitech-mint';
     if (score >= 60) return 'text-yellow-500';
@@ -295,8 +313,8 @@ export const DeveloperDashboard = () => {
   }
 
   // Separate matches into interested and others
-  const interestedMatches = matches.filter(match => match.customer_interested_at && !match.developer_approved_at);
-  const otherMatches = matches.filter(match => !match.customer_interested_at || match.developer_approved_at);
+  const interestedMatches = matches.filter(match => match.customer_interested_at && !match.developer_approved_at && match.status !== 'rejected');
+  const otherMatches = matches.filter(match => (!match.customer_interested_at || match.developer_approved_at) && match.status !== 'rejected');
 
   return (
     <div className="container mx-auto px-4">
@@ -378,7 +396,7 @@ export const DeveloperDashboard = () => {
                   onClick={scrollToInterestedProjects}
                   className="text-lg font-semibold text-card-foreground hover:text-pink-500 transition-colors cursor-pointer underline decoration-pink-500/30 hover:decoration-pink-500"
                 >
-                  Kunder som har anmält intresse ({interestedMatches.length})
+                  Projekt med kundintresse ({interestedMatches.length})
                 </button>
               </div>
               <div className="grid gap-4" ref={interestedProjectsRef} id="interested-projects">
@@ -401,10 +419,10 @@ export const DeveloperDashboard = () => {
                               </Badge>
                             </div>
                             <h3 className="text-xl font-bold text-card-foreground mb-2">
-                              {project.customer?.company_name}
+                              Anonymt Projekt
                             </h3>
-                            <p className="text-muted-foreground mb-2">
-                              Kontakt: {project.customer?.contact_name}
+                            <p className="text-muted-foreground mb-2 text-sm">
+                              Kunduppgifter visas efter godkännande
                             </p>
                             <p className="text-card-foreground leading-relaxed">
                               {project.project_description}
@@ -455,14 +473,25 @@ export const DeveloperDashboard = () => {
                                 <p className="text-muted-foreground text-sm mb-3">
                                   Denna kund har anmält intresse för dina tjänster. Genom att godkänna projektet kommer ni kunna se varandras kontaktuppgifter.
                                 </p>
-                                <Button 
-                                  onClick={() => approveProject(match.id)}
-                                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-                                  size="lg"
-                                >
-                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                  Godkänn projekt och börja samarbeta
-                                </Button>
+                                <div className="flex gap-3">
+                                  <Button 
+                                    onClick={() => approveProject(match.id)}
+                                    className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                                    size="lg"
+                                  >
+                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                    Godkänn projekt
+                                  </Button>
+                                  <Button 
+                                    onClick={() => rejectProject(match.id)}
+                                    variant="outline"
+                                    className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600 transition-all duration-300"
+                                    size="lg"
+                                  >
+                                    <X className="w-4 h-4 mr-2" />
+                                    Avböj projekt
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -488,6 +517,7 @@ export const DeveloperDashboard = () => {
 
                   const statusInfo = getMatchStatus(match);
                   const StatusIcon = statusInfo.icon;
+                  const showCustomerInfo = match.developer_approved_at && match.customer_interested_at;
 
                   return (
                     <Card key={match.id} className="bg-background/50 border-border/50">
@@ -495,11 +525,13 @@ export const DeveloperDashboard = () => {
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <h3 className="text-xl font-bold text-card-foreground mb-2">
-                              {project.customer?.company_name}
+                              {showCustomerInfo ? project.customer?.company_name : 'Projekt'}
                             </h3>
-                            <p className="text-muted-foreground mb-2">
-                              Kontakt: {project.customer?.contact_name}
-                            </p>
+                            {showCustomerInfo && (
+                              <p className="text-muted-foreground mb-2">
+                                Kontakt: {project.customer?.contact_name}
+                              </p>
+                            )}
                             <p className="text-card-foreground leading-relaxed">
                               {project.project_description}
                             </p>
@@ -541,14 +573,24 @@ export const DeveloperDashboard = () => {
                         </div>
 
                         {!match.developer_approved_at && match.status !== 'hired' && (
-                          <Button 
-                            onClick={() => approveProject(match.id)}
-                            variant="outline"
-                            className="w-full"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Godkänn projekt
-                          </Button>
+                          <div className="flex gap-3">
+                            <Button 
+                              onClick={() => approveProject(match.id)}
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Godkänn projekt
+                            </Button>
+                            <Button 
+                              onClick={() => rejectProject(match.id)}
+                              variant="outline"
+                              className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600"
+                            >
+                              <X className="w-4 h-4 mr-2" />
+                              Avböj
+                            </Button>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
