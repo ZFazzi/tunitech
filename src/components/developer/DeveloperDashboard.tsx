@@ -343,7 +343,7 @@ export const DeveloperDashboard = () => {
         <CardContent>
           {/* Kunder som har anmält intresse */}
           {interestedMatches.length > 0 && (
-            <div className="mb-8" ref={interestedProjectsRef}>
+            <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
                 <Heart className="w-5 h-5 text-pink-500" />
                 <button 
@@ -353,7 +353,7 @@ export const DeveloperDashboard = () => {
                   Kunder som har anmält intresse ({interestedMatches.length})
                 </button>
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-4" ref={interestedProjectsRef}>
                 {interestedMatches.map((match) => {
                   const project = match.project_requirement;
                   if (!project) return null;
