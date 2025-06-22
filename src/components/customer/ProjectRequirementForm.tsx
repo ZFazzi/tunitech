@@ -36,23 +36,23 @@ const formSchema = z.object({
   additional_comments: z.string().optional(),
 });
 
-// Använd rätt typer som matchar underkomponenterna
-interface SelectedSkill {
-  skill_id: string;
+// Types that match the child components
+interface ProjectSelectedSkill {
+  skillCategoryId: string;
   name: string;
-  importance_level: number;
-  minimum_years: number;
+  importanceLevel: number;
+  minimumYears: number;
 }
 
-interface RequiredIndustry {
-  industry_id: string;
+interface ProjectRequiredIndustry {
+  industryCategoryId: string;
   name: string;
   required: boolean;
 }
 
 export const ProjectRequirementForm = () => {
-  const [selectedSkills, setSelectedSkills] = useState<SelectedSkill[]>([]);
-  const [selectedIndustries, setSelectedIndustries] = useState<RequiredIndustry[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<ProjectSelectedSkill[]>([]);
+  const [selectedIndustries, setSelectedIndustries] = useState<ProjectRequiredIndustry[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -136,9 +136,9 @@ export const ProjectRequirementForm = () => {
       if (selectedSkills.length > 0) {
         const skillInserts = selectedSkills.map(skill => ({
           project_requirement_id: projectReq.id,
-          skill_category_id: skill.skill_id,
-          importance_level: skill.importance_level,
-          minimum_years: skill.minimum_years,
+          skill_category_id: skill.skillCategoryId,
+          importance_level: skill.importanceLevel,
+          minimum_years: skill.minimumYears,
         }));
 
         const { error: skillsError } = await supabase
@@ -156,7 +156,7 @@ export const ProjectRequirementForm = () => {
       if (selectedIndustries.length > 0) {
         const industryInserts = selectedIndustries.map(industry => ({
           project_requirement_id: projectReq.id,
-          industry_category_id: industry.industry_id,
+          industry_category_id: industry.industryCategoryId,
           required: industry.required,
         }));
 
@@ -195,11 +195,11 @@ export const ProjectRequirementForm = () => {
     }
   };
 
-  const handleSkillsChange = (skills: SelectedSkill[]) => {
+  const handleSkillsChange = (skills: ProjectSelectedSkill[]) => {
     setSelectedSkills(skills);
   };
 
-  const handleIndustriesChange = (industries: RequiredIndustry[]) => {
+  const handleIndustriesChange = (industries: ProjectRequiredIndustry[]) => {
     setSelectedIndustries(industries);
   };
 
