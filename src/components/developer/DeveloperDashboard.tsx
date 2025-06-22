@@ -156,59 +156,69 @@ export const DeveloperDashboard = () => {
       console.log('Fetching available projects for developer:', developerId);
       setDebugInfo('Hämtar tillgängliga projekt...');
       
-      // Fetch all active projects that this developer hasn't already been matched with
-      const { data, error } = await supabase
+      // First, get all active projects
+      const { data: allActiveProjects, error: projectError } = await supabase
         .from('project_requirements')
         .select(`
           *,
           customer:customers (
             company_name,
             contact_name
-          ),
-          project_matches!left (
-            id,
-            developer_id,
-            status
           )
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      console.log('Raw project data:', data);
-      console.log('Query error:', error);
+      console.log('All active projects query result:', allActiveProjects);
+      console.log('Project query error:', projectError);
 
-      if (error) {
-        console.error('Error fetching projects:', error);
-        setDebugInfo(`Fel vid hämtning: ${error.message}`);
-        throw error;
+      if (projectError) {
+        console.error('Error fetching projects:', projectError);
+        setDebugInfo(`Fel vid hämtning av projekt: ${projectError.message}`);
+        throw projectError;
       }
 
-      console.log('Total active projects found:', data?.length || 0);
-      
-      if (!data || data.length === 0) {
+      if (!allActiveProjects || allActiveProjects.length === 0) {
         console.log('No active projects found in database');
         setDebugInfo('Inga aktiva projekt hittades i databasen');
         setAllProjects([]);
         return;
       }
 
+      console.log('Total active projects found:', allActiveProjects.length);
+
+      // Then, get existing matches for this developer
+      const { data: existingMatches, error: matchError } = await supabase
+        .from('project_matches')
+        .select('project_requirement_id')
+        .eq('developer_id', developerId);
+
+      console.log('Existing matches for developer:', existingMatches);
+      console.log('Match query error:', matchError);
+
+      if (matchError) {
+        console.error('Error fetching existing matches:', matchError);
+        // Continue anyway, this is not critical
+      }
+
       // Filter out projects where this developer already has a match
-      const availableProjects = data.filter(project => {
-        const existingMatch = project.project_matches?.find(
-          (match: any) => match.developer_id === developerId
-        );
-        const hasMatch = !!existingMatch;
+      const existingProjectIds = new Set(existingMatches?.map(match => match.project_requirement_id) || []);
+      
+      const availableProjects = allActiveProjects.filter(project => {
+        const hasMatch = existingProjectIds.has(project.id);
         console.log(`Project ${project.id} - has existing match:`, hasMatch);
         return !hasMatch;
       });
 
       console.log('Available projects after filtering:', availableProjects.length);
-      setDebugInfo(`${availableProjects.length} tillgängliga projekt hittades`);
+      setDebugInfo(`${availableProjects.length} tillgängliga projekt hittades (av totalt ${allActiveProjects.length} aktiva projekt)`);
       setAllProjects(availableProjects);
+      
     } catch (error: any) {
       console.error('Error in fetchAllAvailableProjects:', error);
       setDebugInfo(`Fel: ${error.message}`);
       toast.error('Kunde inte hämta tillgängliga projekt');
+      setAllProjects([]);
     }
   };
 
@@ -518,11 +528,7 @@ export const DeveloperDashboard = () => {
           )}
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Laddar tillgängliga projekt...</p>
-            </div>
-          ) : allProjects.length > 0 ? (
+          {allProjects.length > 0 ? (
             <div className="grid gap-4">
               {allProjects.map((project) => {
                 const isExpanded = expandedAllProjects.has(project.id);
